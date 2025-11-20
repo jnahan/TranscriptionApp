@@ -15,9 +15,7 @@ struct ContentView: View {
     
     @State private var editingRecording: Recording? = nil
     @State private var newRecordingTitle: String = ""
-
-
-
+    @State private var showSettings = false // <- Add this line
     
     @State private var selectedRecording: Recording? = nil
     
@@ -32,8 +30,6 @@ struct ContentView: View {
         }
     }
 
-
-
     var body: some View {
         NavigationSplitView {
             if showCopyToast {
@@ -43,7 +39,7 @@ struct ContentView: View {
                     .cornerRadius(10)
                     .shadow(radius: 5)
                     .transition(.opacity.combined(with: .move(edge: .top)))
-                    .zIndex(1) // ensures it appears above other views
+                    .zIndex(1)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 10)
             }
@@ -52,7 +48,6 @@ struct ContentView: View {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
                     .onTapGesture {
-                        // Tap outside cancels edit
                         editingRecording = nil
                     }
 
@@ -71,7 +66,6 @@ struct ContentView: View {
                         .buttonStyle(.bordered)
 
                         Button("Save") {
-                            // Update the recording title
                             if let index = recordingObjects.firstIndex(where: { $0.id == editing.id }) {
                                 recordingObjects[index].title = newRecordingTitle
                             }
@@ -86,7 +80,6 @@ struct ContentView: View {
                 .frame(maxWidth: 400)
                 .shadow(radius: 20)
             }
-
 
             VStack(alignment: .leading, spacing: 20) {
                 RecorderView(onFinishRecording: { url in
@@ -114,7 +107,6 @@ struct ContentView: View {
 
                             Spacer()
 
-                            // Play/Pause Button
                             Button {
                                 if player.playingURL == recording.fileURL && player.isPlaying {
                                     player.pause()
@@ -126,14 +118,11 @@ struct ContentView: View {
                             }
                             .buttonStyle(.plain)
 
-                            // Progress bar
                             ProgressView(value: player.playingURL == recording.fileURL ? player.progress : 0)
                                 .frame(width: 60)
 
-                            // --- Three-dot menu ---
                             Menu {
                                 Button {
-                                    // Copy transcription
                                     UIPasteboard.general.string = recording.fullText
                                     withAnimation { showCopyToast = true }
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -144,7 +133,6 @@ struct ContentView: View {
                                 }
 
                                 Button {
-                                    // Share transcription
                                     let activityVC = UIActivityViewController(activityItems: [recording.fullText], applicationActivities: nil)
                                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                        let rootVC = windowScene.keyWindow?.rootViewController {
@@ -155,7 +143,6 @@ struct ContentView: View {
                                 }
 
                                 Button {
-                                    // Export audio
                                     let activityVC = UIActivityViewController(activityItems: [recording.fileURL], applicationActivities: nil)
                                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                        let rootVC = windowScene.keyWindow?.rootViewController {
@@ -166,7 +153,6 @@ struct ContentView: View {
                                 }
 
                                 Button {
-                                    // Edit title
                                     editingRecording = recording
                                     newRecordingTitle = recording.title
                                 } label: {
@@ -174,7 +160,6 @@ struct ContentView: View {
                                 }
 
                                 Button(role: .destructive) {
-                                    // Delete recording
                                     if let index = recordingObjects.firstIndex(where: { $0.id == recording.id }) {
                                         modelContext.delete(recordingObjects[index])
                                     }
@@ -194,7 +179,6 @@ struct ContentView: View {
                         .onTapGesture {
                             selectedRecording = recording
                         }
-
                     }
                     .onDelete(perform: deleteRecordings)
                 }
@@ -202,12 +186,23 @@ struct ContentView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EditButton()
                     }
+                    // Add Settings Button
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            showSettings = true
+                        } label: {
+                            Image(systemName: "gear")
+                        }
+                    }
                 }
             }
             .padding()
-            .searchable(text: $searchText, prompt: "Search recordings") // <- attach here
+            .searchable(text: $searchText, prompt: "Search recordings")
             .onChange(of: searchText) { _ in updateFilteredRecordings() }
             .onChange(of: recordingObjects) { _ in updateFilteredRecordings() }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
 
         } detail: {
             if let selected = selectedRecording {
@@ -272,7 +267,7 @@ struct ContentView: View {
             modelContext.insert(recording)
 
         } catch {
-            print("Transcription faile2d:", error)
+            print("Transcription failed:", error)
         }
     }
 }
