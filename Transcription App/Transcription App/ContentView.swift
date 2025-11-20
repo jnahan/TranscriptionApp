@@ -1,13 +1,17 @@
 import SwiftUI
 import SwiftData
 import WhisperKit
+import Combine
+import AVFoundation
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var recordings: [Recording]
+    @Query private var recordingObjects: [Recording]
+    
 
     var body: some View {
         NavigationSplitView {
+            RecorderView()
             VStack(alignment: .leading, spacing: 20) {
                 Text("My Recordings")
                     .font(.title)
@@ -23,7 +27,7 @@ struct ContentView: View {
             .padding()
 
             List {
-                ForEach(recordings) { recording in
+                ForEach(recordingObjects) { recording in
                     NavigationLink {
                         Text(recording.fullText)
                     } label: {
@@ -45,7 +49,7 @@ struct ContentView: View {
     private func deleteRecordings(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(recordings[index])
+                modelContext.delete(recordingObjects[index])
             }
         }
     }
