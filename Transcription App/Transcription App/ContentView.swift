@@ -8,8 +8,25 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var recordingObjects: [Recording]
     @StateObject private var player = MiniPlayer()
+    
+    @State private var searchText: String = ""
+    @State private var filteredRecordings: [Recording] = []
 
+    
     @State private var selectedRecording: Recording? = nil
+    
+    private func updateFilteredRecordings() {
+        if searchText.isEmpty {
+            filteredRecordings = recordingObjects
+        } else {
+            filteredRecordings = recordingObjects.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.fullText.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+
+
 
     var body: some View {
         NavigationSplitView {
@@ -31,16 +48,14 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
 
-                // ---- Fixed List with ForEach ----
                 List(selection: $selectedRecording) {
-                    ForEach(recordingObjects) { recording in
+                    ForEach(filteredRecordings) { recording in
                         HStack {
                             Text(recording.title)
                                 .lineLimit(1)
 
                             Spacer()
 
-                            // Play/Pause Button
                             Button {
                                 if player.playingURL == recording.fileURL && player.isPlaying {
                                     player.pause()
@@ -52,11 +67,10 @@ struct ContentView: View {
                             }
                             .buttonStyle(.plain)
 
-                            // Progress bar
                             ProgressView(value: player.playingURL == recording.fileURL ? player.progress : 0)
                                 .frame(width: 60)
                         }
-                        .contentShape(Rectangle()) // <-- makes the whole row selectable
+                        .contentShape(Rectangle())
                         .onTapGesture {
                             selectedRecording = recording
                         }
@@ -70,8 +84,11 @@ struct ContentView: View {
                 }
             }
             .padding()
+            .searchable(text: $searchText, prompt: "Search recordings") // <- attach here
+            .onChange(of: searchText) { _ in updateFilteredRecordings() }
+            .onChange(of: recordingObjects) { _ in updateFilteredRecordings() }
+
         } detail: {
-            // ---- Detail view showing transcription ----
             if let selected = selectedRecording {
                 ScrollView {
                     Text(selected.fullText)
@@ -134,7 +151,7 @@ struct ContentView: View {
             modelContext.insert(recording)
 
         } catch {
-            print("Transcription failed:", error)
+            print("Transcription faile2d:", error)
         }
     }
 }
