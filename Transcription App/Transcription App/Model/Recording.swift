@@ -6,7 +6,11 @@ import WhisperKit
 class Recording {
     @Attribute(.unique) var id: UUID = UUID()
     var title: String
-    var fileURL: URL
+    
+    // Either fileURL or filePath can be set
+    var fileURL: URL?
+    var filePath: String?
+    
     var fullText: String
     var language: String
     
@@ -17,17 +21,26 @@ class Recording {
     var savedAt: Date = Date()
 
     init(title: String,
-         fileURL: URL,
+         fileURL: URL? = nil,
+         filePath: String? = nil,
          fullText: String,
          language: String,
          segments: [RecordingSegment] = [],
          recordedAt: Date) {
         self.title = title
         self.fileURL = fileURL
+        self.filePath = filePath
         self.fullText = fullText
         self.language = language
         self.segments = segments
         self.recordedAt = recordedAt
+    }
+    
+    // Convenience computed property to get a URL regardless of source
+    var resolvedURL: URL? {
+        if let fileURL { return fileURL }
+        if let filePath { return URL(fileURLWithPath: filePath) }
+        return nil
     }
 }
 

@@ -39,6 +39,8 @@ struct RecorderView: View {
     // Tracks whether microphone permission is denied to show an alert.
     @State private var micDenied = false
     
+    var onFinishRecording: ((URL) -> Void)?
+    
     var body: some View {
         VStack(spacing: 24) {
             
@@ -68,6 +70,9 @@ struct RecorderView: View {
                     if rec.isRecording {
                         // Stop recording; recordings list will refresh via onChange.
                         rec.stop()
+                        if let fileURL = rec.fileURL {
+                            onFinishRecording?(fileURL)
+                        }
                     } else {
                         // Stop playback if active, then start recording.
                         player.stop()
