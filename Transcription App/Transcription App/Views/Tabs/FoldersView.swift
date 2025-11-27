@@ -24,7 +24,7 @@ struct FoldersView: View {
             VStack(spacing: 0) {
                 headerView
                 
-                SearchBar(text: $searchText, placeholder: "Search folders")
+                SearchBar(text: $searchText, placeholder: "Search...")
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
                 
@@ -67,7 +67,7 @@ struct FoldersView: View {
     
     private var headerView: some View {
         HStack {
-            Text("Folders")
+            Text("Collections")
                 .bold()
                 .font(.custom("LibreBaskerville-Regular", size: 20))
             
@@ -76,9 +76,9 @@ struct FoldersView: View {
             Button {
                 showCreateFolder = true
             } label: {
-                Image(systemName: "plus")
-                    .font(.title3)
-                    .foregroundColor(.baseBlack)
+                Image(systemName: "gear")
+                    .font(.system(size: 20))
+                    .foregroundColor(.warmGray600)
             }
         }
         .padding(.horizontal, 16)
@@ -102,29 +102,66 @@ struct FoldersView: View {
     private func deleteFolders(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(folders[index])
+                modelContext.delete(filteredFolders[index])
             }
         }
     }
 }
 
-private struct FolderRow: View {
+// MARK: - Folder Row Component
+struct FolderRow: View {
     let folder: Folder
     let recordingCount: Int
+    @State private var showMenu = false
     
     var body: some View {
-        HStack {
-            Image(systemName: "folder.fill")
-                .foregroundColor(.blue)
+        HStack(spacing: 16) {
+            // Folder Icon
+            ZStack {
+                Circle()
+                    .fill(Color.accentLight)
+                    .frame(width: 56, height: 56)
+                
+                Image(systemName: "waveform")
+                    .font(.system(size: 20))
+                    .foregroundColor(.accent)
+            }
             
+            // Folder Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(folder.name)
-                    .font(.headline)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.baseBlack)
                 
                 Text("\(recordingCount) recordings")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 14))
+                    .foregroundColor(.warmGray500)
             }
+            
+            Spacer()
+            
+            // Three-dot menu
+            Button {
+                showMenu = true
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 20))
+                    .foregroundColor(.warmGray600)
+                    .rotationEffect(.degrees(90))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.vertical, 12)
+        .confirmationDialog("", isPresented: $showMenu, titleVisibility: .hidden) {
+            Button("Rename") {
+                // Handle rename
+            }
+            
+            Button("Delete", role: .destructive) {
+                // Handle delete
+            }
+            
+            Button("Cancel", role: .cancel) {}
         }
     }
 }
