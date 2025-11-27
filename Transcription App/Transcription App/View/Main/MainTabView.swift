@@ -2,30 +2,34 @@ import SwiftUI
 import SwiftData
 
 struct MainTabView: View {
+    // MARK: - Environment & Queries
     @Environment(\.modelContext) private var modelContext
     @Query private var folders: [Folder]
     
+    // MARK: - State
     @State private var selectedTab = 0
+    @State private var showPlusButton = true
+    
+    // MARK: - Sheet States
     @State private var showAddSheet = false
     @State private var showRecorderScreen = false
     @State private var showFilePicker = false
-    @State private var showPlusButton = true
-    
-    // For handling imported file
     @State private var showTranscriptionDetail = false
     @State private var pendingAudioURL: URL? = nil
     
+    // MARK: - Body
     var body: some View {
         ZStack {
+            // Tab Bar
             TabView(selection: $selectedTab) {
-                ContentView()
+                RecordingsView()
                     .environment(\.showPlusButton, $showPlusButton)
                     .tabItem {
                         Label("Recordings", systemImage: "waveform")
                     }
                     .tag(0)
                 
-                // Placeholder for middle tab (will be handled by custom button)
+                // Placeholder for center plus button
                 Color.clear
                     .tabItem {
                         Label("", systemImage: "")
@@ -40,7 +44,7 @@ struct MainTabView: View {
                     .tag(2)
             }
             
-            // Custom Plus Button
+            // Custom Plus Button Overlay
             if showPlusButton {
                 VStack {
                     Spacer()
@@ -64,19 +68,15 @@ struct MainTabView: View {
                         
                         Spacer()
                     }
-                    .padding(.bottom, 8) // Adjust to align with tab bar
+                    .padding(.bottom, 8)
                 }
                 .transition(.opacity)
             }
         }
         .sheet(isPresented: $showAddSheet) {
             AddRecordingSheet(
-                onRecordAudio: {
-                    showRecorderScreen = true
-                },
-                onUploadFile: {
-                    showFilePicker = true
-                }
+                onRecordAudio: { showRecorderScreen = true },
+                onUploadFile: { showFilePicker = true }
             )
             .presentationDetents([.height(200)])
             .presentationDragIndicator(.hidden)
@@ -87,7 +87,6 @@ struct MainTabView: View {
         }
         .sheet(isPresented: $showFilePicker) {
             AudioFilePicker { url in
-                print("File imported: \(url)")
                 pendingAudioURL = url
                 showFilePicker = false
                 showTranscriptionDetail = true
@@ -116,7 +115,7 @@ struct MainTabView: View {
     }
 }
 
-// Environment key for showing/hiding plus button
+// MARK: - Environment Key
 private struct ShowPlusButtonKey: EnvironmentKey {
     static let defaultValue: Binding<Bool> = .constant(true)
 }
@@ -128,6 +127,7 @@ extension EnvironmentValues {
     }
 }
 
+// MARK: - Preview
 #Preview {
     MainTabView()
         .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)

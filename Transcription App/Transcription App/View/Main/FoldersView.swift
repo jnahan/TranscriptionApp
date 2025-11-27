@@ -2,33 +2,23 @@ import SwiftUI
 import SwiftData
 
 struct FoldersView: View {
+    // MARK: - Environment & Queries
     @Environment(\.modelContext) private var modelContext
     @Environment(\.showPlusButton) private var showPlusButton
     @Query private var folders: [Folder]
     @Query private var recordings: [Recording]
     
+    // MARK: - State
     @State private var showCreateFolder = false
     @State private var newFolderName = ""
-    @State private var selectedFolder: Folder?
     
+    // MARK: - Body
     var body: some View {
         NavigationStack {
             List {
                 ForEach(folders) { folder in
                     NavigationLink(value: folder) {
-                        HStack {
-                            Image(systemName: "folder.fill")
-                                .foregroundColor(.blue)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(folder.name)
-                                    .font(.headline)
-                                
-                                Text("\(recordingCount(for: folder)) recordings")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
+                        FolderRow(folder: folder, recordingCount: recordingCount(for: folder))
                     }
                 }
                 .onDelete(perform: deleteFolders)
@@ -62,16 +52,7 @@ struct FoldersView: View {
             }
             .overlay {
                 if folders.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Folders", systemImage: "folder")
-                    } description: {
-                        Text("Create a folder to organize your recordings")
-                    } actions: {
-                        Button("Create Folder") {
-                            showCreateFolder = true
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
+                    emptyState
                 }
             }
         }
@@ -80,6 +61,21 @@ struct FoldersView: View {
         }
     }
     
+    // MARK: - Subviews
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label("No Folders", systemImage: "folder")
+        } description: {
+            Text("Create a folder to organize your recordings")
+        } actions: {
+            Button("Create Folder") {
+                showCreateFolder = true
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+    
+    // MARK: - Helper Methods
     private func recordingCount(for folder: Folder) -> Int {
         recordings.filter { $0.folder?.id == folder.id }.count
     }
@@ -102,107 +98,64 @@ struct FoldersView: View {
     }
 }
 
+// MARK: - Folder Row
+private struct FolderRow: View {
+    let folder: Folder
+    let recordingCount: Int
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "folder.fill")
+                .foregroundColor(.blue)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(folder.name)
+                    .font(.headline)
+                
+                Text("\(recordingCount) recordings")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+}
+
 // MARK: - Folder Detail View
 struct FolderDetailView: View {
+    // MARK: - Environment & Queries
     @Environment(\.modelContext) private var modelContext
     @Query private var allRecordings: [Recording]
+    
+    // MARK: - State Objects
     @StateObject private var player = MiniPlayer()
     
+    // MARK: - Properties
     let folder: Folder
     var showPlusButton: Binding<Bool>
     
+    // MARK: - State
     @State private var showCopyToast = false
     @State private var editingRecording: Recording?
     @State private var newRecordingTitle = ""
     
+    // MARK: - Computed Properties
     private var recordings: [Recording] {
         allRecordings.filter { $0.folder?.id == folder.id }
     }
     
+    // MARK: - Body
     var body: some View {
         ZStack {
             List {
                 ForEach(recordings) { recording in
                     NavigationLink(value: recording) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(recording.title)
-                                    .lineLimit(1)
-                                
-                                Text(recording.recordedAt, style: .date)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            Button {
-                                if player.playingURL == recording.resolvedURL && player.isPlaying {
-                                    player.pause()
-                                } else if let url = recording.resolvedURL {
-                                    player.play(url)
-                                }
-                            } label: {
-                                Image(systemName: (player.playingURL == recording.resolvedURL && player.isPlaying) ? "pause.fill" : "play.fill")
-                            }
-                            .buttonStyle(.plain)
-                            
-                            ProgressView(value: player.playingURL == recording.resolvedURL ? player.progress : 0)
-                                .frame(width: 60)
-                            
-                            Menu {
-                                Button {
-                                    UIPasteboard.general.string = recording.fullText
-                                    withAnimation { showCopyToast = true }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        withAnimation { showCopyToast = false }
-                                    }
-                                } label: {
-                                    Label("Copy Transcription", systemImage: "doc.on.doc")
-                                }
-                                
-                                Button {
-                                    let activityVC = UIActivityViewController(activityItems: [recording.fullText], applicationActivities: nil)
-                                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                       let rootVC = windowScene.keyWindow?.rootViewController {
-                                        rootVC.present(activityVC, animated: true)
-                                    }
-                                } label: {
-                                    Label("Share Transcription", systemImage: "square.and.arrow.up")
-                                }
-                                
-                                Button {
-                                    if let url = recording.resolvedURL {
-                                        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                           let rootVC = windowScene.keyWindow?.rootViewController {
-                                            rootVC.present(activityVC, animated: true)
-                                        }
-                                    }
-                                } label: {
-                                    Label("Export Audio", systemImage: "square.and.arrow.up.fill")
-                                }
-                                
-                                Button {
-                                    editingRecording = recording
-                                    newRecordingTitle = recording.title
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                
-                                Button(role: .destructive) {
-                                    modelContext.delete(recording)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis")
-                                    .rotationEffect(.degrees(90))
-                                    .frame(width: 24, height: 24)
-                                    .contentShape(Rectangle())
-                            }
-                            .menuStyle(.borderlessButton)
-                        }
+                        RecordingRow(
+                            recording: recording,
+                            player: player,
+                            onCopy: { copyRecording(recording) },
+                            onEdit: { editRecording(recording) },
+                            onDelete: { deleteRecording(recording) }
+                        )
                     }
                 }
                 .onDelete { indexSet in
@@ -219,65 +172,106 @@ struct FolderDetailView: View {
             }
             .overlay {
                 if recordings.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Recordings", systemImage: "mic.slash")
-                    } description: {
-                        Text("This folder is empty")
-                    }
+                    emptyState
                 }
             }
             
+            // Copy Toast
             if showCopyToast {
-                VStack {
-                    Text("Recording copied")
-                        .padding()
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                    Spacer()
-                }
-                .padding(.top, 10)
+                toastView
             }
             
-            if let editing = editingRecording {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        editingRecording = nil
-                    }
-                
-                VStack(spacing: 20) {
-                    Text("Edit Recording Title")
-                        .font(.headline)
-                    
-                    TextField("New Title", text: $newRecordingTitle)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.horizontal)
-                    
-                    HStack {
-                        Button("Cancel") {
-                            editingRecording = nil
-                        }
-                        .buttonStyle(.bordered)
-                        
-                        Button("Save") {
-                            editing.title = newRecordingTitle
-                            editingRecording = nil
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
-                .padding()
-                .background(.ultraThinMaterial)
-                .cornerRadius(12)
-                .frame(maxWidth: 400)
-                .shadow(radius: 20)
+            // Edit Overlay
+            if editingRecording != nil {
+                editOverlay
             }
         }
     }
+    
+    // MARK: - Subviews
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label("No Recordings", systemImage: "mic.slash")
+        } description: {
+            Text("This folder is empty")
+        }
+    }
+    
+    private var toastView: some View {
+        VStack {
+            Text("Recording copied")
+                .padding()
+                .background(.ultraThinMaterial)
+                .cornerRadius(10)
+                .shadow(radius: 5)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            Spacer()
+        }
+        .padding(.top, 10)
+    }
+    
+    private var editOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    editingRecording = nil
+                }
+            
+            VStack(spacing: 20) {
+                Text("Edit Recording Title")
+                    .font(.headline)
+                
+                TextField("New Title", text: $newRecordingTitle)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
+                
+                HStack {
+                    Button("Cancel") {
+                        editingRecording = nil
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("Save") {
+                        saveEdit()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .frame(maxWidth: 400)
+            .shadow(radius: 20)
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private func copyRecording(_ recording: Recording) {
+        UIPasteboard.general.string = recording.fullText
+        withAnimation { showCopyToast = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation { showCopyToast = false }
+        }
+    }
+    
+    private func editRecording(_ recording: Recording) {
+        editingRecording = recording
+        newRecordingTitle = recording.title
+    }
+    
+    private func deleteRecording(_ recording: Recording) {
+        modelContext.delete(recording)
+    }
+    
+    private func saveEdit() {
+        guard let editing = editingRecording else { return }
+        editing.title = newRecordingTitle
+        editingRecording = nil
+    }
 }
 
+// MARK: - Preview
 #Preview {
     FoldersView()
         .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)
