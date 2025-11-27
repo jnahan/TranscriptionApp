@@ -24,8 +24,12 @@ struct RecordingsView: View {
                             .padding(.top, 10)
                     }
                     
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 16) {
                         headerView
+                        
+                        SearchBar(text: $searchText, placeholder: "Search recordings")
+                            .padding(.horizontal, 16)
+                        
                         recordingsList
                     }
                 }
@@ -41,7 +45,6 @@ struct RecordingsView: View {
                     )
                 }
             }
-            .searchable(text: $searchText, prompt: "Search recordings")
             .onChange(of: searchText) { _ in updateFilteredRecordings() }
             .onChange(of: recordings) { _ in updateFilteredRecordings() }
             .onAppear {
@@ -73,10 +76,11 @@ struct RecordingsView: View {
             } label: {
                 Image(systemName: "gear")
                     .font(.title3)
+                    .foregroundColor(.baseBlack)
             }
         }
-        .padding(.horizontal)
-        .padding(.top)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
     }
     
     private var recordingsList: some View {

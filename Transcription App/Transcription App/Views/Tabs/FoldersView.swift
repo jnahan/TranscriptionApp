@@ -9,30 +9,34 @@ struct FoldersView: View {
     
     @State private var showCreateFolder = false
     @State private var newFolderName = ""
+    @State private var searchText = ""
+    
+    private var filteredFolders: [Folder] {
+        if searchText.isEmpty {
+            return folders
+        } else {
+            return folders.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(folders) { folder in
-                    NavigationLink(value: folder) {
-                        FolderRow(folder: folder, recordingCount: recordingCount(for: folder))
-                    }
-                }
-                .onDelete(perform: deleteFolders)
-            }
-            .navigationTitle("Folders")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showCreateFolder = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
+            VStack(spacing: 0) {
+                headerView
                 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
+                SearchBar(text: $searchText, placeholder: "Search folders")
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+                
+                List {
+                    ForEach(filteredFolders) { folder in
+                        NavigationLink(value: folder) {
+                            FolderRow(folder: folder, recordingCount: recordingCount(for: folder))
+                        }
+                    }
+                    .onDelete(perform: deleteFolders)
                 }
+                .listStyle(.plain)
             }
             .navigationDestination(for: Folder.self) { folder in
                 FolderDetailView(folder: folder, showPlusButton: showPlusButton)
@@ -59,6 +63,27 @@ struct FoldersView: View {
                 }
             }
         }
+    }
+    
+    private var headerView: some View {
+        HStack {
+            Text("Folders")
+                .bold()
+                .font(.custom("LibreBaskerville-Regular", size: 20))
+            
+            Spacer()
+            
+            Button {
+                showCreateFolder = true
+            } label: {
+                Image(systemName: "plus")
+                    .font(.title3)
+                    .foregroundColor(.baseBlack)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 16)
     }
     
     private func recordingCount(for folder: Folder) -> Int {
