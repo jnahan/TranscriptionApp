@@ -108,14 +108,10 @@ struct FolderDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allRecordings: [Recording]
     
-    @StateObject private var player = Player()
+    @StateObject private var viewModel = RecordingListViewModel()
     
     let folder: Folder
     var showPlusButton: Binding<Bool>
-    
-    @State private var showCopyToast = false
-    @State private var editingRecording: Recording?
-    @State private var newRecordingTitle = ""
     
     private var recordings: [Recording] {
         allRecordings.filter { $0.folder?.id == folder.id }
@@ -128,10 +124,10 @@ struct FolderDetailView: View {
                     NavigationLink(value: recording) {
                         RecordingRow(
                             recording: recording,
-                            player: player,
-                            onCopy: { copyRecording(recording) },
-                            onEdit: { editRecording(recording) },
-                            onDelete: { deleteRecording(recording) }
+                            player: viewModel.player,
+                            onCopy: { viewModel.copyRecording(recording) },
+                            onEdit: { viewModel.editRecording(recording) },
+                            onDelete: { viewModel.deleteRecording(recording) }
                         )
                     }
                 }
@@ -159,7 +155,7 @@ struct FolderDetailView: View {
                 }
             }
             
-            if showCopyToast {
+            if viewModel.showCopyToast {
                 VStack {
                     CopyToast()
                     Spacer()
@@ -167,40 +163,20 @@ struct FolderDetailView: View {
                 .padding(.top, 10)
             }
             
-            if editingRecording != nil {
+            if viewModel.editingRecording != nil {
                 EditRecordingOverlay(
                     isPresented: Binding(
-                        get: { editingRecording != nil },
-                        set: { if !$0 { editingRecording = nil } }
+                        get: { viewModel.editingRecording != nil },
+                        set: { if !$0 { viewModel.cancelEdit() } }
                     ),
-                    newTitle: $newRecordingTitle,
-                    onSave: saveEdit
+                    newTitle: $viewModel.newRecordingTitle,
+                    onSave: viewModel.saveEdit
                 )
             }
         }
-    }
-    
-    private func copyRecording(_ recording: Recording) {
-        UIPasteboard.general.string = recording.fullText
-        withAnimation { showCopyToast = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation { showCopyToast = false }
+        .onAppear {
+            viewModel.configure(modelContext: modelContext)
         }
-    }
-    
-    private func editRecording(_ recording: Recording) {
-        editingRecording = recording
-        newRecordingTitle = recording.title
-    }
-    
-    private func deleteRecording(_ recording: Recording) {
-        modelContext.delete(recording)
-    }
-    
-    private func saveEdit() {
-        guard let editing = editingRecording else { return }
-        editing.title = newRecordingTitle
-        editingRecording = nil
     }
 }
 
