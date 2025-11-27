@@ -7,6 +7,7 @@ import AVFoundation
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var recordingObjects: [Recording]
+    @Query private var folders: [Folder]
     @StateObject private var player = MiniPlayer()
     
     @State private var searchText: String = ""
@@ -15,9 +16,13 @@ struct ContentView: View {
     
     @State private var editingRecording: Recording? = nil
     @State private var newRecordingTitle: String = ""
-    @State private var showSettings = false // <- Add this line
+    @State private var showSettings = false
     
     @State private var selectedRecording: Recording? = nil
+    
+    // New states for transcription detail flow
+    @State private var showTranscriptionDetail = false
+    @State private var pendingAudioURL: URL? = nil
     
     private func updateFilteredRecordings() {
         if searchText.isEmpty {
@@ -83,9 +88,8 @@ struct ContentView: View {
 
             VStack(alignment: .leading, spacing: 20) {
                 RecorderView(onFinishRecording: { url in
-                    Task {
-                        await addRecordingAndTranscribe(fileURL: url)
-                    }
+                    pendingAudioURL = url
+                    showTranscriptionDetail = true
                 })
 
                 Text("My Recordings")
@@ -108,17 +112,17 @@ struct ContentView: View {
                             Spacer()
 
                             Button {
-                                if player.playingURL == recording.fileURL && player.isPlaying {
+                                if player.playingURL == recording.resolvedURL && player.isPlaying {
                                     player.pause()
-                                } else {
-                                    player.play(recording.fileURL)
+                                } else if let url = recording.resolvedURL {
+                                    player.play(url)
                                 }
                             } label: {
-                                Image(systemName: (player.playingURL == recording.fileURL && player.isPlaying) ? "pause.fill" : "play.fill")
+                                Image(systemName: (player.playingURL == recording.resolvedURL && player.isPlaying) ? "pause.fill" : "play.fill")
                             }
                             .buttonStyle(.plain)
 
-                            ProgressView(value: player.playingURL == recording.fileURL ? player.progress : 0)
+                            ProgressView(value: player.playingURL == recording.resolvedURL ? player.progress : 0)
                                 .frame(width: 60)
 
                             Menu {
@@ -143,10 +147,12 @@ struct ContentView: View {
                                 }
 
                                 Button {
-                                    let activityVC = UIActivityViewController(activityItems: [recording.fileURL], applicationActivities: nil)
-                                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                       let rootVC = windowScene.keyWindow?.rootViewController {
-                                        rootVC.present(activityVC, animated: true)
+                                    if let url = recording.resolvedURL {
+                                        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                           let rootVC = windowScene.keyWindow?.rootViewController {
+                                            rootVC.present(activityVC, animated: true)
+                                        }
                                     }
                                 } label: {
                                     Label("Export Audio", systemImage: "square.and.arrow.up.fill")
@@ -186,7 +192,6 @@ struct ContentView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EditButton()
                     }
-                    // Add Settings Button
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             showSettings = true
@@ -202,6 +207,20 @@ struct ContentView: View {
             .onChange(of: recordingObjects) { _ in updateFilteredRecordings() }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
+            }
+            .sheet(isPresented: $showTranscriptionDetail) {
+                if let audioURL = pendingAudioURL {
+                    TranscriptionDetailView(
+                        isPresented: $showTranscriptionDetail,
+                        audioURL: audioURL,
+                        folders: folders,
+                        modelContext: modelContext,
+                        onTranscriptionComplete: {
+                            // Refresh happens automatically via @Query
+                            pendingAudioURL = nil
+                        }
+                    )
+                }
             }
 
         } detail: {

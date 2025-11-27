@@ -5,43 +5,12 @@ import AVFoundation
 struct RecordingDetailView: View {
     let recording: Recording
     @StateObject private var audioPlayer = AudioPlayerController()
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @State private var showShareSheet = false
     @State private var showMenu = false
     
     var body: some View {
         VStack(spacing: 0) {
-            // Top Navigation Bar
-            HStack {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title3)
-                        .foregroundColor(.primary)
-                }
-                
-                Spacer()
-                
-                Button {
-                    showMenu = true
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title3)
-                        .foregroundColor(.primary)
-                }
-                
-                Button {
-                    showShareSheet = true
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.title3)
-                        .foregroundColor(.primary)
-                }
-            }
-            .padding()
-            
             // Scrollable Content Area
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -150,28 +119,37 @@ struct RecordingDetailView: View {
             .padding(.top, 16)
             .background(.ultraThinMaterial)
         }
-        .navigationBarHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    Button {
+                        UIPasteboard.general.string = recording.fullText
+                    } label: {
+                        Label("Copy Transcription", systemImage: "doc.on.doc")
+                    }
+                    
+                    Button {
+                        showShareSheet = true
+                    } label: {
+                        Label("Share Transcription", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button {
+                        // Export audio logic
+                    } label: {
+                        Label("Export Audio", systemImage: "square.and.arrow.up.fill")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
         .sheet(isPresented: $showShareSheet) {
             if let url = recording.resolvedURL {
                 ShareSheet(items: [recording.fullText, url])
             } else {
                 ShareSheet(items: [recording.fullText])
             }
-        }
-        .confirmationDialog("Options", isPresented: $showMenu) {
-            Button("Copy Transcription") {
-                UIPasteboard.general.string = recording.fullText
-            }
-            
-            Button("Share Transcription") {
-                showShareSheet = true
-            }
-            
-            Button("Export Audio") {
-                // Export audio logic
-            }
-            
-            Button("Cancel", role: .cancel) {}
         }
         .onDisappear {
             audioPlayer.stop()
@@ -280,6 +258,8 @@ struct ShareSheet: UIViewControllerRepresentable {
     
     container.mainContext.insert(recording)
     
-    return RecordingDetailView(recording: recording)
-        .modelContainer(container)
+    return NavigationStack {
+        RecordingDetailView(recording: recording)
+    }
+    .modelContainer(container)
 }
