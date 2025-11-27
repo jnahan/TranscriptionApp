@@ -1,13 +1,18 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct AudioFilePicker: UIViewControllerRepresentable {
+struct MediaFilePicker: UIViewControllerRepresentable {
     @Environment(\.dismiss) private var dismiss
-    var onFilePicked: (URL) -> Void
+    var onFilePicked: (URL, MediaType) -> Void
+    
+    enum MediaType {
+        case audio
+        case video
+    }
     
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        // Support common audio formats
-        let supportedTypes: [UTType] = [
+        // Support common audio and video formats
+        let audioTypes: [UTType] = [
             .audio,
             .mp3,
             .mpeg4Audio,
@@ -17,6 +22,18 @@ struct AudioFilePicker: UIViewControllerRepresentable {
             UTType(filenameExtension: "aif") ?? .audio,
             UTType(filenameExtension: "caf") ?? .audio
         ]
+        
+        let videoTypes: [UTType] = [
+            .movie,
+            .video,
+            .mpeg4Movie,
+            .quickTimeMovie,
+            UTType(filenameExtension: "mov") ?? .movie,
+            UTType(filenameExtension: "mp4") ?? .movie,
+            UTType(filenameExtension: "m4v") ?? .movie
+        ]
+        
+        let supportedTypes = audioTypes + videoTypes
         
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes)
         picker.delegate = context.coordinator
@@ -31,9 +48,9 @@ struct AudioFilePicker: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let parent: AudioFilePicker
+        let parent: MediaFilePicker
         
-        init(_ parent: AudioFilePicker) {
+        init(_ parent: MediaFilePicker) {
             self.parent = parent
         }
         
@@ -47,6 +64,9 @@ struct AudioFilePicker: UIViewControllerRepresentable {
             }
             
             defer { url.stopAccessingSecurityScopedResource() }
+            
+            // Determine media type
+            let mediaType = determineMediaType(for: url)
             
             // Copy the file to app's directory
             do {
@@ -77,9 +97,11 @@ struct AudioFilePicker: UIViewControllerRepresentable {
                 // Copy the file
                 try fileManager.copyItem(at: url, to: finalURL)
                 
-                // Call the completion handler with the copied file URL
+                print("✅ \(mediaType == .video ? "Video" : "Audio") file imported: \(finalURL.lastPathComponent)")
+                
+                // Call the completion handler with the copied file URL and media type
                 DispatchQueue.main.async {
-                    self.parent.onFilePicked(finalURL)
+                    self.parent.onFilePicked(finalURL, mediaType)
                 }
                 
             } catch {
@@ -89,6 +111,12 @@ struct AudioFilePicker: UIViewControllerRepresentable {
         
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
             // Picker was cancelled, just dismiss
+        }
+        
+        private func determineMediaType(for url: URL) -> MediaType {
+            let ext = url.pathExtension.lowercased()
+            let videoExtensions = ["mov", "mp4", "m4v", "avi", "mkv", "wmv", "flv"]
+            return videoExtensions.contains(ext) ? .video : .audio
         }
     }
 }

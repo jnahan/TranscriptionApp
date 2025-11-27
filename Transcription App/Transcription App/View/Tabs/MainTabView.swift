@@ -12,8 +12,9 @@ struct MainTabView: View {
     
     // MARK: - Sheet States
     @State private var showAddSheet = false
-    @State private var showRecorderView = false
+    @State private var showRecorderScreen = false
     @State private var showFilePicker = false
+    @State private var showPhotoPicker = false
     @State private var showTranscriptionDetail = false
     @State private var pendingAudioURL: URL? = nil
     
@@ -75,21 +76,33 @@ struct MainTabView: View {
         }
         .sheet(isPresented: $showAddSheet) {
             NewRecordingSheet(
-                onRecordAudio: { showRecorderView = true },
-                onUploadFile: { showFilePicker = true }
+                onRecordAudio: { showRecorderScreen = true },
+                onUploadFile: { showFilePicker = true },
+                onChooseFromPhotos: { showPhotoPicker = true }
             )
-            .presentationDetents([.height(200)])
+            .presentationDetents([.height(240)])
             .presentationDragIndicator(.hidden)
             .presentationBackground(.clear)
         }
-        .fullScreenCover(isPresented: $showRecorderView) {
+        .fullScreenCover(isPresented: $showRecorderScreen) {
             RecorderView()
         }
         .sheet(isPresented: $showFilePicker) {
-            AudioFilePicker { url in
+            MediaFilePicker { url, mediaType in
                 pendingAudioURL = url
                 showFilePicker = false
                 showTranscriptionDetail = true
+                
+                print("Imported \(mediaType == .video ? "video" : "audio") from files: \(url.lastPathComponent)")
+            }
+        }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotoVideoPicker { url in
+                pendingAudioURL = url
+                showPhotoPicker = false
+                showTranscriptionDetail = true
+                
+                print("Imported video from photos: \(url.lastPathComponent)")
             }
         }
         .fullScreenCover(item: Binding(
