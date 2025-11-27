@@ -116,12 +116,12 @@
 		5D7925AA2ECD8E4A002889A6 /* Transcription App */ = {
 			isa = PBXGroup;
 			children = (
-				5DB579202ED8CF8E002DC84D /* Utilities */,
-				5D962F292ECEBAB200049626 /* View */,
+				5DB579232ED8D041002DC84D /* App */,
+				5D7925BB2ECD8E5A002889A6 /* Models */,
+				5D962F292ECEBAB200049626 /* Views */,
 				5D7037802ECD91B400D061E3 /* Service */,
+				5DB579202ED8CF8E002DC84D /* Utilities */,
 				5D70377D2ECD910200D061E3 /* TestRecording */,
-				5D7925BB2ECD8E5A002889A6 /* Model */,
-				5D7925AB2ECD8E4A002889A6 /* Transcription_AppApp.swift */,
 				5D7925B12ECD8E4B002889A6 /* Assets.xcassets */,
 				5D7925B32ECD8E4B002889A6 /* Preview Content */,
 			);
@@ -136,26 +136,26 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		5D7925BB2ECD8E5A002889A6 /* Model */ = {
+		5D7925BB2ECD8E5A002889A6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				5D7925BC2ECD8E6B002889A6 /* Recording.swift */,
 				5D214A362ED8238B0069565D /* Folder.swift */,
 				5D214A392ED8263B0069565D /* RecordingSegment.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
-		5D962F292ECEBAB200049626 /* View */ = {
+		5D962F292ECEBAB200049626 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5DB5791B2ED8CAE9002DC84D /* Pickers */,
-				5DB5790E2ED8BF5E002DC84D /* Components */,
-				5DB5790D2ED8BB20002DC84D /* Settings */,
-				5DB5790C2ED8BAB5002DC84D /* Recording */,
 				5DB5790B2ED8BAA0002DC84D /* Tabs */,
+				5DB5790C2ED8BAB5002DC84D /* Recording */,
+				5DB5790E2ED8BF5E002DC84D /* Components */,
+				5DB5791B2ED8CAE9002DC84D /* Pickers */,
+				5DB5790D2ED8BB20002DC84D /* Settings */,
 			);
-			path = View;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		5DB5790B2ED8BAA0002DC84D /* Tabs */ = {
@@ -172,8 +172,8 @@
 			isa = PBXGroup;
 			children = (
 				5DB579012ED84343002DC84D /* RecorderView.swift */,
-				5D4622D32ED83570009A454D /* CreateRecordingView.swift */,
 				5D962F252ECE92E500049626 /* RecorderControl.swift */,
+				5D4622D32ED83570009A454D /* CreateRecordingView.swift */,
 				5D962F2C2ECEBBF800049626 /* RecordingDetailsView.swift */,
 			);
 			path = Recording;
@@ -216,6 +216,14 @@
 				5DB579212ED8CF97002DC84D /* Colors.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		5DB579232ED8D041002DC84D /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5D7925AB2ECD8E4A002889A6 /* Transcription_AppApp.swift */,
+			);
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
