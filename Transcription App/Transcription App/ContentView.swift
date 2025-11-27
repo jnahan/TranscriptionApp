@@ -6,6 +6,7 @@ import AVFoundation
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.showPlusButton) private var showPlusButton
     @Query private var recordingObjects: [Recording]
     @Query private var folders: [Folder]
     @StateObject private var player = MiniPlayer()
@@ -221,6 +222,8 @@ struct ContentView: View {
             }
             .navigationDestination(item: $selectedRecording) { recording in
                 RecordingDetailView(recording: recording)
+                    .onAppear { showPlusButton.wrappedValue = false }
+                    .onDisappear { showPlusButton.wrappedValue = true }
             }
         }
         .fullScreenCover(isPresented: $showRecorderScreen) {

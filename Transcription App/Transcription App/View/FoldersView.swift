@@ -3,6 +3,7 @@ import SwiftData
 
 struct FoldersView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.showPlusButton) private var showPlusButton
     @Query private var folders: [Folder]
     @Query private var recordings: [Recording]
     
@@ -47,7 +48,8 @@ struct FoldersView: View {
                 }
             }
             .navigationDestination(for: Folder.self) { folder in
-                FolderDetailView(folder: folder)
+                FolderDetailView(folder: folder, showPlusButton: showPlusButton)
+                    .onAppear { showPlusButton.wrappedValue = false }
             }
             .alert("Create Folder", isPresented: $showCreateFolder) {
                 TextField("Folder name", text: $newFolderName)
@@ -72,6 +74,9 @@ struct FoldersView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            showPlusButton.wrappedValue = true
         }
     }
     
@@ -104,6 +109,7 @@ struct FolderDetailView: View {
     @StateObject private var player = MiniPlayer()
     
     let folder: Folder
+    var showPlusButton: Binding<Bool>
     
     @State private var showCopyToast = false
     @State private var editingRecording: Recording?
@@ -117,84 +123,86 @@ struct FolderDetailView: View {
         ZStack {
             List {
                 ForEach(recordings) { recording in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(recording.title)
-                                .lineLimit(1)
-                            
-                            Text(recording.recordedAt, style: .date)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            if player.playingURL == recording.resolvedURL && player.isPlaying {
-                                player.pause()
-                            } else if let url = recording.resolvedURL {
-                                player.play(url)
+                    NavigationLink(value: recording) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(recording.title)
+                                    .lineLimit(1)
+                                
+                                Text(recording.recordedAt, style: .date)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
-                        } label: {
-                            Image(systemName: (player.playingURL == recording.resolvedURL && player.isPlaying) ? "pause.fill" : "play.fill")
-                        }
-                        .buttonStyle(.plain)
-                        
-                        ProgressView(value: player.playingURL == recording.resolvedURL ? player.progress : 0)
-                            .frame(width: 60)
-                        
-                        Menu {
+                            
+                            Spacer()
+                            
                             Button {
-                                UIPasteboard.general.string = recording.fullText
-                                withAnimation { showCopyToast = true }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    withAnimation { showCopyToast = false }
+                                if player.playingURL == recording.resolvedURL && player.isPlaying {
+                                    player.pause()
+                                } else if let url = recording.resolvedURL {
+                                    player.play(url)
                                 }
                             } label: {
-                                Label("Copy Transcription", systemImage: "doc.on.doc")
+                                Image(systemName: (player.playingURL == recording.resolvedURL && player.isPlaying) ? "pause.fill" : "play.fill")
                             }
+                            .buttonStyle(.plain)
                             
-                            Button {
-                                let activityVC = UIActivityViewController(activityItems: [recording.fullText], applicationActivities: nil)
-                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                   let rootVC = windowScene.keyWindow?.rootViewController {
-                                    rootVC.present(activityVC, animated: true)
+                            ProgressView(value: player.playingURL == recording.resolvedURL ? player.progress : 0)
+                                .frame(width: 60)
+                            
+                            Menu {
+                                Button {
+                                    UIPasteboard.general.string = recording.fullText
+                                    withAnimation { showCopyToast = true }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation { showCopyToast = false }
+                                    }
+                                } label: {
+                                    Label("Copy Transcription", systemImage: "doc.on.doc")
                                 }
-                            } label: {
-                                Label("Share Transcription", systemImage: "square.and.arrow.up")
-                            }
-                            
-                            Button {
-                                if let url = recording.resolvedURL {
-                                    let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                                
+                                Button {
+                                    let activityVC = UIActivityViewController(activityItems: [recording.fullText], applicationActivities: nil)
                                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                        let rootVC = windowScene.keyWindow?.rootViewController {
                                         rootVC.present(activityVC, animated: true)
                                     }
+                                } label: {
+                                    Label("Share Transcription", systemImage: "square.and.arrow.up")
+                                }
+                                
+                                Button {
+                                    if let url = recording.resolvedURL {
+                                        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                           let rootVC = windowScene.keyWindow?.rootViewController {
+                                            rootVC.present(activityVC, animated: true)
+                                        }
+                                    }
+                                } label: {
+                                    Label("Export Audio", systemImage: "square.and.arrow.up.fill")
+                                }
+                                
+                                Button {
+                                    editingRecording = recording
+                                    newRecordingTitle = recording.title
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                
+                                Button(role: .destructive) {
+                                    modelContext.delete(recording)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
                                 }
                             } label: {
-                                Label("Export Audio", systemImage: "square.and.arrow.up.fill")
+                                Image(systemName: "ellipsis")
+                                    .rotationEffect(.degrees(90))
+                                    .frame(width: 24, height: 24)
+                                    .contentShape(Rectangle())
                             }
-                            
-                            Button {
-                                editingRecording = recording
-                                newRecordingTitle = recording.title
-                            } label: {
-                                Label("Edit", systemImage: "pencil")
-                            }
-                            
-                            Button(role: .destructive) {
-                                modelContext.delete(recording)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .rotationEffect(.degrees(90))
-                                .frame(width: 24, height: 24)
-                                .contentShape(Rectangle())
+                            .menuStyle(.borderlessButton)
                         }
-                        .menuStyle(.borderlessButton)
                     }
                 }
                 .onDelete { indexSet in
@@ -205,6 +213,10 @@ struct FolderDetailView: View {
             }
             .navigationTitle(folder.name)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: Recording.self) { recording in
+                RecordingDetailView(recording: recording)
+                    .onAppear { showPlusButton.wrappedValue = false }
+            }
             .overlay {
                 if recordings.isEmpty {
                     ContentUnavailableView {

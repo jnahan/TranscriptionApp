@@ -9,6 +9,7 @@ struct MainTabView: View {
     @State private var showAddSheet = false
     @State private var showRecorderScreen = false
     @State private var showFilePicker = false
+    @State private var showPlusButton = true
     
     // For handling imported file
     @State private var showTranscriptionDetail = false
@@ -18,6 +19,7 @@ struct MainTabView: View {
         ZStack {
             TabView(selection: $selectedTab) {
                 ContentView()
+                    .environment(\.showPlusButton, $showPlusButton)
                     .tabItem {
                         Label("Recordings", systemImage: "waveform")
                     }
@@ -31,6 +33,7 @@ struct MainTabView: View {
                     .tag(1)
                 
                 FoldersView()
+                    .environment(\.showPlusButton, $showPlusButton)
                     .tabItem {
                         Label("Folders", systemImage: "folder")
                     }
@@ -38,29 +41,32 @@ struct MainTabView: View {
             }
             
             // Custom Plus Button
-            VStack {
-                Spacer()
-                HStack {
+            if showPlusButton {
+                VStack {
                     Spacer()
-                    
-                    Button {
-                        showAddSheet = true
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(Color.black)
-                                .frame(width: 56, height: 56)
-                                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
-                            
-                            Image(systemName: "plus")
-                                .font(.system(size: 24, weight: .semibold))
-                                .foregroundColor(.white)
+                    HStack {
+                        Spacer()
+                        
+                        Button {
+                            showAddSheet = true
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.black)
+                                    .frame(width: 56, height: 56)
+                                    .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+                                
+                                Image(systemName: "plus")
+                                    .font(.system(size: 24, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
                         }
+                        
+                        Spacer()
                     }
-                    
-                    Spacer()
+                    .padding(.bottom, 8) // Adjust to align with tab bar
                 }
-                .padding(.bottom, 8) // Adjust to align with tab bar
+                .transition(.opacity)
             }
         }
         .sheet(isPresented: $showAddSheet) {
@@ -107,6 +113,18 @@ struct MainTabView: View {
                 }
             )
         }
+    }
+}
+
+// Environment key for showing/hiding plus button
+private struct ShowPlusButtonKey: EnvironmentKey {
+    static let defaultValue: Binding<Bool> = .constant(true)
+}
+
+extension EnvironmentValues {
+    var showPlusButton: Binding<Bool> {
+        get { self[ShowPlusButtonKey.self] }
+        set { self[ShowPlusButtonKey.self] = newValue }
     }
 }
 

@@ -6,18 +6,29 @@ struct RecordingDetailView: View {
     let recording: Recording
     @StateObject private var audioPlayer = AudioPlayerController()
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    
     @State private var showShareSheet = false
-    @State private var showMenu = false
+    @State private var showNotePopup = false
+    @State private var showEditTitle = false
+    @State private var newTitle = ""
+    @State private var showDeleteConfirm = false
     
     var body: some View {
         VStack(spacing: 0) {
             // Scrollable Content Area
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Title
-                    Text(recording.title)
-                        .font(.system(size: 34, weight: .bold))
-                        .padding(.horizontal)
+                    // Title and Date
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(recording.title)
+                            .font(.system(size: 34, weight: .bold))
+                        
+                        Text(recording.recordedAt, style: .date)
+                            .font(.system(size: 17))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
                     
                     // Transcription with timestamps
                     if !recording.segments.isEmpty {
@@ -114,33 +125,85 @@ struct RecordingDetailView: View {
                             .foregroundColor(.primary)
                     }
                 }
+                
+                // Bottom Action Buttons
+                HStack(spacing: 40) {
+                    // Note button
+                    Button {
+                        showNotePopup = true
+                    } label: {
+                        Image(systemName: "note.text")
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Spacer()
+                    
+                    // Copy button
+                    Button {
+                        UIPasteboard.general.string = recording.fullText
+                    } label: {
+                        Image(systemName: "doc.on.doc")
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                    }
+                    
+                    // Share button
+                    Button {
+                        showShareSheet = true
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                    }
+                }
+                .padding(.horizontal, 40)
                 .padding(.bottom, 20)
             }
             .padding(.top, 16)
             .background(.ultraThinMaterial)
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+            }
+            
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button {
-                        UIPasteboard.general.string = recording.fullText
-                    } label: {
-                        Label("Copy Transcription", systemImage: "doc.on.doc")
-                    }
-                    
-                    Button {
-                        showShareSheet = true
-                    } label: {
-                        Label("Share Transcription", systemImage: "square.and.arrow.up")
-                    }
-                    
-                    Button {
-                        // Export audio logic
+                        if let url = recording.resolvedURL {
+                            let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                               let rootVC = windowScene.keyWindow?.rootViewController {
+                                rootVC.present(activityVC, animated: true)
+                            }
+                        }
                     } label: {
                         Label("Export Audio", systemImage: "square.and.arrow.up.fill")
                     }
+                    
+                    Button {
+                        showEditTitle = true
+                        newTitle = recording.title
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive) {
+                        showDeleteConfirm = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
+                        .font(.system(size: 20))
                 }
             }
         }
@@ -149,6 +212,36 @@ struct RecordingDetailView: View {
                 ShareSheet(items: [recording.fullText, url])
             } else {
                 ShareSheet(items: [recording.fullText])
+            }
+        }
+        .alert("Note", isPresented: $showNotePopup) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if !recording.notes.isEmpty {
+                Text(recording.notes)
+            } else {
+                Text("No notes")
+            }
+        }
+        .alert("Edit Title", isPresented: $showEditTitle) {
+            TextField("Title", text: $newTitle)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                recording.title = newTitle
+            }
+        }
+        .alert("Delete Recording?", isPresented: $showDeleteConfirm) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                modelContext.delete(recording)
+                dismiss()
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
+        .onAppear {
+            if let url = recording.resolvedURL {
+                audioPlayer.loadAudio(url: url)
             }
         }
         .onDisappear {
@@ -172,17 +265,23 @@ class AudioPlayerController: ObservableObject {
     private var player: AVAudioPlayer?
     private var timer: Timer?
     
-    func play(url: URL) {
+    func loadAudio(url: URL) {
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.prepareToPlay()
             duration = player?.duration ?? 0
-            player?.play()
-            isPlaying = true
-            startTimer()
         } catch {
-            print("Failed to play audio: \(error)")
+            print("Failed to load audio: \(error)")
         }
+    }
+    
+    func play(url: URL) {
+        if player == nil {
+            loadAudio(url: url)
+        }
+        player?.play()
+        isPlaying = true
+        startTimer()
     }
     
     func pause() {
@@ -236,30 +335,4 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
-// MARK: - Preview
-#Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Recording.self, RecordingSegment.self, configurations: config)
-    
-    let recording = Recording(
-        title: "Afternoon recording",
-        fileURL: URL(fileURLWithPath: "/path/to/audio.m4a"),
-        filePath: nil,
-        fullText: "Lorem ipsum dolor sit amet consectetur.",
-        language: "en",
-        segments: [
-            RecordingSegment(start: 92, end: 120, text: "Lorem ipsum dolor sit amet consectetur. Suspendisse quis cursus vitae blandit convallis suspendisse gravida at. Orci ac diam condimentum mi at. Metus consectetur consequat sapien hac morbi consectetur adipiscing donec. Feugiat cras enim tortor libero dignissim non adipiscing velit velit"),
-            RecordingSegment(start: 92, end: 120, text: "Lorem ipsum dolor sit amet consectetur. Suspendisse quis cursus vitae blandit convallis suspendisse gravida at. Orci ac diam condimentum mi at. Metus consectetur consequat sapien hac morbi consectetur adipiscing donec. Feugiat cras enim tortor libero dignissim non adipiscing velit velit")
-        ],
-        recordedAt: Date()
-    )
-    
-    container.mainContext.insert(recording)
-    
-    return NavigationStack {
-        RecordingDetailView(recording: recording)
-    }
-    .modelContainer(container)
 }
