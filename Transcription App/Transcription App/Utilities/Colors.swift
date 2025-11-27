@@ -3,7 +3,7 @@ import SwiftUI
 extension Color {
     // MARK: - Accent
     static let accent = Color(red: 240/255, green: 88/255, blue: 136/255)
-    static let accentLight = Color(red: 248/255, green: 230/255, blue: 235/255)
+    static let accentLight = Color(red: 250/255, green: 231/255, blue: 237/255)
     
     // MARK: - Warning
     static let warning = Color(red: 223/255, green: 0/255, blue: 33/255)
@@ -27,6 +27,6 @@ extension Color {
 
 extension View {
     func defaultShadow() -> some View {
-        self.shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 4)
+        self.shadow(color: Color.black.opacity(0.04), radius: 20, x: 0, y: 4)
     }
 }

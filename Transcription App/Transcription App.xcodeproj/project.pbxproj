@@ -37,6 +37,8 @@
 		5DB579222ED8CF97002DC84D /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579212ED8CF97002DC84D /* Colors.swift */; };
 		5DB579252ED8D143002DC84D /* TranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579242ED8D143002DC84D /* TranscriptionService.swift */; };
 		5DB579272ED8D5D1002DC84D /* RecordingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579262ED8D5D1002DC84D /* RecordingListViewModel.swift */; };
+		5DB5792B2ED8EF0E002DC84D /* LibreBaskerville-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DB579292ED8ECA9002DC84D /* LibreBaskerville-VariableFont_wght.ttf */; };
+		5DB5792D2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5792C2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +72,9 @@
 		5DB579212ED8CF97002DC84D /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		5DB579242ED8D143002DC84D /* TranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionService.swift; sourceTree = "<group>"; };
 		5DB579262ED8D5D1002DC84D /* RecordingListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingListViewModel.swift; sourceTree = "<group>"; };
+		5DB579292ED8ECA9002DC84D /* LibreBaskerville-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreBaskerville-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		5DB5792A2ED8ECE5002DC84D /* Transcription-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Transcription-App-Info.plist"; sourceTree = SOURCE_ROOT; };
+		5DB5792C2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-VariableFont_opsz,wght.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +126,8 @@
 		5D7925AA2ECD8E4A002889A6 /* Transcription App */ = {
 			isa = PBXGroup;
 			children = (
+				5DB5792A2ED8ECE5002DC84D /* Transcription-App-Info.plist */,
+				5DB579282ED8EC99002DC84D /* Fonts */,
 				5DB579232ED8D041002DC84D /* App */,
 				5D7925BB2ECD8E5A002889A6 /* Models */,
 				5D962F292ECEBAB200049626 /* Views */,
@@ -232,6 +239,15 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		5DB579282ED8EC99002DC84D /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				5DB579292ED8ECA9002DC84D /* LibreBaskerville-VariableFont_wght.ttf */,
+				5DB5792C2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -299,6 +315,8 @@
 				5D7925B52ECD8E4B002889A6 /* Preview Assets.xcassets in Resources */,
 				5D70377F2ECD916400D061E3 /* jfk.wav in Resources */,
 				5D7925B22ECD8E4B002889A6 /* Assets.xcassets in Resources */,
+				5DB5792D2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf in Resources */,
+				5DB5792B2ED8EF0E002DC84D /* LibreBaskerville-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,6 +489,7 @@
 				DEVELOPMENT_TEAM = 485K7R6W7C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Transcription-App-Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need your microphone to save and record audio";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -502,6 +521,7 @@
 				DEVELOPMENT_TEAM = 485K7R6W7C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Transcription-App-Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need your microphone to save and record audio";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

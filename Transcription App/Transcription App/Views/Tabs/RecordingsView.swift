@@ -62,9 +62,10 @@ struct RecordingsView: View {
     private var headerView: some View {
         HStack {
             Text("My Recordings")
-                .font(.largeTitle)
                 .bold()
-            
+                .font(.custom("LibreBaskerville-Regular", size: 20))
+        
+
             Spacer()
             
             Button {

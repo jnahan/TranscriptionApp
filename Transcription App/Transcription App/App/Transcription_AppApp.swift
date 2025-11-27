@@ -17,6 +17,7 @@ struct Transcription_AppApp: App {
         WindowGroup {
             MainTabView()
                 .modelContainer(sharedModelContainer)
+                .environment(\.font, .custom("Inter-Regular", size: 16))
         }
     }
 }
