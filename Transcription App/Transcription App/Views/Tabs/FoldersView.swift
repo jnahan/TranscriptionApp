@@ -2,17 +2,14 @@ import SwiftUI
 import SwiftData
 
 struct FoldersView: View {
-    // MARK: - Environment & Queries
     @Environment(\.modelContext) private var modelContext
     @Environment(\.showPlusButton) private var showPlusButton
     @Query private var folders: [Folder]
     @Query private var recordings: [Recording]
     
-    // MARK: - State
     @State private var showCreateFolder = false
     @State private var newFolderName = ""
     
-    // MARK: - Body
     var body: some View {
         NavigationStack {
             List {
@@ -52,30 +49,18 @@ struct FoldersView: View {
             }
             .overlay {
                 if folders.isEmpty {
-                    emptyState
+                    EmptyStateView(
+                        icon: "folder",
+                        title: "No Folders",
+                        description: "Create a folder to organize your recordings",
+                        actionTitle: "Create Folder",
+                        action: { showCreateFolder = true }
+                    )
                 }
             }
         }
-        .onAppear {
-            showPlusButton.wrappedValue = true
-        }
     }
     
-    // MARK: - Subviews
-    private var emptyState: some View {
-        ContentUnavailableView {
-            Label("No Folders", systemImage: "folder")
-        } description: {
-            Text("Create a folder to organize your recordings")
-        } actions: {
-            Button("Create Folder") {
-                showCreateFolder = true
-            }
-            .buttonStyle(.borderedProminent)
-        }
-    }
-    
-    // MARK: - Helper Methods
     private func recordingCount(for folder: Folder) -> Int {
         recordings.filter { $0.folder?.id == folder.id }.count
     }
@@ -98,7 +83,6 @@ struct FoldersView: View {
     }
 }
 
-// MARK: - Folder Row
 private struct FolderRow: View {
     let folder: Folder
     let recordingCount: Int
@@ -120,30 +104,23 @@ private struct FolderRow: View {
     }
 }
 
-// MARK: - Folder Detail View
 struct FolderDetailView: View {
-    // MARK: - Environment & Queries
     @Environment(\.modelContext) private var modelContext
     @Query private var allRecordings: [Recording]
     
-    // MARK: - State Objects
     @StateObject private var player = MiniPlayer()
     
-    // MARK: - Properties
     let folder: Folder
     var showPlusButton: Binding<Bool>
     
-    // MARK: - State
     @State private var showCopyToast = false
     @State private var editingRecording: Recording?
     @State private var newRecordingTitle = ""
     
-    // MARK: - Computed Properties
     private var recordings: [Recording] {
         allRecordings.filter { $0.folder?.id == folder.id }
     }
     
-    // MARK: - Body
     var body: some View {
         ZStack {
             List {
@@ -172,81 +149,37 @@ struct FolderDetailView: View {
             }
             .overlay {
                 if recordings.isEmpty {
-                    emptyState
+                    EmptyStateView(
+                        icon: "mic.slash",
+                        title: "No Recordings",
+                        description: "This folder is empty",
+                        actionTitle: nil,
+                        action: nil
+                    )
                 }
             }
             
-            // Copy Toast
             if showCopyToast {
-                toastView
+                VStack {
+                    CopyToast()
+                    Spacer()
+                }
+                .padding(.top, 10)
             }
             
-            // Edit Overlay
             if editingRecording != nil {
-                editOverlay
+                EditRecordingOverlay(
+                    isPresented: Binding(
+                        get: { editingRecording != nil },
+                        set: { if !$0 { editingRecording = nil } }
+                    ),
+                    newTitle: $newRecordingTitle,
+                    onSave: saveEdit
+                )
             }
         }
     }
     
-    // MARK: - Subviews
-    private var emptyState: some View {
-        ContentUnavailableView {
-            Label("No Recordings", systemImage: "mic.slash")
-        } description: {
-            Text("This folder is empty")
-        }
-    }
-    
-    private var toastView: some View {
-        VStack {
-            Text("Recording copied")
-                .padding()
-                .background(.ultraThinMaterial)
-                .cornerRadius(10)
-                .shadow(radius: 5)
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            Spacer()
-        }
-        .padding(.top, 10)
-    }
-    
-    private var editOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    editingRecording = nil
-                }
-            
-            VStack(spacing: 20) {
-                Text("Edit Recording Title")
-                    .font(.headline)
-                
-                TextField("New Title", text: $newRecordingTitle)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
-                
-                HStack {
-                    Button("Cancel") {
-                        editingRecording = nil
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button("Save") {
-                        saveEdit()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            .padding()
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .frame(maxWidth: 400)
-            .shadow(radius: 20)
-        }
-    }
-    
-    // MARK: - Helper Methods
     private func copyRecording(_ recording: Recording) {
         UIPasteboard.general.string = recording.fullText
         withAnimation { showCopyToast = true }
@@ -271,7 +204,6 @@ struct FolderDetailView: View {
     }
 }
 
-// MARK: - Preview
 #Preview {
     FoldersView()
         .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)

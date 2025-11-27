@@ -25,42 +25,34 @@ struct MainTabView: View {
                     }
                     .tag(0)
                 
-                Color.clear
-                    .tabItem {
-                        Label("", systemImage: "")
-                    }
-                    .tag(1)
-                
                 FoldersView()
                     .environment(\.showPlusButton, $showPlusButton)
                     .tabItem {
                         Label("Folders", systemImage: "folder")
                     }
-                    .tag(2)
+                    .tag(1)
+            }
+            .onChange(of: selectedTab) { _, newTab in
+                showPlusButton = true
             }
             
             if showPlusButton {
                 VStack {
                     Spacer()
-                    HStack {
-                        Spacer()
-                        
-                        Button {
-                            showAddSheet = true
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.black)
-                                    .frame(width: 56, height: 56)
-                                    .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
-                                
-                                Image(systemName: "plus")
-                                    .font(.system(size: 24, weight: .semibold))
-                                    .foregroundColor(.white)
-                            }
+                    
+                    Button {
+                        showAddSheet = true
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(Color.black)
+                                .frame(width: 56, height: 56)
+                                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+                            
+                            Image(systemName: "plus")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundColor(.white)
                         }
-                        
-                        Spacer()
                     }
                     .padding(.bottom, 8)
                 }
@@ -86,7 +78,6 @@ struct MainTabView: View {
                     pendingAudioURL = url
                     showFilePicker = false
                     showTranscriptionDetail = true
-                    print("Imported \(mediaType == .video ? "video" : "audio") from files: \(url.lastPathComponent)")
                 },
                 onCancel: {
                     showFilePicker = false
@@ -99,7 +90,6 @@ struct MainTabView: View {
                     pendingAudioURL = url
                     showPhotoPicker = false
                     showTranscriptionDetail = true
-                    print("Imported video from photos: \(url.lastPathComponent)")
                 },
                 onCancel: {
                     showPhotoPicker = false

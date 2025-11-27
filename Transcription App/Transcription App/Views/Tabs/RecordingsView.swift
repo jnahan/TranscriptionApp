@@ -64,12 +64,7 @@ struct RecordingsView: View {
     
     // MARK: - Subviews
     private var toastView: some View {
-        Text("Recording copied")
-            .padding()
-            .background(.ultraThinMaterial)
-            .cornerRadius(10)
-            .shadow(radius: 5)
-            .transition(.opacity.combined(with: .move(edge: .top)))
+        CopyToast()
             .zIndex(1)
             .frame(maxWidth: .infinity)
             .padding(.top, 10)
@@ -115,41 +110,15 @@ struct RecordingsView: View {
     }
     
     private var editOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    editingRecording = nil
-                }
-            
-            VStack(spacing: 20) {
-                Text("Edit Recording Title")
-                    .font(.headline)
-                
-                TextField("New Title", text: $newRecordingTitle)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
-                
-                HStack {
-                    Button("Cancel") {
-                        editingRecording = nil
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button("Save") {
-                        saveEdit()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            .padding()
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .frame(maxWidth: 400)
-            .shadow(radius: 20)
-        }
+        EditRecordingOverlay(
+            isPresented: Binding(
+                get: { editingRecording != nil },
+                set: { if !$0 { editingRecording = nil } }
+            ),
+            newTitle: $newRecordingTitle,
+            onSave: saveEdit
+        )
     }
-    
     // MARK: - Helper Methods
     private func updateFilteredRecordings() {
         if searchText.isEmpty {
