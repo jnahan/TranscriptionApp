@@ -271,5 +271,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Recording.self, RecordingSegment.self], inMemory: true)
+        .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)
 }

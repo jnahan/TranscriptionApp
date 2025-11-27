@@ -1,17 +1,10 @@
-//
-//  Transcription_AppApp.swift
-//  Transcription App
-//
-//  Created by Jenna Han on 11/19/25.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct Transcription_AppApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Recording.self, RecordingSegment.self])
+        let schema = Schema([Recording.self, RecordingSegment.self, Folder.self])
         let config = ModelConfiguration(schema: schema)
         do {
             return try ModelContainer(for: schema, configurations: [config])
