@@ -88,6 +88,7 @@ struct ContentView: View {
 
             VStack(alignment: .leading, spacing: 20) {
                 RecorderView(onFinishRecording: { url in
+                    print("=== RecorderView finished with URL: \(url)")
                     pendingAudioURL = url
                     showTranscriptionDetail = true
                 })
@@ -208,19 +209,25 @@ struct ContentView: View {
             .sheet(isPresented: $showSettings) {
                 SettingsView()
             }
-            .sheet(isPresented: $showTranscriptionDetail) {
-                if let audioURL = pendingAudioURL {
-                    TranscriptionDetailView(
-                        isPresented: $showTranscriptionDetail,
-                        audioURL: audioURL,
-                        folders: folders,
-                        modelContext: modelContext,
-                        onTranscriptionComplete: {
-                            // Refresh happens automatically via @Query
-                            pendingAudioURL = nil
-                        }
-                    )
+            .fullScreenCover(item: Binding(
+                get: { showTranscriptionDetail ? pendingAudioURL : nil },
+                set: { newValue in
+                    if newValue == nil {
+                        showTranscriptionDetail = false
+                        pendingAudioURL = nil
+                    }
                 }
+            )) { audioURL in
+                TranscriptionDetailView(
+                    isPresented: $showTranscriptionDetail,
+                    audioURL: audioURL,
+                    folders: folders,
+                    modelContext: modelContext,
+                    onTranscriptionComplete: {
+                        pendingAudioURL = nil
+                        showTranscriptionDetail = false
+                    }
+                )
             }
 
         } detail: {
@@ -286,6 +293,11 @@ struct ContentView: View {
             print("Transcription failed:", error)
         }
     }
+}
+
+// MARK: - URL Identifiable Extension
+extension URL: Identifiable {
+    public var id: String { self.absoluteString }
 }
 
 #Preview {
