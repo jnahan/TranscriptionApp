@@ -6,213 +6,195 @@ struct SettingsView: View {
     @State private var selectedModel = "Tiny"
     
     var body: some View {
-        ZStack {
-            Color.warmGray50
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18))
-                            .foregroundColor(.warmGray600)
+        NavigationStack {
+            ZStack {
+                Color.warmGray50
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    CustomTopBar(
+                        title: "Settings",
+                        leftIcon: "caret-left",
+                        onLeftTap: { dismiss() }
+                    )
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            // Top Section
+                            VStack(spacing: 0) {
+                                // Audio Language
+                                NavigationLink(destination: AudioLanguageView(selectedLanguage: $audioLanguage)) {
+                                    HStack(spacing: 16) {
+                                        Image("text-aa")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Text("Audio language")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Text(audioLanguage)
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.warmGray500)
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
+                                
+                                Divider()
+                                    .padding(.leading, 60)
+                                
+                                // Model
+                                NavigationLink(destination: ModelSelectionView(selectedModel: $selectedModel)) {
+                                    HStack(spacing: 16) {
+                                        Image("sparkle")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Text("Model")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Text(selectedModel)
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.warmGray500)
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
+                            }
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .padding(.horizontal, 16)
+                            
+                            // Bottom Section
+                            VStack(spacing: 0) {
+                                // Feedback and Support
+                                NavigationLink(destination: FeedbackSupportView()) {
+                                    HStack(spacing: 16) {
+                                        Image("seal-question")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Text("Feedback and support")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
+                                
+                                Divider()
+                                    .padding(.leading, 60)
+                                
+                                // Rate App
+                                Button(action: rateApp) {
+                                    HStack(spacing: 16) {
+                                        Image("star")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Text("Rate app")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
+                                
+                                Divider()
+                                    .padding(.leading, 60)
+                                
+                                // Share App
+                                Button(action: shareApp) {
+                                    HStack(spacing: 16) {
+                                        Image("export")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Text("Share app")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
+                            }
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .padding(.horizontal, 16)
+                        }
+                        .padding(.top, 8)
                     }
                     
                     Spacer()
                     
-                    Text("Settings")
-                        .font(.custom("LibreBaskerville-Regular", size: 20))
-                        .foregroundColor(.baseBlack)
-                    
-                    Spacer()
-                    
-                    // Invisible spacer for centering
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18))
-                        .opacity(0)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Top Section
-                        VStack(spacing: 0) {
-                            // Audio Language
-                            NavigationLink(destination: AudioLanguageView(selectedLanguage: $audioLanguage)) {
-                                HStack(spacing: 16) {
-                                    Image("text-aa")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Text("Audio language")
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Spacer()
-                                    
-                                    Text(audioLanguage)
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.warmGray500)
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.warmGray400)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                            }
-                            
-                            Divider()
-                                .padding(.leading, 60)
-                            
-                            // Model
-                            NavigationLink(destination: ModelSelectionView(selectedModel: $selectedModel)) {
-                                HStack(spacing: 16) {
-                                    Image("sparkle")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Text("Model")
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Spacer()
-                                    
-                                    Text(selectedModel)
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.warmGray500)
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.warmGray400)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                            }
-                        }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .padding(.horizontal, 16)
+                    // Footer
+                    VStack(spacing: 8) {
+                        Image("hand-heart-fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 48, height: 48)
+                            .foregroundColor(.accent)
                         
-                        // Bottom Section
-                        VStack(spacing: 0) {
-                            // Feedback and Support
-                            NavigationLink(destination: FeedbackSupportView()) {
-                                HStack(spacing: 16) {
-                                    Image("seal-question")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Text("Feedback and support")
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.warmGray400)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                            }
-                            
-                            Divider()
-                                .padding(.leading, 60)
-                            
-                            // Rate App
-                            Button(action: rateApp) {
-                                HStack(spacing: 16) {
-                                    Image("star")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Text("Rate app")
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.warmGray400)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                            }
-                            
-                            Divider()
-                                .padding(.leading, 60)
-                            
-                            // Share App
-                            Button(action: shareApp) {
-                                HStack(spacing: 16) {
-                                    Image("export")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Text("Share app")
-                                        .font(.system(size: 17))
-                                        .foregroundColor(.baseBlack)
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.warmGray400)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 16)
-                            }
-                        }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .padding(.horizontal, 16)
+                        Text("SONO")
+                            .font(.custom("LibreBaskerville-Regular", size: 20))
+                            .foregroundColor(.baseBlack)
+                        
+                        Text("Made with love")
+                            .font(.system(size: 16))
+                            .foregroundColor(.warmGray600)
+                        
+                        Text("Version 1.0.0")
+                            .font(.system(size: 14))
+                            .foregroundColor(.warmGray400)
                     }
-                    .padding(.top, 8)
+                    .padding(.bottom, 40)
                 }
-                
-                Spacer()
-                
-                // Footer
-                VStack(spacing: 8) {
-                    Image("hand-heart-fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 48, height: 48)
-                        .foregroundColor(.accent)
-                    
-                    Text("SONO")
-                        .font(.custom("LibreBaskerville-Regular", size: 20))
-                        .foregroundColor(.baseBlack)
-                    
-                    Text("Made with love")
-                        .font(.system(size: 16))
-                        .foregroundColor(.warmGray600)
-                    
-                    Text("Version 1.0.0")
-                        .font(.system(size: 14))
-                        .foregroundColor(.warmGray400)
-                }
-                .padding(.bottom, 40)
             }
+            .navigationBarHidden(true)
         }
-        .navigationBarHidden(true)
+        .presentationDragIndicator(.hidden)
     }
     
     // Rate app function
@@ -250,31 +232,11 @@ struct AudioLanguageView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18))
-                            .foregroundColor(.warmGray600)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Audio language")
-                        .font(.custom("LibreBaskerville-Regular", size: 20))
-                        .foregroundColor(.baseBlack)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18))
-                        .opacity(0)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
+                CustomTopBar(
+                    title: "Audio language",
+                    leftIcon: "caret-left",
+                    onLeftTap: { dismiss() }
+                )
                 
                 List {
                     ForEach(languages, id: \.self) { language in
@@ -318,31 +280,11 @@ struct ModelSelectionView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18))
-                            .foregroundColor(.warmGray600)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Model")
-                        .font(.custom("LibreBaskerville-Regular", size: 20))
-                        .foregroundColor(.baseBlack)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18))
-                        .opacity(0)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
+                CustomTopBar(
+                    title: "Model",
+                    leftIcon: "caret-left",
+                    onLeftTap: { dismiss() }
+                )
                 
                 List {
                     ForEach(models, id: \.self) { model in
@@ -383,31 +325,11 @@ struct FeedbackSupportView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18))
-                            .foregroundColor(.warmGray600)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Feedback and support")
-                        .font(.custom("LibreBaskerville-Regular", size: 20))
-                        .foregroundColor(.baseBlack)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18))
-                        .opacity(0)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
+                CustomTopBar(
+                    title: "Feedback and support",
+                    leftIcon: "caret-left",
+                    onLeftTap: { dismiss() }
+                )
                 
                 List {
                     Button("Send Feedback") {

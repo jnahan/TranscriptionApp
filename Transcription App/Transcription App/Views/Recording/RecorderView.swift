@@ -12,7 +12,7 @@ struct RecorderView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Gradient background
+                // Gradient background - OUTSIDE safe area
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color(red: 0.98, green: 0.95, blue: 0.93), // Top: light peach/beige
@@ -23,46 +23,22 @@ struct RecorderView: View {
                 )
                 .ignoresSafeArea()
                 
+                // Content - INSIDE safe area
                 VStack(spacing: 0) {
-                    // Custom Header
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 20))
-                                .foregroundColor(.warmGray600)
-                        }
-                        
-                        Spacer()
-                        
-                        Text("Recording")
-                            .font(.custom("LibreBaskerville-Regular", size: 20))
-                            .foregroundColor(.baseBlack)
-                        
-                        Spacer()
-                        
-                        // Invisible spacer for centering
-                        Image(systemName: "xmark")
-                            .font(.system(size: 20))
-                            .opacity(0)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                    .padding(.bottom, 8)
-                    
-                    Spacer()
+                    CustomTopBar(
+                        title: "Recording",
+                        leftIcon: "x",
+                        onLeftTap: { dismiss() }
+                    )
                     
                     RecorderControl(onFinishRecording: { url in
                         print("=== RecorderControl finished with URL: \(url)")
                         pendingAudioURL = url
                         showTranscriptionDetail = true
                     })
-                    
-                    Spacer()
                 }
+                // VStack does NOT ignore safe area, so it stays within bounds
             }
-            .ignoresSafeArea() // Add this line
             .navigationBarHidden(true)
             .fullScreenCover(item: Binding(
                 get: { showTranscriptionDetail ? pendingAudioURL : nil },

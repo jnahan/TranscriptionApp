@@ -16,105 +16,96 @@ struct RecorderControl: View {
     var onFinishRecording: ((URL) -> Void)?
     
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [
-                    Color.white,
-                    Color.accentLight.opacity(0.3),
-                    Color.accentLight.opacity(0.5)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        VStack(spacing: 0) {
+            Spacer()
             
-            VStack(spacing: 0) {
-                Spacer()
+            // Timer display
+            VStack(spacing: 20) {
+                Text(formattedTime)
+                    .font(.system(size: 32, weight: .regular))
+                    .foregroundColor(.baseBlack)
+                    .monospacedDigit()
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.white)
+                    .cornerRadius(20)
                 
-                // Timer display
-                VStack(spacing: 24) {
-                    Text(formattedTime)
-                        .font(.system(size: 48, weight: .regular))
-                        .foregroundColor(.baseBlack)
-                        .monospacedDigit()
-                    
-                    // Vertical line
-                    Rectangle()
-                        .fill(Color.warmGray300)
-                        .frame(width: 2, height: 200)
-                }
-                
-                // Waveform visualizer
-                RecorderVisualizer(values: rec.meterHistory, barCount: 40)
-                    .frame(height: 80)
-                    .padding(.horizontal, 40)
-                
-                Spacer()
-                
-                // Bottom buttons
-                HStack(spacing: 80) {
-                    // Retry button
-                    Button {
-                        playTapHaptic()
-                        resetRecording()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 18))
-                            Text("Retry")
-                                .font(.system(size: 18, weight: .medium))
-                        }
-                        .foregroundColor(.accent)
-                    }
-                    .disabled(!rec.isRecording && rec.fileURL == nil)
-                    .opacity((!rec.isRecording && rec.fileURL == nil) ? 0.3 : 1)
-                    
-                    // Record/Stop button
-                    Button {
-                        playTapHaptic()
-                        if rec.isRecording {
-                            stopRecording()
-                        } else {
-                            startRecording()
-                        }
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 80, height: 80)
-                                .shadow(color: .black.opacity(0.1), radius: 10, y: 4)
-                            
-                            if rec.isRecording {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.accent)
-                                    .frame(width: 32, height: 32)
-                            } else {
-                                Circle()
-                                    .fill(Color.accent)
-                                    .frame(width: 64, height: 64)
-                            }
-                        }
-                    }
-                    
-                    // Done button
-                    Button {
-                        playTapHaptic()
-                        finishRecording()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 18))
-                            Text("Done")
-                                .font(.system(size: 18, weight: .medium))
-                        }
-                        .foregroundColor(.baseBlack)
-                    }
-                    .disabled(rec.fileURL == nil)
-                    .opacity(rec.fileURL == nil ? 0.3 : 1)
-                }
-                .padding(.bottom, 60)
+                // Vertical line
+                Rectangle()
+                    .fill(Color.white.opacity(0.5))
+                    .frame(width: 2, height: 280)
             }
+            
+            // Waveform visualizer
+            RecorderVisualizer(values: rec.meterHistory, barCount: 40)
+                .frame(height: 60)
+                .padding(.horizontal, 40)
+                .padding(.top, -140)
+            
+            Spacer()
+            
+            // Bottom buttons
+            HStack(spacing: 60) {
+                // Retry button
+                Button {
+                    playTapHaptic()
+                    resetRecording()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 20))
+                        Text("Retry")
+                            .font(.system(size: 17, weight: .medium))
+                    }
+                    .foregroundColor(.accent)
+                }
+                .disabled(!rec.isRecording && rec.fileURL == nil)
+                .opacity((!rec.isRecording && rec.fileURL == nil) ? 0.3 : 1)
+                
+                // Record/Stop button
+                Button {
+                    playTapHaptic()
+                    if rec.isRecording {
+                        stopRecording()
+                    } else {
+                        startRecording()
+                    }
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white)
+                            .frame(width: 88, height: 88)
+                            .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+                        
+                        if rec.isRecording {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.accent)
+                                .frame(width: 36, height: 36)
+                        } else {
+                            Circle()
+                                .fill(Color.accent)
+                                .frame(width: 72, height: 72)
+                        }
+                    }
+                }
+                
+                // Done button
+                Button {
+                    playTapHaptic()
+                    finishRecording()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 20))
+                        Text("Done")
+                            .font(.system(size: 17, weight: .medium))
+                    }
+                    .foregroundColor(.baseBlack)
+                }
+                .disabled(rec.fileURL == nil)
+                .opacity(rec.fileURL == nil ? 0.3 : 1)
+            }
+            .padding(.bottom, 50)
         }
         .task {
             rec.requestPermission { ok in
@@ -144,10 +135,15 @@ struct RecorderControl: View {
     
     // MARK: - Computed Properties
     private var formattedTime: String {
-        let minutes = Int(elapsedTime) / 60
+        let hours = Int(elapsedTime) / 3600
+        let minutes = Int(elapsedTime) / 60 % 60
         let seconds = Int(elapsedTime) % 60
-        let milliseconds = Int((elapsedTime.truncatingRemainder(dividingBy: 1)) * 100)
-        return String(format: "%02d:%02d:%02d", minutes, seconds, milliseconds)
+        
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
     }
     
     // MARK: - Actions
@@ -168,7 +164,6 @@ struct RecorderControl: View {
             rec.stop()
         }
         elapsedTime = 0
-        // Don't try to set fileURL directly, just start a new recording
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             startRecording()
         }

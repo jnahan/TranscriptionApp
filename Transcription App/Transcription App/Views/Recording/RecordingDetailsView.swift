@@ -9,46 +9,80 @@ struct RecordingDetailsView: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var showShareSheet = false
-    @State private var showNotePopup = false
+    @State private var showNotePopup = false  // Keep this for the overlay
     @State private var showEditTitle = false
     @State private var newTitle = ""
     @State private var showDeleteConfirm = false
+    @State private var showMenu = false
     
     var body: some View {
         ZStack {
-            Color.white
+            Color.warmGray50
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                VStack(spacing: 12) {
-                    // Flower icon
+                // Custom Top Bar
+                HStack(spacing: 0) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image("caret-left")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(.warmGray400)
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    
+                    Spacer()
+                    
+                    // Clover icon in center
                     Image("clover")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 48, height: 48)
+                        .frame(width: 32, height: 32)
                         .foregroundColor(.accent)
-                        .padding(.top, 16)
                     
-                    // Date
+                    Spacer()
+                    
+                    Button {
+                        showMenu = true
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 24))
+                            .foregroundColor(.warmGray400)
+                            .rotationEffect(.degrees(90))
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .padding(.trailing, 8)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .frame(height: 68)
+                .background(Color.warmGray50)
+                
+                // Header with date and title
+                VStack(spacing: 8) {
                     Text(relativeDate)
                         .font(.system(size: 16))
                         .foregroundColor(.warmGray500)
                     
-                    // Title
                     Text(recording.title)
                         .font(.custom("LibreBaskerville-Regular", size: 24))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }
-                .padding(.bottom, 32)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
                 
                 // Scrollable Transcript Area
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 24) {
                         if !recording.segments.isEmpty {
                             ForEach(recording.segments) { segment in
-                                VStack(alignment: .leading, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 8) {
                                     Text(formatTime(segment.start))
                                         .font(.system(size: 14))
                                         .foregroundColor(.warmGray500)
@@ -58,7 +92,6 @@ struct RecordingDetailsView: View {
                                         .foregroundColor(.baseBlack)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
-                                .padding(.bottom, 24)
                             }
                         } else {
                             Text(recording.fullText)
@@ -79,182 +112,59 @@ struct RecordingDetailsView: View {
             VStack {
                 Spacer()
                 
-                VStack(spacing: 16) {
-                    // Progress Bar
-                    VStack(spacing: 8) {
-                        Slider(value: $audioPlayer.currentTime, in: 0...max(audioPlayer.duration, 0.1)) { editing in
-                            if !editing {
-                                audioPlayer.seek(to: audioPlayer.currentTime)
-                            }
-                        }
-                        .tint(.baseBlack)
-                        
-                        HStack {
-                            Text(formatTime(audioPlayer.currentTime))
-                                .font(.system(size: 14))
-                                .foregroundColor(.warmGray600)
-                                .monospacedDigit()
-                            
-                            Spacer()
-                            
-                            Text(formatTime(audioPlayer.duration))
-                                .font(.system(size: 14))
-                                .foregroundColor(.warmGray600)
-                                .monospacedDigit()
-                        }
+                AudioPlayerControls(
+                    audioPlayer: audioPlayer,
+                    audioURL: recording.resolvedURL,
+                    fullText: recording.fullText,
+                    onNotePressed: {
+                        showNotePopup = true
+                    },
+                    onSharePressed: {
+                        showShareSheet = true
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.top, 20)
-                    .padding(.bottom, 32)
-                    
-                    // Bottom Action Buttons (ONLY ROW)
-                    HStack(spacing: 0) {
-                        // Note button
-                        Button {
-                            showNotePopup = true
-                        } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: "note.text")
-                                    .font(.system(size: 24))
-                                Text("Note")
-                                    .font(.system(size: 11))
-                            }
-                            .foregroundColor(.warmGray600)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        // Rewind 15 button
-                        Button {
-                            audioPlayer.skip(by: -15)
-                        } label: {
-                            Image(systemName: "gobackward.15")
-                                .font(.system(size: 24))
-                                .foregroundColor(.warmGray600)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        // Play/Pause (center)
-                        Button {
-                            if audioPlayer.isPlaying {
-                                audioPlayer.pause()
-                            } else {
-                                if let url = recording.resolvedURL {
-                                    audioPlayer.play(url: url)
-                                }
-                            }
-                        } label: {
-                            Image(systemName: audioPlayer.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.system(size: 28))
-                                .foregroundColor(.baseBlack)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        // Forward 15 button
-                        Button {
-                            audioPlayer.skip(by: 15)
-                        } label: {
-                            Image(systemName: "goforward.15")
-                                .font(.system(size: 24))
-                                .foregroundColor(.warmGray600)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        // Copy button
-                        Button {
-                            UIPasteboard.general.string = recording.fullText
-                        } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: "doc.on.doc")
-                                    .font(.system(size: 24))
-                                Text("Copy")
-                                    .font(.system(size: 11))
-                            }
-                            .foregroundColor(.warmGray600)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        // Share button
-                        Button {
-                            showShareSheet = true
-                        } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 24))
-                                Text("Share")
-                                    .font(.system(size: 11))
-                            }
-                            .foregroundColor(.warmGray600)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .padding(.bottom, 40)
-                }
-                .background(Color.white)
+                )
+            }
+            
+            // Note Overlay
+            if showNotePopup {
+                NoteOverlay(
+                    isPresented: $showNotePopup,
+                    noteText: recording.notes
+                )
+                .transition(.opacity)
+                .zIndex(100)
             }
         }
-        .navigationBarBackButtonHidden(true)
+        .animation(.easeInOut(duration: 0.2), value: showNotePopup)
+        .navigationBarHidden(true)
         .toolbar(.hidden, for: .tabBar)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18))
-                        .foregroundColor(.warmGray600)
+        .confirmationDialog("", isPresented: $showMenu, titleVisibility: .hidden) {
+            Button("Export Audio") {
+                if let url = recording.resolvedURL {
+                    let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let rootVC = windowScene.keyWindow?.rootViewController {
+                        rootVC.present(activityVC, animated: true)
+                    }
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button {
-                        if let url = recording.resolvedURL {
-                            let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let rootVC = windowScene.keyWindow?.rootViewController {
-                                rootVC.present(activityVC, animated: true)
-                            }
-                        }
-                    } label: {
-                        Label("Export Audio", systemImage: "square.and.arrow.up.fill")
-                    }
-                    
-                    Button {
-                        showEditTitle = true
-                        newTitle = recording.title
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    
-                    Button(role: .destructive) {
-                        showDeleteConfirm = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.system(size: 20))
-                        .foregroundColor(.warmGray600)
-                        .rotationEffect(.degrees(90))
-                }
+            Button("Edit") {
+                showEditTitle = true
+                newTitle = recording.title
             }
+            
+            Button("Delete", role: .destructive) {
+                showDeleteConfirm = true
+            }
+            
+            Button("Cancel", role: .cancel) {}
         }
-        .toolbarBackground(Color.white, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showShareSheet) {
             if let url = recording.resolvedURL {
                 ShareSheet(items: [recording.fullText, url])
             } else {
                 ShareSheet(items: [recording.fullText])
-            }
-        }
-        .alert("Note", isPresented: $showNotePopup) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            if !recording.notes.isEmpty {
-                Text(recording.notes)
-            } else {
-                Text("No notes")
             }
         }
         .alert("Edit Title", isPresented: $showEditTitle) {
@@ -309,6 +219,7 @@ struct RecordingDetailsView: View {
         return String(format: "%d:%02d", minutes, seconds)
     }
 }
+
 
 // MARK: - Audio Player Controller
 class AudioPlayerController: ObservableObject {
