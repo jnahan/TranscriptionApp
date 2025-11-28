@@ -67,7 +67,7 @@ struct MainTabView: View {
                 .transition(.opacity)
             }
         }
-        .sheet(isPresented: $showAddSheet) {
+        .fullScreenCover(isPresented: $showAddSheet) {
             NewRecordingSheet(
                 onRecordAudio: { showRecorderScreen = true },
                 onUploadFile: { showFilePicker = true },
@@ -76,6 +76,8 @@ struct MainTabView: View {
             .presentationDetents([.height(240)])
             .presentationDragIndicator(.hidden)
             .presentationBackground(.clear)
+            
+            
         }
         .fullScreenCover(isPresented: $showRecorderScreen) {
             RecorderView()

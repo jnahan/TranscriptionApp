@@ -11,17 +11,26 @@ struct NewRecordingSheet: View {
     
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        ZStack {
+            // Background with blur
+            Color.clear
+                .background(.ultraThinMaterial)
+                .background(Color.warmGray300.opacity(0.6))
+                .ignoresSafeArea()
+                .onTapGesture {
+                    dismiss()
+                }
             
             VStack(spacing: 0) {
-                closeButton
+                Spacer()
                 
-                actionButtons
+                VStack(spacing: 0) {
+                    closeButton
+                    
+                    actionButtons
+                }
             }
-            .background(Color.black.opacity(0.0001))
         }
-        .background(backgroundDismiss)
     }
     
     // MARK: - Subviews
@@ -42,7 +51,7 @@ struct NewRecordingSheet: View {
     private var actionButtons: some View {
         VStack(spacing: 1) {
             ActionButton(
-                icon: "mic.fill",
+                iconName: "microphone",
                 title: "Record audio",
                 action: {
                     dismiss()
@@ -54,8 +63,8 @@ struct NewRecordingSheet: View {
                 .padding(.leading, 60)
             
             ActionButton(
-                icon: "arrow.up.doc.fill",
-                title: "Upload from files",
+                iconName: "file",
+                title: "Upload file",
                 action: {
                     dismiss()
                     onUploadFile()
@@ -66,8 +75,8 @@ struct NewRecordingSheet: View {
                 .padding(.leading, 60)
             
             ActionButton(
-                icon: "photo.on.rectangle",
-                title: "Choose from photos",
+                iconName: "image",
+                title: "Upload video",
                 action: {
                     dismiss()
                     onChooseFromPhotos()
@@ -78,27 +87,21 @@ struct NewRecordingSheet: View {
         .cornerRadius(12)
         .padding()
     }
-    
-    private var backgroundDismiss: some View {
-        Color.black.opacity(0.4)
-            .ignoresSafeArea()
-            .onTapGesture {
-                dismiss()
-            }
-    }
 }
 
 // MARK: - Action Button
 private struct ActionButton: View {
-    let icon: String
+    let iconName: String
     let title: String
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             HStack {
-                Image(systemName: icon)
-                    .font(.title2)
+                Image(iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
                     .frame(width: 30)
                 Text(title)
                     .font(.body)

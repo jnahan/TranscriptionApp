@@ -1,116 +1,218 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var audioLanguage = "English"
     @State private var selectedModel = "Tiny"
     
     var body: some View {
-        NavigationView {
-            List {
-                // Audio Language Setting
-                NavigationLink(destination: AudioLanguageView(selectedLanguage: $audioLanguage)) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "textformat")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .frame(width: 24)
-                        
-                        Text("Audio language")
-                            .font(.body)
-                        
-                        Spacer()
-                        
-                        Text(audioLanguage)
-                            .foregroundColor(.secondary)
+        ZStack {
+            Color.warmGray50
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                            .foregroundColor(.warmGray600)
                     }
-                    .padding(.vertical, 4)
+                    
+                    Spacer()
+                    
+                    Text("Settings")
+                        .font(.custom("LibreBaskerville-Regular", size: 20))
+                        .foregroundColor(.baseBlack)
+                    
+                    Spacer()
+                    
+                    // Invisible spacer for centering
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18))
+                        .opacity(0)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Top Section
+                        VStack(spacing: 0) {
+                            // Audio Language
+                            NavigationLink(destination: AudioLanguageView(selectedLanguage: $audioLanguage)) {
+                                HStack(spacing: 16) {
+                                    Image("text-aa")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Text("Audio language")
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Spacer()
+                                    
+                                    Text(audioLanguage)
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.warmGray500)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray400)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
+                            
+                            Divider()
+                                .padding(.leading, 60)
+                            
+                            // Model
+                            NavigationLink(destination: ModelSelectionView(selectedModel: $selectedModel)) {
+                                HStack(spacing: 16) {
+                                    Image("sparkle")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Text("Model")
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Spacer()
+                                    
+                                    Text(selectedModel)
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.warmGray500)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray400)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 16)
+                        
+                        // Bottom Section
+                        VStack(spacing: 0) {
+                            // Feedback and Support
+                            NavigationLink(destination: FeedbackSupportView()) {
+                                HStack(spacing: 16) {
+                                    Image("seal-question")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Text("Feedback and support")
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray400)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
+                            
+                            Divider()
+                                .padding(.leading, 60)
+                            
+                            // Rate App
+                            Button(action: rateApp) {
+                                HStack(spacing: 16) {
+                                    Image("star")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Text("Rate app")
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray400)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
+                            
+                            Divider()
+                                .padding(.leading, 60)
+                            
+                            // Share App
+                            Button(action: shareApp) {
+                                HStack(spacing: 16) {
+                                    Image("export")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Text("Share app")
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray400)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 16)
+                            }
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 16)
+                    }
+                    .padding(.top, 8)
                 }
                 
-                // Model Setting
-                NavigationLink(destination: ModelSelectionView(selectedModel: $selectedModel)) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "cpu")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .frame(width: 24)
-                        
-                        Text("Model")
-                            .font(.body)
-                        
-                        Spacer()
-                        
-                        Text(selectedModel)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 4)
-                }
+                Spacer()
                 
-                // Feedback and Support
-                NavigationLink(destination: FeedbackSupportView()) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "questionmark.circle")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .frame(width: 24)
-                        
-                        Text("Feedback and support")
-                            .font(.body)
-                        
-                        Spacer()
-                    }
-                    .padding(.vertical, 4)
+                // Footer
+                VStack(spacing: 8) {
+                    Image("hand-heart-fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 48, height: 48)
+                        .foregroundColor(.accent)
+                    
+                    Text("SONO")
+                        .font(.custom("LibreBaskerville-Regular", size: 20))
+                        .foregroundColor(.baseBlack)
+                    
+                    Text("Made with love")
+                        .font(.system(size: 16))
+                        .foregroundColor(.warmGray600)
+                    
+                    Text("Version 1.0.0")
+                        .font(.system(size: 14))
+                        .foregroundColor(.warmGray400)
                 }
-                
-                // Rate App
-                Button(action: {
-                    rateApp()
-                }) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "star")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .frame(width: 24)
-                        
-                        Text("Rate app")
-                            .font(.body)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 4)
-                }
-                
-                // Share App
-                Button(action: {
-                    shareApp()
-                }) {
-                    HStack(spacing: 16) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .frame(width: 24)
-                        
-                        Text("Share app")
-                            .font(.body)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 4)
-                }
+                .padding(.bottom, 40)
             }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationBarHidden(true)
     }
     
     // Rate app function
@@ -138,87 +240,201 @@ struct SettingsView: View {
 // MARK: - Audio Language Selection View
 struct AudioLanguageView: View {
     @Binding var selectedLanguage: String
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     let languages = ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Chinese", "Japanese", "Korean"]
     
     var body: some View {
-        List {
-            ForEach(languages, id: \.self) { language in
-                Button(action: {
-                    selectedLanguage = language
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    HStack {
-                        Text(language)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if selectedLanguage == language {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+        ZStack {
+            Color.warmGray50
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                            .foregroundColor(.warmGray600)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("Audio language")
+                        .font(.custom("LibreBaskerville-Regular", size: 20))
+                        .foregroundColor(.baseBlack)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18))
+                        .opacity(0)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+                
+                List {
+                    ForEach(languages, id: \.self) { language in
+                        Button(action: {
+                            selectedLanguage = language
+                            dismiss()
+                        }) {
+                            HStack {
+                                Text(language)
+                                    .font(.system(size: 17))
+                                    .foregroundColor(.baseBlack)
+                                Spacer()
+                                if selectedLanguage == language {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.accent)
+                                }
+                            }
                         }
+                        .listRowBackground(Color.white)
                     }
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
         }
-        .navigationTitle("Audio language")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
     }
 }
 
 // MARK: - Model Selection View
 struct ModelSelectionView: View {
     @Binding var selectedModel: String
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     let models = ["Tiny", "Base", "Small", "Medium", "Large"]
     
     var body: some View {
-        List {
-            ForEach(models, id: \.self) { model in
-                Button(action: {
-                    selectedModel = model
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    HStack {
-                        Text(model)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if selectedModel == model {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+        ZStack {
+            Color.warmGray50
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                            .foregroundColor(.warmGray600)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("Model")
+                        .font(.custom("LibreBaskerville-Regular", size: 20))
+                        .foregroundColor(.baseBlack)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18))
+                        .opacity(0)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+                
+                List {
+                    ForEach(models, id: \.self) { model in
+                        Button(action: {
+                            selectedModel = model
+                            dismiss()
+                        }) {
+                            HStack {
+                                Text(model)
+                                    .font(.system(size: 17))
+                                    .foregroundColor(.baseBlack)
+                                Spacer()
+                                if selectedModel == model {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.accent)
+                                }
+                            }
                         }
+                        .listRowBackground(Color.white)
                     }
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
         }
-        .navigationTitle("Model")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
     }
 }
 
 // MARK: - Feedback and Support View
 struct FeedbackSupportView: View {
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
-        List {
-            Button("Send Feedback") {
-                sendFeedback()
-            }
+        ZStack {
+            Color.warmGray50
+                .ignoresSafeArea()
             
-            Button("Contact Support") {
-                contactSupport()
-            }
-            
-            Button("Privacy Policy") {
-                openPrivacyPolicy()
-            }
-            
-            Button("Terms of Service") {
-                openTermsOfService()
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                            .foregroundColor(.warmGray600)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("Feedback and support")
+                        .font(.custom("LibreBaskerville-Regular", size: 20))
+                        .foregroundColor(.baseBlack)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18))
+                        .opacity(0)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+                
+                List {
+                    Button("Send Feedback") {
+                        sendFeedback()
+                    }
+                    .listRowBackground(Color.white)
+                    
+                    Button("Contact Support") {
+                        contactSupport()
+                    }
+                    .listRowBackground(Color.white)
+                    
+                    Button("Privacy Policy") {
+                        openPrivacyPolicy()
+                    }
+                    .listRowBackground(Color.white)
+                    
+                    Button("Terms of Service") {
+                        openTermsOfService()
+                    }
+                    .listRowBackground(Color.white)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
         }
-        .navigationTitle("Feedback and support")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
     }
     
     func sendFeedback() {
@@ -243,12 +459,5 @@ struct FeedbackSupportView: View {
         if let url = URL(string: "https://yourapp.com/terms") {
             UIApplication.shared.open(url)
         }
-    }
-}
-
-// MARK: - Preview
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView()
     }
 }

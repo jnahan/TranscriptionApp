@@ -10,6 +10,7 @@ struct FoldersView: View {
     @State private var showCreateFolder = false
     @State private var newFolderName = ""
     @State private var searchText = ""
+    @State private var selectedFolder: Folder?
     
     private var filteredFolders: [Folder] {
         if searchText.isEmpty {
@@ -30,18 +31,29 @@ struct FoldersView: View {
                 
                 List {
                     ForEach(filteredFolders) { folder in
-                        NavigationLink(value: folder) {
-                            FolderRow(folder: folder, recordingCount: recordingCount(for: folder))
+                        Button {
+                            selectedFolder = folder
+                        } label: {
+                            FolderRow(
+                                folder: folder,
+                                recordingCount: recordingCount(for: folder)
+                            )
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.warmGray50)
+                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
                     }
                     .onDelete(perform: deleteFolders)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.warmGray50)
             }
-            .navigationDestination(for: Folder.self) { folder in
+            .background(Color.warmGray50.ignoresSafeArea())
+            .navigationDestination(item: $selectedFolder) { folder in
                 FolderDetailView(folder: folder, showPlusButton: showPlusButton)
                     .onAppear { showPlusButton.wrappedValue = false }
-                    .onDisappear { showPlusButton.wrappedValue = true }  // Add this line
+                    .onDisappear { showPlusButton.wrappedValue = true }
             }
             .alert("Create Folder", isPresented: $showCreateFolder) {
                 TextField("Folder name", text: $newFolderName)
@@ -105,64 +117,6 @@ struct FoldersView: View {
             for index in offsets {
                 modelContext.delete(filteredFolders[index])
             }
-        }
-    }
-}
-
-// MARK: - Folder Row Component
-struct FolderRow: View {
-    let folder: Folder
-    let recordingCount: Int
-    @State private var showMenu = false
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            // Folder Icon
-            ZStack {
-                Circle()
-                    .fill(Color.accentLight)
-                    .frame(width: 56, height: 56)
-                
-                Image(systemName: "waveform")
-                    .font(.system(size: 20))
-                    .foregroundColor(.accent)
-            }
-            
-            // Folder Info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(folder.name)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.baseBlack)
-                
-                Text("\(recordingCount) recordings")
-                    .font(.system(size: 14))
-                    .foregroundColor(.warmGray500)
-            }
-            
-            Spacer()
-            
-            // Three-dot menu
-            Button {
-                showMenu = true
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 20))
-                    .foregroundColor(.warmGray600)
-                    .rotationEffect(.degrees(90))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.vertical, 12)
-        .confirmationDialog("", isPresented: $showMenu, titleVisibility: .hidden) {
-            Button("Rename") {
-                // Handle rename
-            }
-            
-            Button("Delete", role: .destructive) {
-                // Handle delete
-            }
-            
-            Button("Cancel", role: .cancel) {}
         }
     }
 }
@@ -242,7 +196,6 @@ struct FolderDetailView: View {
             viewModel.configure(modelContext: modelContext)
         }
         .background(Color.warmGray50)
-
     }
 }
 

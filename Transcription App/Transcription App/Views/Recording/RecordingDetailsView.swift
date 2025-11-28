@@ -15,174 +15,183 @@ struct RecordingDetailsView: View {
     @State private var showDeleteConfirm = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            VStack(spacing: 12) {
-                // Flower icon
-                Image(systemName: "leaf.fill")
-                    .font(.system(size: 32))
-                    .foregroundColor(.accent)
-                
-                // Date
-                Text(relativeDate)
-                    .font(.system(size: 16))
-                    .foregroundColor(.warmGray500)
-                
-                // Title
-                Text(recording.title)
-                    .font(.custom("LibreBaskerville-Regular", size: 28))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-            }
-            .padding(.top, 16)
-            .padding(.bottom, 24)
+        ZStack {
+            Color.white
+                .ignoresSafeArea()
             
-            // Scrollable Transcript Area
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    if !recording.segments.isEmpty {
-                        ForEach(recording.segments) { segment in
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text(formatTime(segment.start))
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.warmGray500)
-                                
-                                Text(segment.text)
-                                    .font(.system(size: 17))
-                                    .foregroundColor(.baseBlack)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                    } else {
-                        Text(recording.fullText)
-                            .font(.system(size: 17))
-                            .foregroundColor(.baseBlack)
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .background(Color.warmGray50)
-                .cornerRadius(16)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 200)
-            }
-            
-            Spacer()
-            
-            // Audio Player Controls (Fixed at bottom)
-            VStack(spacing: 20) {
-                // Progress Bar
-                VStack(spacing: 8) {
-                    Slider(value: $audioPlayer.currentTime, in: 0...max(audioPlayer.duration, 0.1)) { editing in
-                        if !editing {
-                            audioPlayer.seek(to: audioPlayer.currentTime)
-                        }
-                    }
-                    .tint(.baseBlack)
+            VStack(spacing: 0) {
+                // Header
+                VStack(spacing: 12) {
+                    // Flower icon
+                    Image("clover")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 48, height: 48)
+                        .foregroundColor(.accent)
+                        .padding(.top, 16)
                     
-                    HStack {
-                        Text(formatTime(audioPlayer.currentTime))
-                            .font(.system(size: 14))
-                            .foregroundColor(.warmGray600)
-                            .monospacedDigit()
-                        
-                        Spacer()
-                        
-                        Text(formatTime(audioPlayer.duration))
-                            .font(.system(size: 14))
-                            .foregroundColor(.warmGray600)
-                            .monospacedDigit()
-                    }
-                }
-                .padding(.horizontal, 24)
-                
-                // Playback Controls
-                HStack(spacing: 60) {
-                    // Rewind 15 seconds
-                    Button {
-                        audioPlayer.skip(by: -15)
-                    } label: {
-                        Image(systemName: "gobackward.15")
-                            .font(.system(size: 36))
-                            .foregroundColor(.baseBlack)
-                    }
+                    // Date
+                    Text(relativeDate)
+                        .font(.system(size: 16))
+                        .foregroundColor(.warmGray500)
                     
-                    // Play/Pause
-                    Button {
-                        if audioPlayer.isPlaying {
-                            audioPlayer.pause()
-                        } else {
-                            if let url = recording.resolvedURL {
-                                audioPlayer.play(url: url)
-                            }
-                        }
-                    } label: {
-                        Image(systemName: audioPlayer.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.system(size: 48))
-                            .foregroundColor(.baseBlack)
-                    }
-                    
-                    // Forward 15 seconds
-                    Button {
-                        audioPlayer.skip(by: 15)
-                    } label: {
-                        Image(systemName: "goforward.15")
-                            .font(.system(size: 36))
-                            .foregroundColor(.baseBlack)
-                    }
-                }
-                .padding(.vertical, 8)
-                
-                // Bottom Action Buttons
-                HStack(spacing: 0) {
-                    // Note button
-                    Button {
-                        showNotePopup = true
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "note.text")
-                                .font(.system(size: 24))
-                            Text("Note")
-                                .font(.system(size: 12))
-                        }
-                        .foregroundColor(.warmGray600)
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    // Copy button
-                    Button {
-                        UIPasteboard.general.string = recording.fullText
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "doc.on.doc")
-                                .font(.system(size: 24))
-                            Text("Copy")
-                                .font(.system(size: 12))
-                        }
-                        .foregroundColor(.warmGray600)
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    // Share button
-                    Button {
-                        showShareSheet = true
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 24))
-                            Text("Share")
-                                .font(.system(size: 12))
-                        }
-                        .foregroundColor(.warmGray600)
-                    }
-                    .frame(maxWidth: .infinity)
+                    // Title
+                    Text(recording.title)
+                        .font(.custom("LibreBaskerville-Regular", size: 24))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
                 }
                 .padding(.bottom, 32)
+                
+                // Scrollable Transcript Area
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        if !recording.segments.isEmpty {
+                            ForEach(recording.segments) { segment in
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text(formatTime(segment.start))
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.warmGray500)
+                                    
+                                    Text(segment.text)
+                                        .font(.system(size: 17))
+                                        .foregroundColor(.baseBlack)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                .padding(.bottom, 24)
+                            }
+                        } else {
+                            Text(recording.fullText)
+                                .font(.system(size: 17))
+                                .foregroundColor(.baseBlack)
+                                .lineSpacing(4)
+                        }
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.top, 8)
+                    .padding(.bottom, 200)
+                }
+                
+                Spacer()
             }
-            .padding(.top, 16)
-            .background(Color.baseWhite)
+            
+            // Audio Player Controls (Fixed at bottom)
+            VStack {
+                Spacer()
+                
+                VStack(spacing: 16) {
+                    // Progress Bar
+                    VStack(spacing: 8) {
+                        Slider(value: $audioPlayer.currentTime, in: 0...max(audioPlayer.duration, 0.1)) { editing in
+                            if !editing {
+                                audioPlayer.seek(to: audioPlayer.currentTime)
+                            }
+                        }
+                        .tint(.baseBlack)
+                        
+                        HStack {
+                            Text(formatTime(audioPlayer.currentTime))
+                                .font(.system(size: 14))
+                                .foregroundColor(.warmGray600)
+                                .monospacedDigit()
+                            
+                            Spacer()
+                            
+                            Text(formatTime(audioPlayer.duration))
+                                .font(.system(size: 14))
+                                .foregroundColor(.warmGray600)
+                                .monospacedDigit()
+                        }
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.top, 20)
+                    .padding(.bottom, 32)
+                    
+                    // Bottom Action Buttons (ONLY ROW)
+                    HStack(spacing: 0) {
+                        // Note button
+                        Button {
+                            showNotePopup = true
+                        } label: {
+                            VStack(spacing: 8) {
+                                Image(systemName: "note.text")
+                                    .font(.system(size: 24))
+                                Text("Note")
+                                    .font(.system(size: 11))
+                            }
+                            .foregroundColor(.warmGray600)
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Rewind 15 button
+                        Button {
+                            audioPlayer.skip(by: -15)
+                        } label: {
+                            Image(systemName: "gobackward.15")
+                                .font(.system(size: 24))
+                                .foregroundColor(.warmGray600)
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Play/Pause (center)
+                        Button {
+                            if audioPlayer.isPlaying {
+                                audioPlayer.pause()
+                            } else {
+                                if let url = recording.resolvedURL {
+                                    audioPlayer.play(url: url)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: audioPlayer.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.system(size: 28))
+                                .foregroundColor(.baseBlack)
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Forward 15 button
+                        Button {
+                            audioPlayer.skip(by: 15)
+                        } label: {
+                            Image(systemName: "goforward.15")
+                                .font(.system(size: 24))
+                                .foregroundColor(.warmGray600)
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Copy button
+                        Button {
+                            UIPasteboard.general.string = recording.fullText
+                        } label: {
+                            VStack(spacing: 8) {
+                                Image(systemName: "doc.on.doc")
+                                    .font(.system(size: 24))
+                                Text("Copy")
+                                    .font(.system(size: 11))
+                            }
+                            .foregroundColor(.warmGray600)
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        // Share button
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            VStack(spacing: 8) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 24))
+                                Text("Share")
+                                    .font(.system(size: 11))
+                            }
+                            .foregroundColor(.warmGray600)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(.bottom, 40)
+                }
+                .background(Color.white)
+            }
         }
-        .background(Color.baseWhite)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
@@ -191,7 +200,7 @@ struct RecordingDetailsView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 20))
+                        .font(.system(size: 18))
                         .foregroundColor(.warmGray600)
                 }
             }
@@ -230,6 +239,8 @@ struct RecordingDetailsView: View {
                 }
             }
         }
+        .toolbarBackground(Color.white, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showShareSheet) {
             if let url = recording.resolvedURL {
                 ShareSheet(items: [recording.fullText, url])
