@@ -11,6 +11,7 @@ struct FoldersView: View {
     @State private var newFolderName = ""
     @State private var searchText = ""
     @State private var selectedFolder: Folder?
+    @State private var showSettings = false
     
     private var filteredFolders: [Folder] {
         if searchText.isEmpty {
@@ -23,7 +24,11 @@ struct FoldersView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                headerView
+                CustomTopBar(
+                    title: "Collections",
+                    rightIcon: "gear-six",
+                    onRightTap: { showSettings = true }
+                )
                 
                 SearchBar(text: $searchText, placeholder: "Search...")
                     .padding(.horizontal, 16)
@@ -50,19 +55,14 @@ struct FoldersView: View {
                 .background(Color.warmGray50)
             }
             .background(Color.warmGray50.ignoresSafeArea())
+            .navigationBarHidden(true)
             .navigationDestination(item: $selectedFolder) { folder in
                 FolderDetailView(folder: folder, showPlusButton: showPlusButton)
                     .onAppear { showPlusButton.wrappedValue = false }
                     .onDisappear { showPlusButton.wrappedValue = true }
             }
-            .alert("Create Folder", isPresented: $showCreateFolder) {
-                TextField("Folder name", text: $newFolderName)
-                Button("Cancel", role: .cancel) {
-                    newFolderName = ""
-                }
-                Button("Create") {
-                    createFolder()
-                }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
             }
             .overlay {
                 if folders.isEmpty {
@@ -70,46 +70,16 @@ struct FoldersView: View {
                         icon: "folder",
                         title: "No Folders",
                         description: "Create a folder to organize your recordings",
-                        actionTitle: "Create Folder",
-                        action: { showCreateFolder = true }
+                        actionTitle: nil,
+                        action: nil
                     )
                 }
             }
         }
     }
     
-    private var headerView: some View {
-        HStack {
-            Text("Collections")
-                .bold()
-                .font(.custom("LibreBaskerville-Regular", size: 20))
-            
-            Spacer()
-            
-            Button {
-                showCreateFolder = true
-            } label: {
-                Image(systemName: "gear")
-                    .font(.system(size: 20))
-                    .foregroundColor(.warmGray600)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .padding(.bottom, 16)
-    }
-    
     private func recordingCount(for folder: Folder) -> Int {
         recordings.filter { $0.folder?.id == folder.id }.count
-    }
-    
-    private func createFolder() {
-        guard !newFolderName.isEmpty else { return }
-        
-        let folder = Folder(name: newFolderName)
-        modelContext.insert(folder)
-        
-        newFolderName = ""
     }
     
     private func deleteFolders(offsets: IndexSet) {

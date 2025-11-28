@@ -17,6 +17,13 @@ struct RecordingsView: View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
+                    // Custom Top Bar
+                    CustomTopBar(
+                        title: "Recordings",
+                        rightIcon: "gear-six",
+                        onRightTap: { showSettings = true }
+                    )
+                    
                     if viewModel.showCopyToast {
                         CopyToast()
                             .zIndex(1)
@@ -25,12 +32,11 @@ struct RecordingsView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        headerView
-                        
                         SearchBar(text: $searchText, placeholder: "Search recordings")
                             .padding(.horizontal, 16)
                         
-                        recordingsList                    }
+                        recordingsList
+                    }
                 }
                 
                 if viewModel.editingRecording != nil {
@@ -63,29 +69,8 @@ struct RecordingsView: View {
                     .onDisappear { showPlusButton.wrappedValue = true }
             }
             .background(Color.warmGray50)
-
+            .navigationBarHidden(true)
         }
-    }
-    
-    private var headerView: some View {
-        HStack {
-            Text("My Recordings")
-                .bold()
-                .font(.custom("LibreBaskerville-Regular", size: 20))
-        
-
-            Spacer()
-            
-            Button {
-                showSettings = true
-            } label: {
-                Image(systemName: "gear")
-                    .font(.title3)
-                    .foregroundColor(.baseBlack)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
     }
     
     private var recordingsList: some View {

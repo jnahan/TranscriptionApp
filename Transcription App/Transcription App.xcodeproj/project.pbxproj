@@ -10,6 +10,7 @@
 		5D1570632ED965F40094E13E /* FolderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570622ED965F40094E13E /* FolderRow.swift */; };
 		5D1570652ED96B0A0094E13E /* FolderPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570642ED96B0A0094E13E /* FolderPickerView.swift */; };
 		5D1570672ED96BEE0094E13E /* CreateFolderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */; };
+		5D1570692EDA0F450094E13E /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570682EDA0F450094E13E /* TopBar.swift */; };
 		5D214A372ED8238B0069565D /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D214A362ED8238B0069565D /* Folder.swift */; };
 		5D214A3A2ED8263B0069565D /* RecordingSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D214A392ED8263B0069565D /* RecordingSegment.swift */; };
 		5D4622D42ED83570009A454D /* CreateRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4622D32ED83570009A454D /* CreateRecordingView.swift */; };
@@ -49,6 +50,7 @@
 		5D1570622ED965F40094E13E /* FolderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRow.swift; sourceTree = "<group>"; };
 		5D1570642ED96B0A0094E13E /* FolderPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderPickerView.swift; sourceTree = "<group>"; };
 		5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFolderSheet.swift; sourceTree = "<group>"; };
+		5D1570682EDA0F450094E13E /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
 		5D214A362ED8238B0069565D /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		5D214A392ED8263B0069565D /* RecordingSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSegment.swift; sourceTree = "<group>"; };
 		5D4622D32ED83570009A454D /* CreateRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateRecordingView.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				5DB579152ED8C052002DC84D /* EmptyStateView.swift */,
 				5DA01ABA2ED90291006BF0F3 /* SearchBar.swift */,
 				5D1570642ED96B0A0094E13E /* FolderPickerView.swift */,
+				5D1570682EDA0F450094E13E /* TopBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -349,6 +352,7 @@
 				5DB579222ED8CF97002DC84D /* Colors.swift in Sources */,
 				5D962F2B2ECEBAC000049626 /* SettingsView.swift in Sources */,
 				5DB579062ED846A6002DC84D /* FoldersView.swift in Sources */,
+				5D1570692EDA0F450094E13E /* TopBar.swift in Sources */,
 				5D1570632ED965F40094E13E /* FolderRow.swift in Sources */,
 				5D962F222ECE87ED00049626 /* Recorder.swift in Sources */,
 				5DB5791D2ED8CAF4002DC84D /* MediaFilePicker.swift in Sources */,
