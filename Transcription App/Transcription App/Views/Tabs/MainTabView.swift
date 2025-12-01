@@ -17,54 +17,61 @@ struct MainTabView: View {
     
     var body: some View {
         ZStack {
-            TabView(selection: $selectedTab) {
-                RecordingsView()
-                    .environment(\.showPlusButton, $showPlusButton)
-                    .tabItem {
+            // Main content
+            Group {
+                if selectedTab == 0 {
+                    RecordingsView()
+                        .environment(\.showPlusButton, $showPlusButton)
+                } else {
+                    FoldersView()
+                        .environment(\.showPlusButton, $showPlusButton)
+                }
+            }
+            
+            // Custom Tab Bar
+            VStack {
+                Spacer()
+                
+                HStack(spacing: 40) {
+                    // Home button
+                    Button {
+                        selectedTab = 0
+                    } label: {
                         Image(selectedTab == 0 ? "house-fill" : "house")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(selectedTab == 0 ? .baseBlack : .warmGray400)
                             .frame(width: 32, height: 32)
                     }
-                    .tag(0)
-                
-                FoldersView()
-                    .environment(\.showPlusButton, $showPlusButton)
-                    .tabItem {
+                    
+                    // Plus button
+                    Button {
+                        showAddSheet = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        .frame(width: 120, height: 48)
+                        .background(Color.baseBlack)
+                        .cornerRadius(24)
+                        .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+                    }
+                    
+                    // Folder button
+                    Button {
+                        selectedTab = 1
+                    } label: {
                         Image(selectedTab == 1 ? "folder-fill" : "folder")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(selectedTab == 1 ? .baseBlack : .warmGray400)
                             .frame(width: 32, height: 32)
                     }
-                    .tag(1)
-            }
-            .onChange(of: selectedTab) { _, newTab in
-                showPlusButton = true
-            }
-            
-            if showPlusButton {
-                VStack {
-                    Spacer()
-                    
-                    Button {
-                        showAddSheet = true
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(Color.baseBlack)
-                                .frame(width: 56, height: 56)
-                                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
-                            
-                            Image(systemName: "plus")
-                                .font(.system(size: 24, weight: .semibold))
-                                .foregroundColor(.baseWhite)
-                        }
-                    }
-                    .padding(.bottom, 8)
                 }
-                .transition(.opacity)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 8)
             }
         }
         .fullScreenCover(isPresented: $showAddSheet) {
@@ -76,8 +83,6 @@ struct MainTabView: View {
             .presentationDetents([.height(240)])
             .presentationDragIndicator(.hidden)
             .presentationBackground(.clear)
-            
-            
         }
         .fullScreenCover(isPresented: $showRecorderScreen) {
             RecorderView()

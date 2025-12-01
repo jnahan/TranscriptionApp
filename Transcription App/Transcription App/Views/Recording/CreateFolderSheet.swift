@@ -36,9 +36,15 @@ struct CreateFolderSheet: View {
                     .cornerRadius(12)
                     .padding(.horizontal, 24)
                     .focused($isTextFieldFocused)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        if !folderName.isEmpty {
+                            onCreate()
+                            isPresented = false
+                        }
+                    }
             }
-            
-            Spacer()
+            .padding(.bottom, 32)
             
             // Create button
             Button {
@@ -58,13 +64,11 @@ struct CreateFolderSheet: View {
             .padding(.bottom, 34)
         }
         .background(Color.warmGray50)
-        .presentationDetents([.height(320)])
+        .presentationDetents([.height(280)])
         .presentationDragIndicator(.hidden)
+        .presentationBackgroundInteraction(.enabled)
         .onAppear {
-            // Automatically focus the text field when the sheet appears
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isTextFieldFocused = true
-            }
+            isTextFieldFocused = true
         }
     }
 }
