@@ -42,10 +42,11 @@ struct RecordingRow: View {
             Button {
                 showMenu = true
             } label: {
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 20))
-                    .foregroundColor(.warmGray600)
-                    .rotationEffect(.degrees(90))
+                Image("dots-three")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.warmGray500)
             }
             .buttonStyle(.plain)
         }

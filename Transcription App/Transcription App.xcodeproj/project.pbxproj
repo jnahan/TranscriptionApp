@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D1570632ED965F40094E13E /* FolderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570622ED965F40094E13E /* FolderRow.swift */; };
+		5D1570632ED965F40094E13E /* CollectionsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570622ED965F40094E13E /* CollectionsRow.swift */; };
 		5D1570652ED96B0A0094E13E /* FolderPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570642ED96B0A0094E13E /* FolderPickerView.swift */; };
 		5D1570672ED96BEE0094E13E /* CreateFolderSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */; };
 		5D1570692EDA0F450094E13E /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570682EDA0F450094E13E /* TopBar.swift */; };
@@ -32,7 +32,7 @@
 		5DA01ABB2ED90291006BF0F3 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA01ABA2ED90291006BF0F3 /* SearchBar.swift */; };
 		5DB579022ED84343002DC84D /* RecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579012ED84343002DC84D /* RecorderView.swift */; };
 		5DB579042ED84651002DC84D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579032ED84651002DC84D /* MainTabView.swift */; };
-		5DB579062ED846A6002DC84D /* FoldersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579052ED846A6002DC84D /* FoldersView.swift */; };
+		5DB579062ED846A6002DC84D /* CollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579052ED846A6002DC84D /* CollectionsView.swift */; };
 		5DB579082ED8475F002DC84D /* NewRecordingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579072ED8475F002DC84D /* NewRecordingSheet.swift */; };
 		5DB579102ED8BF6E002DC84D /* RecordingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB5790F2ED8BF6E002DC84D /* RecordingRow.swift */; };
 		5DB579122ED8C016002DC84D /* EditRecordingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579112ED8C016002DC84D /* EditRecordingOverlay.swift */; };
@@ -49,13 +49,14 @@
 		5DDA7CC82EDD840800AFB6C0 /* Font+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDA7CC72EDD840700AFB6C0 /* Font+App.swift */; };
 		5DDA7CCA2EDD842100AFB6C0 /* View+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDA7CC92EDD842100AFB6C0 /* View+Shadow.swift */; };
 		5DDA7CCC2EDD850300AFB6C0 /* CollectionsEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDA7CCB2EDD850300AFB6C0 /* CollectionsEmptyState.swift */; };
+		5DDA7CD02EDD864C00AFB6C0 /* CollectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDA7CCF2EDD864C00AFB6C0 /* CollectionDetailView.swift */; };
 		5DE4CA712EDD2DAB0039A2AA /* RecordingEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */; };
 		5DE4CA732EDD37AF0039A2AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE4CA722EDD37AF0039A2AA /* Assets.xcassets */; };
 		5DE4CA752EDD37D20039A2AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE4CA742EDD37D20039A2AA /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5D1570622ED965F40094E13E /* FolderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRow.swift; sourceTree = "<group>"; };
+		5D1570622ED965F40094E13E /* CollectionsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsRow.swift; sourceTree = "<group>"; };
 		5D1570642ED96B0A0094E13E /* FolderPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderPickerView.swift; sourceTree = "<group>"; };
 		5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFolderSheet.swift; sourceTree = "<group>"; };
 		5D1570682EDA0F450094E13E /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
@@ -80,7 +81,7 @@
 		5DA01ABA2ED90291006BF0F3 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		5DB579012ED84343002DC84D /* RecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecorderView.swift; sourceTree = "<group>"; };
 		5DB579032ED84651002DC84D /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		5DB579052ED846A6002DC84D /* FoldersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersView.swift; sourceTree = "<group>"; };
+		5DB579052ED846A6002DC84D /* CollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsView.swift; sourceTree = "<group>"; };
 		5DB579072ED8475F002DC84D /* NewRecordingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewRecordingSheet.swift; sourceTree = "<group>"; };
 		5DB5790F2ED8BF6E002DC84D /* RecordingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingRow.swift; sourceTree = "<group>"; };
 		5DB579112ED8C016002DC84D /* EditRecordingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecordingOverlay.swift; sourceTree = "<group>"; };
@@ -98,6 +99,7 @@
 		5DDA7CC72EDD840700AFB6C0 /* Font+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+App.swift"; sourceTree = "<group>"; };
 		5DDA7CC92EDD842100AFB6C0 /* View+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Shadow.swift"; sourceTree = "<group>"; };
 		5DDA7CCB2EDD850300AFB6C0 /* CollectionsEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsEmptyState.swift; sourceTree = "<group>"; };
+		5DDA7CCF2EDD864C00AFB6C0 /* CollectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionDetailView.swift; sourceTree = "<group>"; };
 		5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingEmptyState.swift; sourceTree = "<group>"; };
 		5DE4CA722EDD37AF0039A2AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5DE4CA742EDD37D20039A2AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -201,15 +203,10 @@
 		5DB5790B2ED8BAA0002DC84D /* Tabs */ = {
 			isa = PBXGroup;
 			children = (
+				5DDA7CCE2EDD858E00AFB6C0 /* Collection */,
+				5DDA7CCD2EDD858100AFB6C0 /* Recording */,
 				5DB579032ED84651002DC84D /* MainTabView.swift */,
-				5D7925AD2ECD8E4A002889A6 /* RecordingsView.swift */,
-				5DB579052ED846A6002DC84D /* FoldersView.swift */,
-				5DB579262ED8D5D1002DC84D /* RecordingListViewModel.swift */,
-				5DB5790F2ED8BF6E002DC84D /* RecordingRow.swift */,
-				5D1570622ED965F40094E13E /* FolderRow.swift */,
 				5DB579072ED8475F002DC84D /* NewRecordingSheet.swift */,
-				5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */,
-				5DDA7CCB2EDD850300AFB6C0 /* CollectionsEmptyState.swift */,
 			);
 			path = Tabs;
 			sourceTree = "<group>";
@@ -217,13 +214,8 @@
 		5DB5790C2ED8BAB5002DC84D /* Recording */ = {
 			isa = PBXGroup;
 			children = (
-				5DB579012ED84343002DC84D /* RecorderView.swift */,
-				5D962F252ECE92E500049626 /* RecorderControl.swift */,
-				5D4622D32ED83570009A454D /* CreateRecordingView.swift */,
-				5D962F2C2ECEBBF800049626 /* RecordingDetailsView.swift */,
-				5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */,
-				5D15706A2EDA154A0094E13E /* AudioPlayerControls.swift */,
-				5D15706C2EDA172F0094E13E /* NoteOverlay.swift */,
+				5DDA7CD22EDD86EC00AFB6C0 /* RecordingDetails */,
+				5DDA7CD12EDD86C100AFB6C0 /* Recorder */,
 			);
 			path = Recording;
 			sourceTree = "<group>";
@@ -239,9 +231,7 @@
 		5DB5790E2ED8BF5E002DC84D /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				5DB579172ED8C823002DC84D /* RecordingActionsMenu.swift */,
-				5D962F232ECE8DD400049626 /* RecorderVisualizer.swift */,
-				5DB579112ED8C016002DC84D /* EditRecordingOverlay.swift */,
+				5D1570662ED96BEE0094E13E /* CreateFolderSheet.swift */,
 				5DB579132ED8C031002DC84D /* CopyToast.swift */,
 				5DB579152ED8C052002DC84D /* EmptyStateView.swift */,
 				5DA01ABA2ED90291006BF0F3 /* SearchBar.swift */,
@@ -285,6 +275,51 @@
 				5DDA7CC92EDD842100AFB6C0 /* View+Shadow.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5DDA7CCD2EDD858100AFB6C0 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				5D7925AD2ECD8E4A002889A6 /* RecordingsView.swift */,
+				5DB579262ED8D5D1002DC84D /* RecordingListViewModel.swift */,
+				5DB5790F2ED8BF6E002DC84D /* RecordingRow.swift */,
+				5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */,
+				5DB579172ED8C823002DC84D /* RecordingActionsMenu.swift */,
+				5DB579112ED8C016002DC84D /* EditRecordingOverlay.swift */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		5DDA7CCE2EDD858E00AFB6C0 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				5DB579052ED846A6002DC84D /* CollectionsView.swift */,
+				5D1570622ED965F40094E13E /* CollectionsRow.swift */,
+				5DDA7CCB2EDD850300AFB6C0 /* CollectionsEmptyState.swift */,
+				5DDA7CCF2EDD864C00AFB6C0 /* CollectionDetailView.swift */,
+			);
+			path = Collection;
+			sourceTree = "<group>";
+		};
+		5DDA7CD12EDD86C100AFB6C0 /* Recorder */ = {
+			isa = PBXGroup;
+			children = (
+				5D962F252ECE92E500049626 /* RecorderControl.swift */,
+				5DB579012ED84343002DC84D /* RecorderView.swift */,
+				5D4622D32ED83570009A454D /* CreateRecordingView.swift */,
+				5D962F232ECE8DD400049626 /* RecorderVisualizer.swift */,
+			);
+			path = Recorder;
+			sourceTree = "<group>";
+		};
+		5DDA7CD22EDD86EC00AFB6C0 /* RecordingDetails */ = {
+			isa = PBXGroup;
+			children = (
+				5D962F2C2ECEBBF800049626 /* RecordingDetailsView.swift */,
+				5D15706A2EDA154A0094E13E /* AudioPlayerControls.swift */,
+				5D15706C2EDA172F0094E13E /* NoteOverlay.swift */,
+			);
+			path = RecordingDetails;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -375,12 +410,13 @@
 				5D962F2D2ECEBBF800049626 /* RecordingDetailsView.swift in Sources */,
 				5D7925AE2ECD8E4A002889A6 /* RecordingsView.swift in Sources */,
 				5D7925AC2ECD8E4A002889A6 /* Transcription_AppApp.swift in Sources */,
+				5DDA7CD02EDD864C00AFB6C0 /* CollectionDetailView.swift in Sources */,
 				5D214A372ED8238B0069565D /* Folder.swift in Sources */,
 				5D15706B2EDA154A0094E13E /* AudioPlayerControls.swift in Sources */,
 				5D962F2B2ECEBAC000049626 /* SettingsView.swift in Sources */,
-				5DB579062ED846A6002DC84D /* FoldersView.swift in Sources */,
+				5DB579062ED846A6002DC84D /* CollectionsView.swift in Sources */,
 				5D1570692EDA0F450094E13E /* TopBar.swift in Sources */,
-				5D1570632ED965F40094E13E /* FolderRow.swift in Sources */,
+				5D1570632ED965F40094E13E /* CollectionsRow.swift in Sources */,
 				5D962F222ECE87ED00049626 /* Recorder.swift in Sources */,
 				5DB5791D2ED8CAF4002DC84D /* MediaFilePicker.swift in Sources */,
 				5DB579182ED8C823002DC84D /* RecordingActionsMenu.swift in Sources */,

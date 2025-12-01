@@ -35,7 +35,7 @@ struct MainTabView: View {
                     .tabItem { EmptyView() } // Hide default tab item
                     .tag(0)
                 
-                FoldersView()
+                CollectionsView()
                     .environment(\.showPlusButton, $showPlusButton)
                     .tabItem { EmptyView() } // Hide default tab item
                     .tag(1)
