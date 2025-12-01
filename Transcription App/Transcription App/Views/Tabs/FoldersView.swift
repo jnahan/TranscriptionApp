@@ -23,36 +23,60 @@ struct FoldersView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                CustomTopBar(
-                    title: "Collections",
-                    rightIcon: "gear-six",
-                    onRightTap: { showSettings = true }
-                )
-                
-                SearchBar(text: $searchText, placeholder: "Search...")
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                
-                List {
-                    ForEach(filteredFolders) { folder in
-                        Button {
-                            selectedFolder = folder
-                        } label: {
-                            FolderRow(
-                                folder: folder,
-                                recordingCount: recordingCount(for: folder)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                        .listRowBackground(Color.warmGray50)
-                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+            ZStack {
+                // Gradient at absolute top of screen (when empty)
+                if folders.isEmpty {
+                    VStack(spacing: 0) {
+                        Image("radial-gradient")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 280)
+                            .frame(maxWidth: .infinity)
+                            .rotationEffect(.degrees(180))
+                            .clipped()
+                        
+                        Spacer()
                     }
-                    .onDelete(perform: deleteFolders)
+                    .ignoresSafeArea(edges: .top)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .background(Color.warmGray50)
+                
+                VStack(spacing: 0) {
+                    CustomTopBar(
+                        title: "Collections",
+                        rightIcon: "folder-plus",
+                        onRightTap: { showCreateFolder = true }
+                    )
+                    
+                    if !filteredFolders.isEmpty {
+                        SearchBar(text: $searchText, placeholder: "Search...")
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 8)
+                    }
+                    
+                    if folders.isEmpty {
+                        FoldersEmptyState(showCreateFolder: $showCreateFolder)
+                    } else {
+                        List {
+                            ForEach(filteredFolders) { folder in
+                                Button {
+                                    selectedFolder = folder
+                                } label: {
+                                    FolderRow(
+                                        folder: folder,
+                                        recordingCount: recordingCount(for: folder)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .listRowBackground(Color.warmGray50)
+                                .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                            }
+                            .onDelete(perform: deleteFolders)
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.warmGray50)
+                    }
+                }
             }
             .background(Color.warmGray50.ignoresSafeArea())
             .navigationBarHidden(true)
@@ -61,19 +85,12 @@ struct FoldersView: View {
                     .onAppear { showPlusButton.wrappedValue = false }
                     .onDisappear { showPlusButton.wrappedValue = true }
             }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-            }
-            .overlay {
-                if folders.isEmpty {
-                    EmptyStateView(
-                        icon: "folder",
-                        title: "No Folders",
-                        description: "Create a folder to organize your recordings",
-                        actionTitle: nil,
-                        action: nil
-                    )
-                }
+            .sheet(isPresented: $showCreateFolder) {
+                CreateFolderSheet(
+                    isPresented: $showCreateFolder,
+                    folderName: $newFolderName,
+                    onCreate: createFolder
+                )
             }
         }
     }
@@ -88,6 +105,55 @@ struct FoldersView: View {
                 modelContext.delete(filteredFolders[index])
             }
         }
+    }
+    
+    private func createFolder() {
+        guard !newFolderName.isEmpty else { return }
+        
+        let folder = Folder(name: newFolderName)
+        modelContext.insert(folder)
+        newFolderName = ""
+        showCreateFolder = false
+    }
+}
+
+struct FoldersEmptyState: View {
+    @Binding var showCreateFolder: Bool
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            
+            VStack(spacing: 24) {
+                Text("Organize your\nrecordings")
+                    .font(.custom("LibreBaskerville-Medium", size: 24))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.black)
+                
+                Button {
+                    showCreateFolder = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image("folder-plus")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color.accent)
+                        
+                        Text("New collection")
+                            .font(.system(size: 16))
+                            .foregroundColor(Color.warmGray600)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.white)
+                    .clipShape(Capsule())
+                }
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

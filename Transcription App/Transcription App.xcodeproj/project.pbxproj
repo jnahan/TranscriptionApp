@@ -21,7 +21,6 @@
 		5D70377F2ECD916400D061E3 /* jfk.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5D70377E2ECD916400D061E3 /* jfk.wav */; };
 		5D7925AC2ECD8E4A002889A6 /* Transcription_AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7925AB2ECD8E4A002889A6 /* Transcription_AppApp.swift */; };
 		5D7925AE2ECD8E4A002889A6 /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7925AD2ECD8E4A002889A6 /* RecordingsView.swift */; };
-		5D7925B22ECD8E4B002889A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D7925B12ECD8E4B002889A6 /* Assets.xcassets */; };
 		5D7925B52ECD8E4B002889A6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D7925B42ECD8E4B002889A6 /* Preview Assets.xcassets */; };
 		5D7925BD2ECD8E6C002889A6 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7925BC2ECD8E6B002889A6 /* Recording.swift */; };
 		5D962F222ECE87ED00049626 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D962F212ECE87ED00049626 /* Recorder.swift */; };
@@ -47,6 +46,9 @@
 		5DB579272ED8D5D1002DC84D /* RecordingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB579262ED8D5D1002DC84D /* RecordingListViewModel.swift */; };
 		5DB5792B2ED8EF0E002DC84D /* LibreBaskerville-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DB579292ED8ECA9002DC84D /* LibreBaskerville-VariableFont_wght.ttf */; };
 		5DB5792D2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5792C2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf */; };
+		5DE4CA712EDD2DAB0039A2AA /* RecordingEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */; };
+		5DE4CA732EDD37AF0039A2AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE4CA722EDD37AF0039A2AA /* Assets.xcassets */; };
+		5DE4CA752EDD37D20039A2AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE4CA742EDD37D20039A2AA /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,7 +66,6 @@
 		5D7925A82ECD8E4A002889A6 /* Transcription App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Transcription App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D7925AB2ECD8E4A002889A6 /* Transcription_AppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcription_AppApp.swift; sourceTree = "<group>"; };
 		5D7925AD2ECD8E4A002889A6 /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
-		5D7925B12ECD8E4B002889A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D7925B42ECD8E4B002889A6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5D7925BC2ECD8E6B002889A6 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
 		5D962F212ECE87ED00049626 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
@@ -91,6 +92,9 @@
 		5DB579292ED8ECA9002DC84D /* LibreBaskerville-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreBaskerville-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		5DB5792A2ED8ECE5002DC84D /* Transcription-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Transcription-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		5DB5792C2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-VariableFont_opsz,wght.ttf"; sourceTree = "<group>"; };
+		5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingEmptyState.swift; sourceTree = "<group>"; };
+		5DE4CA722EDD37AF0039A2AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5DE4CA742EDD37D20039A2AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,7 @@
 		5D70377D2ECD910200D061E3 /* TestRecording */ = {
 			isa = PBXGroup;
 			children = (
+				5DE4CA722EDD37AF0039A2AA /* Assets.xcassets */,
 				5D70377E2ECD916400D061E3 /* jfk.wav */,
 			);
 			path = TestRecording;
@@ -150,8 +155,8 @@
 				5D7037802ECD91B400D061E3 /* Service */,
 				5DB579202ED8CF8E002DC84D /* Utilities */,
 				5D70377D2ECD910200D061E3 /* TestRecording */,
-				5D7925B12ECD8E4B002889A6 /* Assets.xcassets */,
 				5D7925B32ECD8E4B002889A6 /* Preview Content */,
+				5DE4CA742EDD37D20039A2AA /* Assets.xcassets */,
 				5D4FA9A82EDD274800CBF284 /* LaunchScreen.storyboard */,
 			);
 			path = "Transcription App";
@@ -197,6 +202,7 @@
 				5DB5790F2ED8BF6E002DC84D /* RecordingRow.swift */,
 				5D1570622ED965F40094E13E /* FolderRow.swift */,
 				5DB579072ED8475F002DC84D /* NewRecordingSheet.swift */,
+				5DE4CA702EDD2DAB0039A2AA /* RecordingEmptyState.swift */,
 			);
 			path = Tabs;
 			sourceTree = "<group>";
@@ -338,9 +344,10 @@
 			files = (
 				5D7925B52ECD8E4B002889A6 /* Preview Assets.xcassets in Resources */,
 				5D70377F2ECD916400D061E3 /* jfk.wav in Resources */,
-				5D7925B22ECD8E4B002889A6 /* Assets.xcassets in Resources */,
 				5D4FA9A92EDD274900CBF284 /* LaunchScreen.storyboard in Resources */,
 				5DB5792D2ED8EFA9002DC84D /* Inter-VariableFont_opsz,wght.ttf in Resources */,
+				5DE4CA752EDD37D20039A2AA /* Assets.xcassets in Resources */,
+				5DE4CA732EDD37AF0039A2AA /* Assets.xcassets in Resources */,
 				5DB5792B2ED8EF0E002DC84D /* LibreBaskerville-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -373,6 +380,7 @@
 				5DB579162ED8C052002DC84D /* EmptyStateView.swift in Sources */,
 				5D962F282ECE935500049626 /* Player.swift in Sources */,
 				5DB579122ED8C016002DC84D /* EditRecordingOverlay.swift in Sources */,
+				5DE4CA712EDD2DAB0039A2AA /* RecordingEmptyState.swift in Sources */,
 				5D214A3A2ED8263B0069565D /* RecordingSegment.swift in Sources */,
 				5DB579082ED8475F002DC84D /* NewRecordingSheet.swift in Sources */,
 				5D7925BD2ECD8E6C002889A6 /* Recording.swift in Sources */,
@@ -526,6 +534,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -558,6 +567,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

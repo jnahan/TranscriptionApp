@@ -12,18 +12,21 @@ struct RecorderView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Gradient background - OUTSIDE safe area
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(red: 0.98, green: 0.95, blue: 0.93), // Top: light peach/beige
-                        Color(red: 1.0, green: 0.85, blue: 0.88)   // Bottom: light pink
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                // Base color layer
+                Color.warmGray100
+                    .ignoresSafeArea()
+                
+                // Gradient background - fill entire screen
+                GeometryReader { geometry in
+                    Image("gradient")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                }
                 .ignoresSafeArea()
                 
-                // Content - INSIDE safe area
+                // Content
                 VStack(spacing: 0) {
                     CustomTopBar(
                         title: "Recording",
@@ -37,7 +40,6 @@ struct RecorderView: View {
                         showTranscriptionDetail = true
                     })
                 }
-                // VStack does NOT ignore safe area, so it stays within bounds
             }
             .navigationBarHidden(true)
             .fullScreenCover(item: Binding(

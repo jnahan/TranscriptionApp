@@ -16,96 +16,93 @@ struct RecorderControl: View {
     var onFinishRecording: ((URL) -> Void)?
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            
-            // Timer display
-            VStack(spacing: 20) {
-                Text(formattedTime)
-                    .font(.system(size: 32, weight: .regular))
-                    .foregroundColor(.baseBlack)
-                    .monospacedDigit()
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.white)
-                    .cornerRadius(20)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                Spacer()
                 
-                // Vertical line
-                Rectangle()
-                    .fill(Color.white.opacity(0.5))
-                    .frame(width: 2, height: 280)
-            }
-            
-            // Waveform visualizer
-            RecorderVisualizer(values: rec.meterHistory, barCount: 40)
-                .frame(height: 60)
-                .padding(.horizontal, 40)
-                .padding(.top, -140)
-            
-            Spacer()
-            
-            // Bottom buttons
-            HStack(spacing: 60) {
-                // Retry button
-                Button {
-                    playTapHaptic()
-                    resetRecording()
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 20))
-                        Text("Retry")
-                            .font(.system(size: 17, weight: .medium))
-                    }
-                    .foregroundColor(.accent)
+                // Timer display
+                VStack(spacing: 20) {
+                    Text(formattedTime)
+                        .font(.system(size: 32, weight: .regular))
+                        .foregroundColor(.baseBlack)
+                        .monospacedDigit()
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.white)
+                        .cornerRadius(20)
+                    
+                    // Vertical line
+                    Rectangle()
+                        .fill(Color.white.opacity(0.5))
+                        .frame(width: 2, height: 280)
                 }
-                .disabled(!rec.isRecording && rec.fileURL == nil)
-                .opacity((!rec.isRecording && rec.fileURL == nil) ? 0.3 : 1)
                 
-                // Record/Stop button
-                Button {
-                    playTapHaptic()
-                    if rec.isRecording {
-                        stopRecording()
-                    } else {
-                        startRecording()
+                // Waveform visualizer
+                RecorderVisualizer(values: rec.meterHistory, barCount: 40)
+                    .frame(height: 60)
+                    .padding(.horizontal, 40)
+                    .padding(.top, -140)
+                
+                Spacer()
+                
+                // Bottom buttons - 64px from bottom including safe area
+                HStack(spacing: 24) {
+                    // Retry button
+                    Button {
+                        playTapHaptic()
+                        resetRecording()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 20))
+                            Text("Retry")
+                                .font(.system(size: 17, weight: .medium))
+                        }
+                        .foregroundColor(.accent)
                     }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(Color.white)
-                            .frame(width: 88, height: 88)
-                            .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
-                        
+                    .disabled(!rec.isRecording && rec.fileURL == nil)
+                    .opacity((!rec.isRecording && rec.fileURL == nil) ? 0.3 : 1)
+                    
+                    // Record/Stop button
+                    Button {
+                        playTapHaptic()
                         if rec.isRecording {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.accent)
-                                .frame(width: 36, height: 36)
+                            stopRecording()
                         } else {
+                            startRecording()
+                        }
+                    } label: {
+                        ZStack {
                             Circle()
+                                .fill(Color.white)
+                                .frame(width: 64, height: 64)
+                                .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+                            
+                            RoundedRectangle(cornerRadius: 4)
                                 .fill(Color.accent)
-                                .frame(width: 72, height: 72)
+                                .frame(width: 24, height: 24)
                         }
                     }
-                }
-                
-                // Done button
-                Button {
-                    playTapHaptic()
-                    finishRecording()
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 20))
-                        Text("Done")
-                            .font(.system(size: 17, weight: .medium))
+                    
+                    // Done button
+                    Button {
+                        playTapHaptic()
+                        finishRecording()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 20))
+                            Text("Done")
+                                .font(.system(size: 17, weight: .medium))
+                        }
+                        .foregroundColor(.baseBlack)
                     }
-                    .foregroundColor(.baseBlack)
+                    .disabled(rec.fileURL == nil)
+                    .opacity(rec.fileURL == nil ? 0.3 : 1)
                 }
-                .disabled(rec.fileURL == nil)
-                .opacity(rec.fileURL == nil ? 0.3 : 1)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 64)
             }
-            .padding(.bottom, 50)
         }
         .task {
             rec.requestPermission { ok in

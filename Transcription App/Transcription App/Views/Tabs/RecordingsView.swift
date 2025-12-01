@@ -16,6 +16,22 @@ struct RecordingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                // Gradient at absolute top of screen (when empty)
+                if filteredRecordings.isEmpty {
+                    VStack(spacing: 0) {
+                        Image("radial-gradient")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 280)
+                            .frame(maxWidth: .infinity)
+                            .rotationEffect(.degrees(180))
+                            .clipped()
+                        
+                        Spacer()
+                    }
+                    .ignoresSafeArea(edges: .top)
+                }
+                
                 VStack(spacing: 0) {
                     // Custom Top Bar
                     CustomTopBar(
@@ -32,8 +48,10 @@ struct RecordingsView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        SearchBar(text: $searchText, placeholder: "Search recordings")
-                            .padding(.horizontal, 16)
+                        if !filteredRecordings.isEmpty {
+                            SearchBar(text: $searchText, placeholder: "Search recordings")
+                                .padding(.horizontal, 16)
+                        }
                         
                         recordingsList
                     }
@@ -74,28 +92,34 @@ struct RecordingsView: View {
     }
     
     private var recordingsList: some View {
-        List {
-            ForEach(filteredRecordings) { recording in
-                Button {
-                    selectedRecording = recording
-                } label: {
-                    RecordingRow(
-                        recording: recording,
-                        player: viewModel.player,
-                        onCopy: { viewModel.copyRecording(recording) },
-                        onEdit: { viewModel.editRecording(recording) },
-                        onDelete: { viewModel.deleteRecording(recording) }
-                    )
+        Group {
+            if filteredRecordings.isEmpty {
+                RecordingEmptyState()
+            } else {
+                List {
+                    ForEach(filteredRecordings) { recording in
+                        Button {
+                            selectedRecording = recording
+                        } label: {
+                            RecordingRow(
+                                recording: recording,
+                                player: viewModel.player,
+                                onCopy: { viewModel.copyRecording(recording) },
+                                onEdit: { viewModel.editRecording(recording) },
+                                onDelete: { viewModel.deleteRecording(recording) }
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.warmGray50)
+                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                    }
+                    .onDelete(perform: deleteRecordings)
                 }
-                .buttonStyle(.plain)
-                .listRowBackground(Color.warmGray50)
-                .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.warmGray50)
             }
-            .onDelete(perform: deleteRecordings)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(Color.warmGray50)
     }
     
     private func updateFilteredRecordings() {
