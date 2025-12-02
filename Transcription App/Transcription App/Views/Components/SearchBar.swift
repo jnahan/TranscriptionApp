@@ -5,20 +5,22 @@ struct SearchBar: View {
     var placeholder: String = "Search..."
     
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.warmGray400)
-                .font(.system(size: 18))
+        HStack(spacing: 8) {
+            Image("magnifying-glass")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 16, height: 16)
+                .foregroundColor(.warmGray500)
             
             ZStack(alignment: .leading) {
                 if text.isEmpty {
                     Text(placeholder)
                         .foregroundColor(.warmGray400)
-                        .font(.system(size: 16))
+                        .font(.system(size: 14))
                 }
                 
                 TextField("", text: $text)
-                    .font(.system(size: 16))
+                    .font(.system(size: 14))
                     .foregroundColor(.baseBlack)
             }
             
@@ -26,9 +28,11 @@ struct SearchBar: View {
                 Button {
                     text = ""
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
+                    Image("x-circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 12, height: 12)
                         .foregroundColor(.warmGray400)
-                        .font(.system(size: 16))
                 }
             }
         }

@@ -22,60 +22,32 @@ struct RecordingDetailsView: View {
             
             VStack(spacing: 0) {
                 // Custom Top Bar
-                HStack(spacing: 0) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image("caret-left")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.warmGray400)
-                            .frame(width: 44, height: 44)
-                            .contentShape(Rectangle())
-                    }
-                    
-                    Spacer()
-                    
-                    // Clover icon in center
-                    Image("clover")
+                CustomTopBar(
+                    title: "",
+                    leftIcon: "caret-left",
+                    rightIcon: "dots-three",
+                    onLeftTap: { dismiss() },
+                    onRightTap: { showMenu = true }
+                )
+                
+                // Header
+                VStack(spacing: 12) {
+                    Image("asterisk")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 32, height: 32)
-                        .foregroundColor(.accent)
-                    
-                    Spacer()
-                    
-                    Button {
-                        showMenu = true
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .font(.system(size: 24))
-                            .foregroundColor(.warmGray400)
-                            .rotationEffect(.degrees(90))
-                            .frame(width: 44, height: 44)
-                            .contentShape(Rectangle())
+                        .frame(width: 24, height: 24)
+
+                    VStack(spacing: 8) {
+                        Text(relativeDate)
+                            .font(.system(size: 14))
+                            .foregroundColor(.warmGray500)
+                        
+                        Text(recording.title)
+                            .font(.custom("LibreBaskerville-Medium", size: 24))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
                     }
-                    .padding(.trailing, 8)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .frame(height: 68)
-                .background(Color.warmGray50)
-                
-                // Header with date and title
-                VStack(spacing: 8) {
-                    Text(relativeDate)
-                        .font(.system(size: 16))
-                        .foregroundColor(.warmGray500)
-                    
-                    Text(recording.title)
-                        .font(.custom("LibreBaskerville-Regular", size: 24))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                }
-                .padding(.top, 16)
-                .padding(.bottom, 24)
                 
                 // Scrollable Transcript Area
                 ScrollView {
@@ -85,24 +57,25 @@ struct RecordingDetailsView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(formatTime(segment.start))
                                         .font(.system(size: 14))
-                                        .foregroundColor(.warmGray500)
+                                        .foregroundColor(.warmGray400)
                                     
                                     Text(segment.text)
-                                        .font(.system(size: 17))
+                                        .font(.system(size: 16))
                                         .foregroundColor(.baseBlack)
-                                        .fixedSize(horizontal: false, vertical: true)
                                 }
                             }
                         } else {
                             Text(recording.fullText)
-                                .font(.system(size: 17))
+                                .font(.system(size: 16))
                                 .foregroundColor(.baseBlack)
                                 .lineSpacing(4)
                         }
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.top, 8)
-                    .padding(.bottom, 200)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 24)
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear.frame(height: 164)
+                    }
                 }
                 
                 Spacer()
@@ -231,14 +204,20 @@ class AudioPlayerController: ObservableObject {
     private var timer: Timer?
     
     func loadAudio(url: URL) {
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            print("❌ Audio file missing at path:", url.path)
+            return
+        }
+
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.prepareToPlay()
             duration = player?.duration ?? 0
         } catch {
-            print("Failed to load audio: \(error)")
+            print("❌ Failed to load audio:", error)
         }
     }
+
     
     func play(url: URL) {
         if player == nil {

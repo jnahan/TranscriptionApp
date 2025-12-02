@@ -47,10 +47,9 @@ struct CollectionsView: View {
                         onRightTap: { showCreateFolder = true }
                     )
                     
-                    if !filteredFolders.isEmpty {
-                        SearchBar(text: $searchText, placeholder: "Search...")
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 8)
+                    if !folders.isEmpty {
+                        SearchBar(text: $searchText, placeholder: "Search collections...")
+                            .padding(.horizontal, 20)
                     }
                     
                     if folders.isEmpty {

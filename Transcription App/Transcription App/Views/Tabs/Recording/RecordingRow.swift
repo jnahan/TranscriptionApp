@@ -17,15 +17,15 @@ struct RecordingRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // Recording Info
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 // Duration and date
-                Text("\(formattedDuration) · \(relativeDate)")
-                    .font(.system(size: 14))
-                    .foregroundColor(.warmGray500)
+                Text("\(formattedDuration)  ·  \(relativeDate)")
+                    .font(.interMedium(size: 14))
+                    .foregroundColor(.warmGray400)
                 
                 // Title
                 Text(recording.title)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.interMedium(size: 16))
                     .foregroundColor(.baseBlack)
                     .lineLimit(1)
                 
@@ -33,7 +33,7 @@ struct RecordingRow: View {
                 Text(recording.fullText)
                     .font(.system(size: 14))
                     .foregroundColor(.warmGray600)
-                    .lineLimit(2)
+                    .lineLimit(3)
             }
             
             Spacer()
@@ -55,10 +55,6 @@ struct RecordingRow: View {
             loadDuration()
         }
         .confirmationDialog("", isPresented: $showMenu, titleVisibility: .hidden) {
-            Button("Select") {
-                // Handle select action
-            }
-            
             Button("Copy transcription") {
                 onCopy()
             }

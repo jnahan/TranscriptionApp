@@ -193,7 +193,6 @@ struct CreateRecordingView: View {
         let recording = Recording(
             title: title,
             fileURL: audioURL,
-            filePath: audioURL.path,
             fullText: transcribedText,
             language: transcribedLanguage,
             notes: note,

@@ -48,9 +48,9 @@ struct RecordingsView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        if !filteredRecordings.isEmpty {
+                        if !recordings.isEmpty {
                             SearchBar(text: $searchText, placeholder: "Search recordings")
-                                .padding(.horizontal, 16)
+                                .padding(.horizontal, 20)
                         }
                         
                         recordingsList
@@ -111,7 +111,9 @@ struct RecordingsView: View {
                         }
                         .buttonStyle(.plain)
                         .listRowBackground(Color.warmGray50)
-                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                        .listRowSpacing(24)
+                        .listRowSeparator(.hidden)
                     }
                     .onDelete(perform: deleteRecordings)
                 }

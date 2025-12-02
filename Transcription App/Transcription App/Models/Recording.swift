@@ -15,8 +15,7 @@ class Recording {
     var language: String
     
     // MARK: - Audio File
-    var fileURL: URL?
-    var filePath: String?
+    var filePath: String
     
     // MARK: - Transcription
     var fullText: String // Complete transcription
@@ -32,15 +31,12 @@ class Recording {
     
     // MARK: - Computed Properties
     var resolvedURL: URL? {
-        if let fileURL { return fileURL }
-        if let filePath { return URL(fileURLWithPath: filePath) }
-        return nil
+        return URL(fileURLWithPath: filePath)
     }
     
     init(
         title: String,
-        fileURL: URL?,
-        filePath: String?,
+        fileURL: URL,  // Only accept URL, no need for filePath parameter
         fullText: String,
         language: String,
         notes: String = "",
@@ -50,8 +46,7 @@ class Recording {
     ) {
         self.id = UUID()
         self.title = title
-        self.fileURL = fileURL
-        self.filePath = filePath
+        self.filePath = fileURL.path  // Convert URL to path string
         self.fullText = fullText
         self.language = language
         self.notes = notes
