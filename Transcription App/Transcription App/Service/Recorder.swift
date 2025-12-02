@@ -13,7 +13,7 @@ final class Recorder: ObservableObject {
     @Published var meterHistory: [Float] = []
     
     // MARK: - Configuration
-    var meterInterval: TimeInterval = 0.05
+    var meterInterval: TimeInterval = 0.03
     var maxHistoryCount: Int = 80
     
     // MARK: - Private Properties
@@ -124,5 +124,15 @@ final class Recorder: ObservableObject {
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
         #endif
         AudioServicesPlaySystemSound(1114)
+    }
+    
+    func reset() {
+        stopMetering()
+        recorder?.stop()
+        isRecording = false
+        recorder = nil
+        fileURL = nil  // Clear the file URL
+        meterLevel = 0
+        meterHistory.removeAll()
     }
 }

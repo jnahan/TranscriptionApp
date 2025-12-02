@@ -6,48 +6,38 @@ struct RecorderVisualizer: View {
     let values: [Float]
     let barCount: Int
     
-    private let barSpacing: CGFloat = 2
-    private let minBarHeight: CGFloat = 0.05
+    private let barSpacing: CGFloat = 3
+    private let minBarHeight: CGFloat = 0.04
+    private let barWidth: CGFloat = 3
     
     var body: some View {
         GeometryReader { geo in
-            let width = max(0, geo.size.width.isFinite ? geo.size.width : 0)
             let height = max(0, geo.size.height.isFinite ? geo.size.height : 0)
-            let safeBarCount = max(1, barCount)
-            let barWidth = calculateBarWidth(width: width, barCount: safeBarCount)
-            let barValues = calculateBarValues(barCount: safeBarCount)
+            
+            // Always show exactly barCount bars, padding with zeros if needed
+            let displayValues = paddedValues()
             
             HStack(alignment: .center, spacing: barSpacing) {
-                ForEach(0..<safeBarCount, id: \.self) { index in
+                ForEach(Array(displayValues.enumerated()), id: \.offset) { index, value in
                     BarView(
-                        value: barValues[index],
+                        value: value,
                         width: barWidth,
                         height: height,
                         minHeight: minBarHeight
                     )
+                    .id(values.count - displayValues.count + index) // Stable ID based on position in full array
                 }
             }
         }
     }
     
-    private func calculateBarWidth(width: CGFloat, barCount: Int) -> CGFloat {
-        let totalSpacing = CGFloat(barCount - 1) * barSpacing
-        let availableWidth = max(0, width - totalSpacing)
-        return availableWidth / CGFloat(barCount)
-    }
-    
-    private func calculateBarValues(barCount: Int) -> [Float] {
-        let chunkSize = max(1, values.count / barCount)
-        
-        return (0..<barCount).map { i in
-            let start = i * chunkSize
-            let end = min(start + chunkSize, values.count)
-            
-            guard start < end else { return 0 }
-            
-            let slice = values[start..<end]
-            return slice.reduce(0, +) / Float(slice.count)
+    private func paddedValues() -> [Float] {
+        let recent = Array(values.suffix(barCount))
+        if recent.count < barCount {
+            let padding = Array(repeating: Float(0), count: barCount - recent.count)
+            return padding + recent
         }
+        return recent
     }
 }
 
@@ -61,12 +51,11 @@ private struct BarView: View {
         let normalizedValue = CGFloat(value.isFinite ? value : 0)
         let cappedValue = max(minHeight, min(normalizedValue, 1))
         let barHeight = max(0, min(height, cappedValue * height))
-        let yOffset = (height - barHeight) / 2
         
         Rectangle()
             .fill(Color.accent)
-            .frame(width: max(0, width), height: barHeight)
-            .cornerRadius(width / 2)
-            .offset(y: yOffset)
+            .frame(width: width, height: barHeight)
+            .cornerRadius(1.5)
+            .frame(height: height, alignment: .center)
     }
 }

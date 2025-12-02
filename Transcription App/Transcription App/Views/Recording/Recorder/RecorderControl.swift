@@ -12,6 +12,7 @@ struct RecorderControl: View {
     @State private var micDenied = false
     @State private var elapsedTime: TimeInterval = 0
     @State private var timer: Timer?
+    @State private var frozenMeterHistory: [Float] = []  // Freeze history when recording stops
     
     var onFinishRecording: ((URL) -> Void)?
     
@@ -20,85 +21,115 @@ struct RecorderControl: View {
             VStack(spacing: 0) {
                 Spacer()
                 
-                // Timer display
-                VStack(spacing: 20) {
+                // Timer display and waveform section
+                VStack(spacing: 0) {
                     Text(formattedTime)
-                        .font(.system(size: 32, weight: .regular))
-                        .foregroundColor(.baseBlack)
-                        .monospacedDigit()
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
+                        .font(.interMedium(size: 14))
+                        .foregroundColor(.warmGray700)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                         .background(Color.white)
-                        .cornerRadius(20)
+                        .cornerRadius(32)
                     
-                    // Vertical line
-                    Rectangle()
-                        .fill(Color.white.opacity(0.5))
-                        .frame(width: 2, height: 280)
+                    ZStack(alignment: .top) {
+                        // Waveform visualizer - show frozen history if stopped, live if recording
+                        HStack(spacing: 0) {
+                            RecorderVisualizer(
+                                values: frozenMeterHistory.isEmpty ? rec.meterHistory : frozenMeterHistory,
+                                barCount: 40
+                            )
+                            .frame(height: 80)
+                            .clipped()
+                            
+                            Spacer()
+                                .frame(width: 3)  // Exact width of white line
+                        }
+                        .frame(width: geometry.size.width / 2)
+                        .padding(.top, 80)
+                        .offset(x: -geometry.size.width / 4)
+                        
+                        // Vertical line on top - centered and fully opaque
+                        Rectangle()
+                            .fill(Color.white)
+                            .frame(width: 3, height: 240)
+                    }
                 }
-                
-                // Waveform visualizer
-                RecorderVisualizer(values: rec.meterHistory, barCount: 40)
-                    .frame(height: 60)
-                    .padding(.horizontal, 40)
-                    .padding(.top, -140)
                 
                 Spacer()
                 
                 // Bottom buttons - 64px from bottom including safe area
                 HStack(spacing: 24) {
-                    // Retry button
-                    Button {
-                        playTapHaptic()
-                        resetRecording()
-                    } label: {
+                    // Retry button - only visible when recording is stopped (not during recording)
+                    if !rec.isRecording && rec.fileURL != nil {
+                        Button {
+                            playTapHaptic()
+                            resetRecording()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "arrow.counterclockwise")
+                                    .font(.system(size: 20))
+                                Text("Retry")
+                                    .font(.system(size: 17, weight: .medium))
+                            }
+                            .foregroundColor(.accent)
+                        }
+                    } else {
+                        // Invisible placeholder to maintain spacing
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.counterclockwise")
                                 .font(.system(size: 20))
                             Text("Retry")
                                 .font(.system(size: 17, weight: .medium))
                         }
-                        .foregroundColor(.accent)
+                        .foregroundColor(.clear)
                     }
-                    .disabled(!rec.isRecording && rec.fileURL == nil)
-                    .opacity((!rec.isRecording && rec.fileURL == nil) ? 0.3 : 1)
                     
-                    // Record/Stop button
+                    // Record/Stop/Done button - changes based on state
                     Button {
                         playTapHaptic()
                         if rec.isRecording {
                             stopRecording()
-                        } else {
+                        } else if rec.fileURL == nil {
                             startRecording()
+                        } else {
+                            finishRecording()
                         }
                     } label: {
                         ZStack {
                             Circle()
                                 .fill(Color.white)
-                                .frame(width: 64, height: 64)
-                                .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+                                .frame(width: 72, height: 72)
+                                .appShadow()
                             
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.accent)
-                                .frame(width: 24, height: 24)
+                            if rec.isRecording {
+                                // Recording: red square
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.accent)
+                                    .frame(width: 24, height: 24)
+                            } else if rec.fileURL == nil {
+                                // Not started: red circle
+                                Circle()
+                                    .fill(Color.accent)
+                                    .frame(width: 48, height: 48)
+                            } else {
+                                // Recorded: checkmark
+                                Image("check")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 32, height: 32)
+                                    .foregroundColor(.black)
+                            }
                         }
                     }
                     
-                    // Done button
-                    Button {
-                        playTapHaptic()
-                        finishRecording()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 20))
-                            Text("Done")
-                                .font(.system(size: 17, weight: .medium))
-                        }
-                        .foregroundColor(.baseBlack)
+                    // Invisible spacer for balance
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 20))
+                        Text("Retry")
+                            .font(.system(size: 17, weight: .medium))
                     }
-                    .disabled(rec.fileURL == nil)
-                    .opacity(rec.fileURL == nil ? 0.3 : 1)
+                    .foregroundColor(.clear)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 64)
@@ -112,6 +143,7 @@ struct RecorderControl: View {
         .onChange(of: rec.isRecording) { _, isRecording in
             if isRecording {
                 startTimer()
+                frozenMeterHistory = []  // Clear frozen history when starting new recording
             } else {
                 stopTimer()
             }
@@ -153,17 +185,14 @@ struct RecorderControl: View {
     }
     
     private func stopRecording() {
+        frozenMeterHistory = rec.meterHistory
         rec.stop()
     }
     
     private func resetRecording() {
-        if rec.isRecording {
-            rec.stop()
-        }
+        rec.reset()
         elapsedTime = 0
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            startRecording()
-        }
+        frozenMeterHistory = []  // Clear frozen history on reset
     }
     
     private func finishRecording() {

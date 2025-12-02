@@ -11,32 +11,33 @@ struct AudioPlayerControls: View {
         VStack(spacing: 0) {
             // Progress Bar
             VStack(spacing: 12) {
-                Slider(value: $audioPlayer.currentTime, in: 0...max(audioPlayer.duration, 0.1)) { editing in
+                CustomSlider(
+                    value: $audioPlayer.currentTime,
+                    range: 0...max(audioPlayer.duration, 0.1)
+                ) { editing in
                     if !editing {
                         audioPlayer.seek(to: audioPlayer.currentTime)
                     }
                 }
-                .tint(.baseBlack)
                 
                 HStack {
                     Text(formatTime(audioPlayer.currentTime))
-                        .font(.system(size: 16))
+                        .font(.system(size: 12))
                         .foregroundColor(.warmGray500)
                         .monospacedDigit()
                     
                     Spacer()
                     
                     Text(formatTime(audioPlayer.duration))
-                        .font(.system(size: 16))
+                        .font(.system(size: 12))
                         .foregroundColor(.warmGray500)
                         .monospacedDigit()
                 }
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 40)
+            .padding(.horizontal, 20)
             
-            // Bottom Action Buttons - Centered Group
-            HStack(spacing: 24) {
+            // Bottom Action Buttons - Full width with spacing
+            HStack(spacing: 0) {
                 // Note button group (icon + text)
                 Button {
                     onNotePressed()
@@ -52,8 +53,10 @@ struct AudioPlayerControls: View {
                     .foregroundColor(.warmGray500)
                 }
                 
-                // Center playback controls (white pill)
-                HStack(spacing: 0) {
+                Spacer()
+                
+                // Center playback controls
+                HStack(spacing: 20) {
                     // Rewind button
                     Button {
                         audioPlayer.skip(by: -15)
@@ -61,10 +64,9 @@ struct AudioPlayerControls: View {
                         Image("clock-counter-clockwise")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.warmGray500)
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(.warmGray700)
                     }
-                    .frame(width: 44, height: 40)
                     
                     // Play/Pause
                     Button {
@@ -76,11 +78,19 @@ struct AudioPlayerControls: View {
                             }
                         }
                     } label: {
-                        Image(systemName: audioPlayer.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.system(size: 40))
+                        Image(audioPlayer.isPlaying ? "pause-fill" : "play-fill")
+                            .resizable()
+                            .renderingMode(.template)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 28, height: 28)
                             .foregroundColor(.baseBlack)
                     }
-                    .frame(width: 56, height: 40)
+                    .frame(width: 56, height: 56)
+                    .background(
+                        Circle()
+                            .fill(Color.white)
+                    )
+                    .appShadow()
                     
                     // Forward button
                     Button {
@@ -89,19 +99,15 @@ struct AudioPlayerControls: View {
                         Image("clock-clockwise")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.warmGray500)
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(.warmGray700)
                     }
-                    .frame(width: 44, height: 40)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(Color.white)
-                .cornerRadius(30)
-                .shadow(color: .black.opacity(0.1), radius: 16, y: 4)
+                
+                Spacer()
                 
                 // Copy and Export buttons group
-                HStack(spacing: 20) {
+                HStack(spacing: 16) {
                     // Copy button
                     Button {
                         UIPasteboard.general.string = fullText
@@ -125,10 +131,10 @@ struct AudioPlayerControls: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 12)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 28)
         }
-        .background(Color.warmGray50)
+        .background(Color.warmGray100)
     }
     
     private func formatTime(_ timeInterval: TimeInterval) -> String {
