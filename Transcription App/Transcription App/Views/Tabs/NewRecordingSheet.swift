@@ -53,6 +53,7 @@ struct NewRecordingSheet: View {
             ActionButton(
                 iconName: "microphone",
                 title: "Record audio",
+                tint: .accent,
                 action: {
                     dismiss()
                     onRecordAudio()
@@ -65,6 +66,7 @@ struct NewRecordingSheet: View {
             ActionButton(
                 iconName: "file",
                 title: "Upload file",
+                tint: .teal,
                 action: {
                     dismiss()
                     onUploadFile()
@@ -75,8 +77,9 @@ struct NewRecordingSheet: View {
                 .padding(.leading, 60)
             
             ActionButton(
-                iconName: "image",
+                iconName: "video-camera",
                 title: "Upload video",
+                tint: .blue,
                 action: {
                     dismiss()
                     onChooseFromPhotos()
@@ -93,21 +96,25 @@ struct NewRecordingSheet: View {
 private struct ActionButton: View {
     let iconName: String
     let title: String
+    let tint: Color
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             HStack {
                 Image(iconName)
+                    .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                    .frame(width: 30)
+                    .foregroundColor(tint)
+
                 Text(title)
                     .font(.body)
+                    .foregroundColor(.primary)
+
                 Spacer()
             }
-            .foregroundColor(.primary)
             .padding()
             .background(Color(UIColor.systemBackground))
         }

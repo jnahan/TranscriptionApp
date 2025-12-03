@@ -24,16 +24,10 @@ struct CreateFolderSheet: View {
             
             // Text field
             VStack(alignment: .leading, spacing: 8) {
-                Text("Folder name")
-                    .font(.system(size: 14))
-                    .foregroundColor(.warmGray500)
+                InputLabel(text: "Folder name")
                     .padding(.horizontal, 24)
                 
-                TextField("Folder name", text: $folderName)
-                    .font(.system(size: 17))
-                    .padding(16)
-                    .background(Color.white)
-                    .cornerRadius(12)
+                InputField(text: $folderName, placeholder: "Folder name")
                     .padding(.horizontal, 24)
                     .focused($isTextFieldFocused)
                     .submitLabel(.done)
@@ -52,16 +46,9 @@ struct CreateFolderSheet: View {
                 isPresented = false
             } label: {
                 Text("Create folder")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(folderName.isEmpty ? Color.warmGray400 : Color.black)
-                    .cornerRadius(16)
             }
             .disabled(folderName.isEmpty)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 34)
+            .buttonStyle(AppButtonStyle())
         }
         .background(Color.warmGray50)
         .presentationDetents([.height(280)])

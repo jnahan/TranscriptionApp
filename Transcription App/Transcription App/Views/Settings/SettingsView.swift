@@ -8,7 +8,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.warmGray50
+                Color.warmGray100
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
@@ -171,10 +171,10 @@ struct SettingsView: View {
                     
                     // Footer
                     VStack(spacing: 8) {
-                        Image("hand-heart-fill")
+                        Image("diamond")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 48, height: 48)
+                            .frame(width: 24, height: 24)
                             .foregroundColor(.accent)
                         
                         Text("SONO")

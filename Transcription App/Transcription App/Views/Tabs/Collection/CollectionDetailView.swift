@@ -12,6 +12,7 @@ struct CollectionDetailView: View {
     var showPlusButton: Binding<Bool>
     
     @State private var searchText = ""
+    @State private var selectedRecording: Recording?
     
     private var recordings: [Recording] {
         allRecordings.filter { $0.folder?.id == folder.id }
@@ -37,57 +38,21 @@ struct CollectionDetailView: View {
                     onLeftTap: { dismiss() }
                 )
                 
-                SearchBar(text: $searchText, placeholder: "Search...")
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                
-                List {
-                    ForEach(filteredRecordings) { recording in
-                        NavigationLink(value: recording) {
-                            RecordingRow(
-                                recording: recording,
-                                player: viewModel.player,
-                                onCopy: { viewModel.copyRecording(recording) },
-                                onEdit: { viewModel.editRecording(recording) },
-                                onDelete: { viewModel.deleteRecording(recording) }
-                            )
-                        }
-                    }
-                    .onDelete { indexSet in
-                        for index in indexSet {
-                            modelContext.delete(filteredRecordings[index])
-                        }
-                    }
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .background(Color.warmGray50)
-            }
-            .background(Color.warmGray50.ignoresSafeArea())
-            .navigationBarHidden(true)
-            .toolbar(.hidden, for: .tabBar)
-            .navigationDestination(for: Recording.self) { recording in
-                RecordingDetailsView(recording: recording)
-                    .onAppear { showPlusButton.wrappedValue = false }
-            }
-            .overlay {
-                if recordings.isEmpty {
-                    EmptyStateView(
-                        icon: "mic.slash",
-                        title: "No Recordings",
-                        description: "This folder is empty",
-                        actionTitle: nil,
-                        action: nil
-                    )
-                }
-            }
-            
-            if viewModel.showCopyToast {
-                VStack {
+                if viewModel.showCopyToast {
                     CopyToast()
-                    Spacer()
+                        .zIndex(1)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 10)
                 }
-                .padding(.top, 10)
+                
+                VStack(alignment: .leading, spacing: 16) {
+                    if !recordings.isEmpty {
+                        SearchBar(text: $searchText, placeholder: "Search recordings...")
+                            .padding(.horizontal, 20)
+                    }
+                    
+                    recordingsList
+                }
             }
             
             if viewModel.editingRecording != nil {
@@ -101,8 +66,63 @@ struct CollectionDetailView: View {
                 )
             }
         }
+        .background(Color.warmGray50.ignoresSafeArea())
+        .navigationBarHidden(true)
+        .toolbar(.hidden, for: .tabBar)
+        .navigationDestination(item: $selectedRecording) { recording in
+            RecordingDetailsView(recording: recording)
+                .onAppear { showPlusButton.wrappedValue = false }
+                .onDisappear { showPlusButton.wrappedValue = true }
+        }
         .onAppear {
             viewModel.configure(modelContext: modelContext)
+        }
+    }
+    
+    private var recordingsList: some View {
+        Group {
+            if recordings.isEmpty {
+                EmptyStateView(
+                    icon: "mic.slash",
+                    title: "No Recordings",
+                    description: "This folder is empty",
+                    actionTitle: nil,
+                    action: nil
+                )
+            } else {
+                List {
+                    ForEach(filteredRecordings) { recording in
+                        Button {
+                            selectedRecording = recording
+                        } label: {
+                            RecordingRow(
+                                recording: recording,
+                                player: viewModel.player,
+                                onCopy: { viewModel.copyRecording(recording) },
+                                onEdit: { viewModel.editRecording(recording) },
+                                onDelete: { viewModel.deleteRecording(recording) }
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.warmGray50)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                        .listRowSpacing(24)
+                        .listRowSeparator(.hidden)
+                    }
+                    .onDelete(perform: deleteRecordings)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.warmGray50)
+            }
+        }
+    }
+    
+    private func deleteRecordings(offsets: IndexSet) {
+        withAnimation {
+            for index in offsets {
+                modelContext.delete(filteredRecordings[index])
+            }
         }
     }
 }

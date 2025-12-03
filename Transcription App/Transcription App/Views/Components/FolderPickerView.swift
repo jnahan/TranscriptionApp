@@ -98,15 +98,8 @@ struct FolderPickerView: View {
                 isPresented = false
             } label: {
                 Text("Done")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(Color.black)
-                    .cornerRadius(16)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 34)
+            .buttonStyle(AppButtonStyle())
         }
         .frame(maxHeight: 480)
         .background(Color.warmGray50)

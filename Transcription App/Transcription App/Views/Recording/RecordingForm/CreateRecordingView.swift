@@ -36,7 +36,7 @@ struct CreateRecordingView: View {
                         .foregroundColor(.warmGray500)
                         .multilineTextAlignment(.center)
                 }
-                .padding(.top, 60)
+                .padding(.top, 32)
                 .padding(.bottom, 32)
                 
                 // Waveform animation
@@ -65,64 +65,33 @@ struct CreateRecordingView: View {
                 VStack(spacing: 16) {
                     // Title field
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Title")
-                            .font(.system(size: 14))
-                            .foregroundColor(.warmGray500)
-                        
-                        TextField("Title", text: $title)
-                            .font(.system(size: 17))
-                            .padding(16)
-                            .background(Color.white)
-                            .cornerRadius(12)
+                        InputLabel(text: "Title")
+                        InputField(text: $title, placeholder: "Title")
                     }
                     
                     // Folder field
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Folder")
-                            .font(.system(size: 14))
-                            .foregroundColor(.warmGray500)
-                        
-                        Button {
-                            showFolderPicker = true
-                        } label: {
-                            HStack {
-                                Text(selectedFolder?.name ?? "Folder")
-                                    .font(.system(size: 17))
-                                    .foregroundColor(.baseBlack)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.warmGray400)
-                            }
-                            .padding(16)
-                            .background(Color.white)
-                            .cornerRadius(12)
-                        }
+                        InputLabel(text: "Folder")
+                        InputField(
+                            text: Binding(
+                                get: { selectedFolder?.name ?? "" },
+                                set: { _ in }
+                            ),
+                            placeholder: "Select folder",
+                            showChevron: true,
+                            onTap: { showFolderPicker = true }
+                        )
                     }
                     
                     // Note field
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Note")
-                            .font(.system(size: 14))
-                            .foregroundColor(.warmGray500)
-                        
-                        ZStack(alignment: .topLeading) {
-                            if note.isEmpty {
-                                Text("Write a note for yourself...")
-                                    .font(.system(size: 17))
-                                    .foregroundColor(.warmGray400)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 20)
-                            }
-                            
-                            TextEditor(text: $note)
-                                .font(.system(size: 17))
-                                .padding(12)
-                                .scrollContentBackground(.hidden)
-                                .background(Color.white)
-                                .cornerRadius(12)
-                                .frame(height: 200)
-                        }
+                        InputLabel(text: "Note")
+                        InputField(
+                            text: $note,
+                            placeholder: "Write a note for yourself...",
+                            isMultiline: true,
+                            height: 200
+                        )
                     }
                 }
                 .padding(.horizontal, 16)
@@ -142,8 +111,8 @@ struct CreateRecordingView: View {
                         .cornerRadius(16)
                 }
                 .disabled(title.isEmpty || isTranscribing)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 34)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 32)
             }
         }
         .sheet(isPresented: $showFolderPicker) {
