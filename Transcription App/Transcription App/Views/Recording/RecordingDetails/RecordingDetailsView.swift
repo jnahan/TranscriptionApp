@@ -158,13 +158,17 @@ struct RecordingDetailsView: View {
                 existingRecording: recording,
                 folders: folders,
                 modelContext: modelContext,
-                onTranscriptionComplete: {}
+                onTranscriptionComplete: {},
+                onExit: nil
             )
         }
         .sheet(isPresented: $showDeleteConfirm) {
-            DeleteRecordingConfirmation(
+            ConfirmationSheet(
                 isPresented: $showDeleteConfirm,
-                recordingTitle: recording.title,
+                title: "Delete recording?",
+                message: "Are you sure you want to delete \"\(recording.title)\"? This action cannot be undone.",
+                confirmButtonText: "Delete recording",
+                cancelButtonText: "Cancel",
                 onConfirm: {
                     modelContext.delete(recording)
                     showDeleteConfirm = false

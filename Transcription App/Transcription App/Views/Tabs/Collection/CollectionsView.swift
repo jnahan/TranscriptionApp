@@ -125,13 +125,15 @@ struct CollectionsView: View {
             )) {
                 if let folder = deletingFolder {
                     let folderRecordingCount = recordings.filter { $0.folder?.id == folder.id }.count
-                    DeleteFolderConfirmation(
+                    ConfirmationSheet(
                         isPresented: Binding(
                             get: { deletingFolder != nil },
                             set: { if !$0 { deletingFolder = nil } }
                         ),
-                        folderName: folder.name,
-                        recordingCount: folderRecordingCount,
+                        title: "Delete folder?",
+                        message: "Are you sure you want to delete \"\(folder.name)\"? This will remove all \(folderRecordingCount) recording\(folderRecordingCount == 1 ? "" : "s") in this collection.",
+                        confirmButtonText: "Delete folder",
+                        cancelButtonText: "Cancel",
                         onConfirm: {
                             // Delete all recordings in this folder
                             let recordingsInFolder = recordings.filter { $0.folder?.id == folder.id }

@@ -9,6 +9,7 @@ struct RecordingFormView: View {
     let folders: [Folder]
     let modelContext: ModelContext
     let onTranscriptionComplete: () -> Void
+    let onExit: (() -> Void)?
     
     @State private var title: String = ""
     @State private var selectedFolder: Folder? = nil
@@ -19,6 +20,7 @@ struct RecordingFormView: View {
     @State private var transcribedSegments: [RecordingSegment] = []
     @State private var showFolderPicker = false
     @State private var isTranscribing = false
+    @State private var showExitConfirmation = false
     @Environment(\.dismiss) private var dismiss
     
     private var isEditing: Bool {
@@ -43,6 +45,15 @@ struct RecordingFormView: View {
                     )
                     .padding(.top, 12)
                 } else {
+                    CustomTopBar(
+                        title: "New recording",
+                        leftIcon: "x",
+                        onLeftTap: {
+                            showExitConfirmation = true
+                        }
+                    )
+                    .padding(.top, 12)
+                    
                     VStack(spacing: 8) {
                         Text("Transcribing audio")
                             .font(.custom("LibreBaskerville-Regular", size: 24))
@@ -53,7 +64,7 @@ struct RecordingFormView: View {
                             .foregroundColor(.warmGray500)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, 32)
+                    .padding(.top, 16)
                     .padding(.bottom, 32)
                 }
                 
@@ -144,6 +155,23 @@ struct RecordingFormView: View {
                 selectedFolder: $selectedFolder,
                 modelContext: modelContext,
                 isPresented: $showFolderPicker
+            )
+        }
+        .sheet(isPresented: $showExitConfirmation) {
+            ConfirmationSheet(
+                isPresented: $showExitConfirmation,
+                title: "Discard recording?",
+                message: "Your recording will be lost if you exit now. Are you sure you want to continue?",
+                confirmButtonText: "Discard recording",
+                cancelButtonText: "Continue editing",
+                onConfirm: {
+                    // Delete the audio file if it exists
+                    if let url = audioURL {
+                        try? FileManager.default.removeItem(at: url)
+                    }
+                    isPresented = false
+                    onExit?()
+                }
             )
         }
         .onAppear {

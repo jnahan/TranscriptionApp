@@ -140,8 +140,11 @@ struct MainTabView: View {
                 modelContext: modelContext,
                 onTranscriptionComplete: {
                     pendingAudioURL = nil
+                },
+                onExit: {
+                    pendingAudioURL = nil
+                    selectedTab = 0  // Go back to recordings home tab
                 }
             )
-        }
-    }
+        }    }
 }

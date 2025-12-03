@@ -79,9 +79,12 @@ struct RecordingRow: View {
             Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showDeleteConfirm) {
-            DeleteRecordingConfirmation(
+            ConfirmationSheet(
                 isPresented: $showDeleteConfirm,
-                recordingTitle: recording.title,
+                title: "Delete recording?",
+                message: "Are you sure you want to delete \"\(recording.title)\"? This action cannot be undone.",
+                confirmButtonText: "Delete recording",
+                cancelButtonText: "Cancel",
                 onConfirm: {
                     onDelete()
                     showDeleteConfirm = false

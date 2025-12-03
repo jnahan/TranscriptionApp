@@ -8,6 +8,7 @@ struct RecorderView: View {
     
     @State private var showTranscriptionDetail = false
     @State private var pendingAudioURL: URL? = nil
+    @State private var showExitConfirmation = false
     
     var body: some View {
         NavigationStack {
@@ -31,7 +32,7 @@ struct RecorderView: View {
                     CustomTopBar(
                         title: "Recording",
                         leftIcon: "x",
-                        onLeftTap: { dismiss() }
+                        onLeftTap: { showExitConfirmation = true }
                     )
                     
                     RecorderControl(onFinishRecording: { url in
@@ -42,6 +43,18 @@ struct RecorderView: View {
                 }
             }
             .navigationBarHidden(true)
+            .sheet(isPresented: $showExitConfirmation) {
+                ConfirmationSheet(
+                    isPresented: $showExitConfirmation,
+                    title: "Exit recording?",
+                    message: "Are you sure you want to exit? Your current recording session will be lost.",
+                    confirmButtonText: "Exit",
+                    cancelButtonText: "Continue recording",
+                    onConfirm: {
+                        dismiss()
+                    }
+                )
+            }
             .fullScreenCover(item: Binding(
                 get: { showTranscriptionDetail ? pendingAudioURL : nil },
                 set: { newValue in
@@ -58,6 +71,11 @@ struct RecorderView: View {
                     folders: folders,
                     modelContext: modelContext,
                     onTranscriptionComplete: {
+                        pendingAudioURL = nil
+                        showTranscriptionDetail = false
+                        dismiss()
+                    },
+                    onExit: {
                         pendingAudioURL = nil
                         showTranscriptionDetail = false
                         dismiss()

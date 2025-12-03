@@ -87,10 +87,12 @@ struct CollectionDetailView: View {
             )
         }
         .sheet(isPresented: $deletingFolder) {
-            DeleteFolderConfirmation(
+            ConfirmationSheet(
                 isPresented: $deletingFolder,
-                folderName: folder.name,
-                recordingCount: recordings.count,
+                title: "Delete folder?",
+                message: "Are you sure you want to delete \"\(folder.name)\"? This will remove all \(recordings.count) recording\(recordings.count == 1 ? "" : "s") in this collection.",
+                confirmButtonText: "Delete folder",
+                cancelButtonText: "Cancel",
                 onConfirm: {
                     // Delete all recordings in this folder
                     for recording in recordings {
@@ -119,7 +121,8 @@ struct CollectionDetailView: View {
                 existingRecording: recording,
                 folders: folders,
                 modelContext: modelContext,
-                onTranscriptionComplete: {}
+                onTranscriptionComplete: {},
+                onExit: nil
             )
             .onAppear { showPlusButton.wrappedValue = false }
             .onDisappear { showPlusButton.wrappedValue = true }

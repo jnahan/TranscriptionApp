@@ -1,9 +1,11 @@
 import SwiftUI
 
-struct DeleteFolderConfirmation: View {
+struct ConfirmationSheet: View {
     @Binding var isPresented: Bool
-    let folderName: String
-    let recordingCount: Int
+    let title: String
+    let message: String
+    let confirmButtonText: String
+    let cancelButtonText: String
     let onConfirm: () -> Void
     
     var body: some View {
@@ -15,14 +17,14 @@ struct DeleteFolderConfirmation: View {
                 .padding(.top, 12)
                 .padding(.bottom, 20)
             
-            // Warning icon or title
-            Text("Delete folder?")
+            // Title
+            Text(title)
                 .font(.custom("LibreBaskerville-Regular", size: 24))
                 .foregroundColor(.baseBlack)
                 .padding(.bottom, 16)
             
-            // Warning message
-            Text("Are you sure you want to delete \"\(folderName)\"? This will remove all \(recordingCount) recording\(recordingCount == 1 ? "" : "s") in this collection.")
+            // Message
+            Text(message)
                 .font(.system(size: 16))
                 .foregroundColor(.warmGray600)
                 .multilineTextAlignment(.center)
@@ -35,7 +37,7 @@ struct DeleteFolderConfirmation: View {
                     onConfirm()
                     isPresented = false
                 } label: {
-                    Text("Delete folder")
+                    Text(confirmButtonText)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -48,7 +50,7 @@ struct DeleteFolderConfirmation: View {
                 Button {
                     isPresented = false
                 } label: {
-                    Text("Cancel")
+                    Text(cancelButtonText)
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.baseBlack)
                         .frame(maxWidth: .infinity)
@@ -58,9 +60,10 @@ struct DeleteFolderConfirmation: View {
             }
             .padding(.bottom, 20)
         }
-        .background(Color.warmGray50)
-        .presentationDetents([.height(320)])
+        .background(Color.warmGray100)
+        .presentationDetents([.height(300)])
         .presentationDragIndicator(.hidden)
-        .presentationBackgroundInteraction(.enabled)
+        .presentationBackground(Color.warmGray100)
+        .presentationCornerRadius(24)
     }
 }

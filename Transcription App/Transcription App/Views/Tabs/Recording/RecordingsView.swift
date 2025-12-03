@@ -86,7 +86,8 @@ struct RecordingsView: View {
                     existingRecording: recording,
                     folders: folders,
                     modelContext: modelContext,
-                    onTranscriptionComplete: {}
+                    onTranscriptionComplete: {},
+                    onExit: nil
                 )
                 .onAppear { showPlusButton.wrappedValue = false }
                 .onDisappear { showPlusButton.wrappedValue = true }
