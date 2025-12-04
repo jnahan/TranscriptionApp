@@ -15,6 +15,28 @@ class TranscriptionService {
     
     // MARK: - Public Methods
     
+    // MARK: - Private Helpers
+    
+    /// Cleans WhisperKit timestamp tokens from text (e.g., <|9.84|>, <|en|>, <|transcribe|>)
+    private func cleanTimestampTokens(from text: String) -> String {
+        // Remove all tokens matching pattern <|...|>
+        let pattern = "<\\|[^|]+\\|>"
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+            return text
+        }
+        
+        let range = NSRange(text.startIndex..., in: text)
+        var cleanedText = regex.stringByReplacingMatches(in: text, options: [], range: range, withTemplate: "")
+        
+        // Remove leading dashes and whitespace that might be left after token removal
+        cleanedText = cleanedText.trimmingCharacters(in: .whitespaces)
+        if cleanedText.hasPrefix("-") {
+            cleanedText = String(cleanedText.dropFirst()).trimmingCharacters(in: .whitespaces)
+        }
+        
+        return cleanedText
+    }
+    
     /// Transcribes an audio file and returns the result
     /// - Parameter audioURL: URL of the audio file to transcribe
     /// - Returns: TranscriptionResult with text, language, and segments
@@ -34,24 +56,27 @@ class TranscriptionService {
             throw TranscriptionError.fileNotFound
         }
         
-        // Perform transcription
-        let results = try await whisperKit.transcribe(audioPath: audioURL.path)
+        // Perform transcription with word-level timestamps for better segmentation
+        let options = DecodingOptions(
+            wordTimestamps: true
+        )
+        let results = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
         
         guard let firstResult = results.first else {
             throw TranscriptionError.noResults
         }
         
-        // Convert to our model
+        // Convert to our model and clean timestamp tokens
         let segments = firstResult.segments.map { segment in
             TranscriptionSegment(
                 start: Double(segment.start),
                 end: Double(segment.end),
-                text: segment.text
+                text: cleanTimestampTokens(from: segment.text)
             )
         }
         
         return TranscriptionResult(
-            text: firstResult.text,
+            text: cleanTimestampTokens(from: firstResult.text),
             language: firstResult.language,
             segments: segments
         )

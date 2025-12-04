@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct Transcription_AppApp: App {
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Recording.self, RecordingSegment.self, Collection.self])
         let config = ModelConfiguration(schema: schema)

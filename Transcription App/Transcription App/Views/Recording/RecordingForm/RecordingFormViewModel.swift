@@ -160,6 +160,10 @@ class RecordingFormViewModel: ObservableObject {
                             text: segment.text
                         )
                     }
+                    print("✅ ViewModel: Mapped \(transcribedSegments.count) segments")
+                    for (index, seg) in transcribedSegments.enumerated() {
+                        print("   Segment \(index): \(seg.start)s - \(seg.text.prefix(30))...")
+                    }
                     isTranscribing = false
                 }
             } catch {
@@ -177,18 +181,27 @@ class RecordingFormViewModel: ObservableObject {
     func saveRecording(modelContext: ModelContext, onComplete: () -> Void) {
         guard let url = audioURL else { return }
         
+        // Create recording first (without segments)
         let recording = Recording(
             title: title.trimmed,
             fileURL: url,
             fullText: transcribedText,
             language: transcribedLanguage,
             notes: note,
-            segments: transcribedSegments,
+            segments: [],  // Start with empty array
             collection: selectedCollection,
             recordedAt: Date()
         )
         
+        // Insert the recording into the context
         modelContext.insert(recording)
+        
+        // Now add each segment to the recording AND insert into context
+        for segment in transcribedSegments {
+            modelContext.insert(segment)
+            recording.segments.append(segment)
+        }
+        
         onComplete()
     }
     

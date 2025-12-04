@@ -50,31 +50,51 @@ struct RecordingDetailsView: View {
                 
                 // Scrollable Transcript Area
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 12) {
                         if !recording.segments.isEmpty {
-                            ForEach(recording.segments) { segment in
-                                VStack(alignment: .leading, spacing: 8) {
+                            ForEach(recording.segments.sorted(by: { $0.start < $1.start })) { segment in
+                                VStack(alignment: .leading, spacing: 4) {
                                     Text(TimeFormatter.formatTimestamp(segment.start))
-                                        .font(.system(size: 14))
+                                        .font(.custom("Inter-Regular", size: 14))
                                         .foregroundColor(.warmGray400)
+                                        .monospacedDigit()
                                     
                                     Text(segment.text)
-                                        .font(.system(size: 16))
+                                        .font(.custom("Inter-Regular", size: 16))
                                         .foregroundColor(.baseBlack)
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if let url = recording.resolvedURL {
+                                        // If already playing, just seek. Otherwise load, seek, and play.
+                                        if audioPlayer.isPlaying {
+                                            audioPlayer.seek(toTime: segment.start)
+                                        } else {
+                                            audioPlayer.loadAudio(url: url)
+                                            audioPlayer.seek(toTime: segment.start)
+                                            audioPlayer.play(url)
+                                        }
+                                    }
                                 }
                             }
                         } else {
+                            // Show full text with a single timestamp at the top
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("0:00")
+                                    .font(.custom("Inter-Regular", size: 14))
+                                    .foregroundColor(.warmGray400)
+                                    .monospacedDigit()
+                                
                             Text(recording.fullText)
-                                .font(.system(size: 16))
+                                    .font(.custom("Inter-Regular", size: 16))
                                 .foregroundColor(.baseBlack)
-                                .lineSpacing(4)
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, AppConstants.UI.Spacing.large)
                     .padding(.top, 24)
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 164)
-                    }
+                    .padding(.bottom, 180)
                 }
                 
                 Spacer()
