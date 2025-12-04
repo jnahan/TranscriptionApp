@@ -38,7 +38,7 @@ struct RecordingDetailsView: View {
                         .frame(width: 24, height: 24)
 
                     VStack(spacing: 8) {
-                        Text(relativeDate)
+                        Text(TimeFormatter.relativeDate(from: recording.recordedAt))
                             .font(.system(size: 14))
                             .foregroundColor(.warmGray500)
                         
@@ -55,7 +55,7 @@ struct RecordingDetailsView: View {
                         if !recording.segments.isEmpty {
                             ForEach(recording.segments) { segment in
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text(formatTime(segment.start))
+                                    Text(TimeFormatter.formatTimestamp(segment.start))
                                         .font(.system(size: 14))
                                         .foregroundColor(.warmGray400)
                                     
@@ -184,32 +184,6 @@ struct RecordingDetailsView: View {
         .onDisappear {
             audioPlayer.stop()
         }
-    }
-    
-    private var relativeDate: String {
-        let calendar = Calendar.current
-        let now = Date()
-        
-        if calendar.isDateInToday(recording.recordedAt) {
-            return "Today"
-        } else if calendar.isDateInYesterday(recording.recordedAt) {
-            return "Yesterday"
-        } else {
-            let components = calendar.dateComponents([.day], from: recording.recordedAt, to: now)
-            if let days = components.day, days < 7 {
-                return "\(days)d ago"
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d, yyyy"
-                return formatter.string(from: recording.recordedAt)
-            }
-        }
-    }
-    
-    private func formatTime(_ timeInterval: TimeInterval) -> String {
-        let minutes = Int(timeInterval) / 60
-        let seconds = Int(timeInterval) % 60
-        return String(format: "%d:%02d", minutes, seconds)
     }
 }
 

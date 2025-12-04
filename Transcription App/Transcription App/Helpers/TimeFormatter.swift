@@ -18,6 +18,19 @@ struct TimeFormatter {
         }
     }
     
+    /// Format a timestamp in seconds to MM:SS or HH:MM:SS format
+    static func formatTimestamp(_ timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = Int(timeInterval) / 60 % 60
+        let seconds = Int(timeInterval) % 60
+        
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%d:%02d", minutes, seconds)
+        }
+    }
+    
     /// Convert a date to relative string (e.g., "Today", "Yesterday", "3d ago", "2w ago")
     static func relativeDate(from date: Date) -> String {
         let calendar = Calendar.current
@@ -36,7 +49,7 @@ struct TimeFormatter {
                 return "\(weeks)w ago"
             } else {
                 let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d"
+                formatter.dateFormat = "MMM d, yyyy"
                 return formatter.string(from: date)
             }
         }

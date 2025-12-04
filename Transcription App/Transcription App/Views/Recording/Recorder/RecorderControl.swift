@@ -23,7 +23,7 @@ struct RecorderControl: View {
                 
                 // Timer display and waveform section
                 VStack(spacing: 0) {
-                    Text(formattedTime)
+                    Text(TimeFormatter.formatTimestamp(elapsedTime))
                         .font(.interMedium(size: 14))
                         .foregroundColor(.warmGray700)
                         .padding(.horizontal, 12)
@@ -159,19 +159,6 @@ struct RecorderControl: View {
             #endif
         } message: {
             Text("Please allow microphone access in Settings to record audio.")
-        }
-    }
-    
-    // MARK: - Computed Properties
-    private var formattedTime: String {
-        let hours = Int(elapsedTime) / 3600
-        let minutes = Int(elapsedTime) / 60 % 60
-        let seconds = Int(elapsedTime) % 60
-        
-        if hours > 0 {
-            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            return String(format: "%02d:%02d", minutes, seconds)
         }
     }
     

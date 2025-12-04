@@ -24,14 +24,14 @@ struct AudioPlayerControls: View {
                 }
                 
                 HStack {
-                    Text(formatTime(audioPlayer.currentTime))
+                    Text(TimeFormatter.formatTimestamp(audioPlayer.currentTime))
                         .font(.system(size: 12))
                         .foregroundColor(.warmGray500)
                         .monospacedDigit()
                     
                     Spacer()
                     
-                    Text(formatTime(audioPlayer.duration))
+                    Text(TimeFormatter.formatTimestamp(audioPlayer.duration))
                         .font(.system(size: 12))
                         .foregroundColor(.warmGray500)
                         .monospacedDigit()
@@ -134,11 +134,5 @@ struct AudioPlayerControls: View {
             .padding(.bottom, 28)
         }
         .background(Color.warmGray100)
-    }
-    
-    private func formatTime(_ timeInterval: TimeInterval) -> String {
-        let minutes = Int(timeInterval) / 60
-        let seconds = Int(timeInterval) % 60
-        return String(format: "%d:%02d", minutes, seconds)
     }
 }
