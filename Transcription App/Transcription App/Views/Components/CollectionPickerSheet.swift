@@ -1,14 +1,14 @@
 import SwiftUI
 import SwiftData
 
-struct FolderPickerView: View {
-    let folders: [Folder]
-    @Binding var selectedFolder: Folder?
+struct CollectionPickerView: View {
+    let collections: [Collection]
+    @Binding var selectedCollection: Collection?
     let modelContext: ModelContext
     @Binding var isPresented: Bool
     
-    @State private var showCreateFolder = false
-    @State private var newFolderName = ""
+    @State private var showCreateCollection = false
+    @State private var newCollectionName = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -20,16 +20,16 @@ struct FolderPickerView: View {
                 .padding(.bottom, 20)
             
             // Title
-            Text("Choose a folder")
+            Text("Choose a collection")
                 .font(.custom("LibreBaskerville-Regular", size: 24))
                 .foregroundColor(.baseBlack)
                 .padding(.bottom, 32)
             
-            // Folders list
+            // Collections list
             VStack(spacing: 0) {
-                // Create folder button
+                // Create collection button
                 Button {
-                    showCreateFolder = true
+                    showCreateCollection = true
                 } label: {
                     HStack(spacing: 16) {
                         ZStack {
@@ -44,7 +44,7 @@ struct FolderPickerView: View {
                                 .foregroundColor(.accent)
                         }
                         
-                        Text("Create folder")
+                        Text("Create collection")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.baseBlack)
                         
@@ -55,14 +55,14 @@ struct FolderPickerView: View {
                 }
                 .buttonStyle(.plain)
                 
-                // Existing folders
-                ForEach(folders) { folder in
+                // Existing collections
+                ForEach(collections) { collection in
                     Button {
-                        // Toggle: if clicking the same folder, deselect it
-                        if selectedFolder?.id == folder.id {
-                            selectedFolder = nil
+                        // Toggle: if clicking the same collection, deselect it
+                        if selectedCollection?.id == collection.id {
+                            selectedCollection = nil
                         } else {
-                            selectedFolder = folder
+                            selectedCollection = collection
                         }
                     } label: {
                         HStack(spacing: 16) {
@@ -78,13 +78,13 @@ struct FolderPickerView: View {
                                     .foregroundColor(.accent)
                             }
                             
-                            Text(folder.name)
+                            Text(collection.name)
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.baseBlack)
                             
                             Spacer()
                             
-                            if selectedFolder?.id == folder.id {
+                            if selectedCollection?.id == collection.id {
                                 Image("check")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -114,21 +114,21 @@ struct FolderPickerView: View {
         .background(Color.warmGray50)
         .presentationDetents([.height(calculateHeight())])
         .presentationDragIndicator(.hidden)
-        .sheet(isPresented: $showCreateFolder) {
+        .sheet(isPresented: $showCreateCollection) {
             CollectionFormSheet(
-                isPresented: $showCreateFolder,
-                folderName: $newFolderName,
+                isPresented: $showCreateCollection,
+                collectionName: $newCollectionName,
                 isEditing: false,
                 onSave: {
-                    if !newFolderName.isEmpty {
-                        let newFolder = Folder(name: newFolderName)
-                        modelContext.insert(newFolder)
-                        selectedFolder = newFolder
-                        newFolderName = ""
+                    if !newCollectionName.isEmpty {
+                        let newCollection = Collection(name: newCollectionName)
+                        modelContext.insert(newCollection)
+                        selectedCollection = newCollection
+                        newCollectionName = ""
                     }
                 },
-                existingFolders: folders,
-                currentFolder: nil
+                existingCollections: collections,
+                currentCollection: nil
             )
         }
     }
@@ -136,7 +136,7 @@ struct FolderPickerView: View {
     private func calculateHeight() -> CGFloat {
         let baseHeight: CGFloat = 179
         let rowHeight: CGFloat = 64
-        let numberOfRows = CGFloat(folders.count + 1)
+        let numberOfRows = CGFloat(collections.count + 1)
         let contentHeight = baseHeight + (rowHeight * numberOfRows)
         
         return min(contentHeight, 480)

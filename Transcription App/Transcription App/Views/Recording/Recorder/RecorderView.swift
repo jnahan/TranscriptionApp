@@ -3,7 +3,7 @@ import SwiftData
 
 struct RecorderView: View {
     @Environment(\.dismiss) private var dismiss
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
     @Environment(\.modelContext) private var modelContext
     
     @State private var showTranscriptionDetail = false
@@ -68,7 +68,7 @@ struct RecorderView: View {
                     isPresented: $showTranscriptionDetail,
                     audioURL: audioURL,
                     existingRecording: nil,
-                    folders: folders,
+                    collections: collections,
                     modelContext: modelContext,
                     onTranscriptionComplete: {
                         pendingAudioURL = nil

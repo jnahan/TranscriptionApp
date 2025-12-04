@@ -1,10 +1,10 @@
 import SwiftData
 import Foundation
 
-/// Represents a folder for organizing recordings
-/// Users can create folders and assign recordings to them for better organization
+/// Represents a collection for organizing recordings
+/// Users can create collections and assign recordings to them for better organization
 @Model
-class Folder {
+class Collection {
     // MARK: - Identifiers
     @Attribute(.unique) var id: UUID
     
@@ -14,7 +14,7 @@ class Folder {
     
     // MARK: - Relationships
     @Relationship(deleteRule: .cascade)
-    var recordings: [Recording] = []    // All recordings in this folder
+    var recordings: [Recording] = []    // All recordings in this collection
     
     init(name: String) {
         self.id = UUID()

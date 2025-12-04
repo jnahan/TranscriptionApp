@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct Transcription_AppApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Recording.self, RecordingSegment.self, Folder.self])
+        let schema = Schema([Recording.self, RecordingSegment.self, Collection.self])
         let config = ModelConfiguration(schema: schema)
         do {
             return try ModelContainer(for: schema, configurations: [config])

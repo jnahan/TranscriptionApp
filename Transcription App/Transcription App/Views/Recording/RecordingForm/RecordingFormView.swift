@@ -6,18 +6,18 @@ struct RecordingFormView: View {
     @Binding var isPresented: Bool
     let audioURL: URL?
     let existingRecording: Recording?
-    let folders: [Folder]
+    let collections: [Collection]
     let modelContext: ModelContext
     let onTranscriptionComplete: () -> Void
     let onExit: (() -> Void)?
     
     @State private var title: String = ""
-    @State private var selectedFolder: Folder? = nil
+    @State private var selectedCollection: Collection? = nil
     @State private var note: String = ""
     @State private var transcribedText: String = ""
     @State private var transcribedLanguage: String = ""
     @State private var transcribedSegments: [RecordingSegment] = []
-    @State private var showFolderPicker = false
+    @State private var showCollectionPicker = false
     @State private var isTranscribing = false
     @State private var showExitConfirmation = false
     
@@ -122,17 +122,17 @@ struct RecordingFormView: View {
                             )
                         }
                         
-                        // Folder field
+                        // Collection field
                         VStack(alignment: .leading, spacing: 8) {
-                            InputLabel(text: "Folder")
+                            InputLabel(text: "Collection")
                             InputField(
                                 text: Binding(
-                                    get: { selectedFolder?.name ?? "" },
+                                    get: { selectedCollection?.name ?? "" },
                                     set: { _ in }
                                 ),
-                                placeholder: "Select folder",
+                                placeholder: "Select collection",
                                 showChevron: true,
-                                onTap: { showFolderPicker = true }
+                                onTap: { showCollectionPicker = true }
                             )
                         }
                         
@@ -180,12 +180,12 @@ struct RecordingFormView: View {
                 .padding(.bottom, 32)
             }
         }
-        .sheet(isPresented: $showFolderPicker) {
-            FolderPickerView(
-                folders: folders,
-                selectedFolder: $selectedFolder,
+        .sheet(isPresented: $showCollectionPicker) {
+            CollectionPickerView(
+                collections: collections,
+                selectedCollection: $selectedCollection,
                 modelContext: modelContext,
-                isPresented: $showFolderPicker
+                isPresented: $showCollectionPicker
             )
         }
         .sheet(isPresented: $showExitConfirmation) {
@@ -209,7 +209,7 @@ struct RecordingFormView: View {
             if let recording = existingRecording {
                 // Pre-populate for editing
                 title = recording.title
-                selectedFolder = recording.folder
+                selectedCollection = recording.collection
                 note = recording.notes ?? ""
                 transcribedText = recording.fullText
                 transcribedLanguage = recording.language
@@ -320,7 +320,7 @@ struct RecordingFormView: View {
             language: transcribedLanguage,
             notes: note,
             segments: transcribedSegments,
-            folder: selectedFolder,
+            collection: selectedCollection,
             recordedAt: Date()
         )
         
@@ -334,7 +334,7 @@ struct RecordingFormView: View {
         guard let recording = existingRecording else { return }
         
         recording.title = title.trimmed
-        recording.folder = selectedFolder
+        recording.collection = selectedCollection
         recording.notes = note
         
         isPresented = false

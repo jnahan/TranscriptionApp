@@ -5,22 +5,22 @@ struct CollectionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var allRecordings: [Recording]
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
     
     @StateObject private var viewModel = RecordingListViewModel()
     
-    let folder: Folder
+    let collection: Collection
     var showPlusButton: Binding<Bool>
     
     @State private var searchText = ""
     @State private var selectedRecording: Recording?
     @State private var showMenu = false
-    @State private var editingFolder = false
-    @State private var editFolderName = ""
-    @State private var deletingFolder = false
+    @State private var editingCollection = false
+    @State private var editCollectionName = ""
+    @State private var deletingCollection = false
     
     private var recordings: [Recording] {
-        allRecordings.filter { $0.folder?.id == folder.id }
+        allRecordings.filter { $0.collection?.id == collection.id }
     }
     
     private var filteredRecordings: [Recording] {
@@ -37,7 +37,7 @@ struct CollectionDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             CustomTopBar(
-                title: folder.name,
+                title: collection.name,
                 leftIcon: "caret-left",
                 rightIcon: "dots-three",
                 onLeftTap: { dismiss() },
@@ -65,45 +65,45 @@ struct CollectionDetailView: View {
         .toolbar(.hidden, for: .tabBar)
         .confirmationDialog("", isPresented: $showMenu, titleVisibility: .hidden) {
             Button("Rename") {
-                editingFolder = true
-                editFolderName = folder.name
+                editingCollection = true
+                editCollectionName = collection.name
             }
             
             Button("Delete", role: .destructive) {
-                deletingFolder = true
+                deletingCollection = true
             }
             
             Button("Cancel", role: .cancel) {}
         }
-        .sheet(isPresented: $editingFolder) {
+        .sheet(isPresented: $editingCollection) {
             CollectionFormSheet(
-                isPresented: $editingFolder,
-                folderName: $editFolderName,
+                isPresented: $editingCollection,
+                collectionName: $editCollectionName,
                 isEditing: true,
                 onSave: {
-                    folder.name = editFolderName
-                    editingFolder = false
+                    collection.name = editCollectionName
+                    editingCollection = false
                 },
-                existingFolders: folders,
-                currentFolder: folder
+                existingCollections: collections,
+                currentCollection: collection
             )
         }
-        .sheet(isPresented: $deletingFolder) {
+        .sheet(isPresented: $deletingCollection) {
             ConfirmationSheet(
-                isPresented: $deletingFolder,
-                title: "Delete folder?",
-                message: "Are you sure you want to delete \"\(folder.name)\"? This will remove all \(recordings.count) recording\(recordings.count == 1 ? "" : "s") in this collection.",
-                confirmButtonText: "Delete folder",
+                isPresented: $deletingCollection,
+                title: "Delete collection?",
+                message: "Are you sure you want to delete \"\(collection.name)\"? This will remove all \(recordings.count) recording\(recordings.count == 1 ? "" : "s") in this collection.",
+                confirmButtonText: "Delete collection",
                 cancelButtonText: "Cancel",
                 onConfirm: {
-                    // Delete all recordings in this folder
+                    // Delete all recordings in this collection
                     for recording in recordings {
                         modelContext.delete(recording)
                     }
                     
-                    // Delete the folder
-                    modelContext.delete(folder)
-                    deletingFolder = false
+                    // Delete the collection
+                    modelContext.delete(collection)
+                    deletingCollection = false
                     dismiss()
                 }
             )
@@ -121,7 +121,7 @@ struct CollectionDetailView: View {
                 ),
                 audioURL: nil,
                 existingRecording: recording,
-                folders: folders,
+                collections: collections,
                 modelContext: modelContext,
                 onTranscriptionComplete: {},
                 onExit: nil
@@ -138,7 +138,7 @@ struct CollectionDetailView: View {
         Group {
             if recordings.isEmpty {
                 VStack(spacing: 16) {
-                    Text(folder.name + " is empty")
+                    Text(collection.name + " is empty")
                         .font(.libreMedium(size: 24))
                 }
                .frame(maxWidth: 280)

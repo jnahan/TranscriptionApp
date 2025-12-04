@@ -14,7 +14,7 @@ extension EnvironmentValues {
 
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
 
     
     @State private var selectedTab = 0
@@ -136,7 +136,7 @@ struct MainTabView: View {
                 ),
                 audioURL: audioURL,
                 existingRecording: nil,
-                folders: folders,
+                collections: collections,
                 modelContext: modelContext,
                 onTranscriptionComplete: {
                     pendingAudioURL = nil

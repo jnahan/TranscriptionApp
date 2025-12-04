@@ -26,8 +26,8 @@ class Recording {
     var notes: String
     
     // MARK: - Organization
-    @Relationship(inverse: \Folder.recordings)
-    var folder: Folder?
+    @Relationship(inverse: \Collection.recordings)
+    var collection: Collection?
     
     // MARK: - Computed Properties
     var resolvedURL: URL? {
@@ -41,7 +41,7 @@ class Recording {
         language: String,
         notes: String = "",
         segments: [RecordingSegment] = [],
-        folder: Folder? = nil,
+        collection: Collection? = nil,
         recordedAt: Date
     ) {
         self.id = UUID()
@@ -51,7 +51,7 @@ class Recording {
         self.language = language
         self.notes = notes
         self.segments = segments
-        self.folder = folder
+        self.collection = collection
         self.recordedAt = recordedAt
     }
 }

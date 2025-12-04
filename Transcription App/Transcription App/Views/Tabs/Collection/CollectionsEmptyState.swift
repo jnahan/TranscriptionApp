@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CollectionsEmptyState: View {
-    @Binding var showCreateFolder: Bool
+    @Binding var showCreateCollection: Bool
     
     var body: some View {
         VStack {
@@ -14,7 +14,7 @@ struct CollectionsEmptyState: View {
                     .foregroundColor(.black)
                 
                 Button {
-                    showCreateFolder = true
+                    showCreateCollection = true
                 } label: {
                     HStack(spacing: 8) {
                         Image("folder-plus")

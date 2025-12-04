@@ -3,19 +3,19 @@ import SwiftData
 
 struct CollectionFormSheet: View {
     @Binding var isPresented: Bool
-    @Binding var folderName: String
+    @Binding var collectionName: String
     let isEditing: Bool
     let onSave: () -> Void
-    let existingFolders: [Folder]
-    let currentFolder: Folder?
+    let existingCollections: [Collection]
+    let currentCollection: Collection?
     
     @FocusState private var isTextFieldFocused: Bool
     
-    @State private var folderNameError: String? = nil
+    @State private var collectionNameError: String? = nil
     @State private var hasAttemptedSubmit = false
     
     private var isFormValid: Bool {
-        validateFolderName()
+        validateCollectionName()
     }
     
     var body: some View {
@@ -28,27 +28,27 @@ struct CollectionFormSheet: View {
                 .padding(.bottom, 20)
             
             // Title
-            Text(isEditing ? "Rename folder" : "Create folder")
+            Text(isEditing ? "Rename collection" : "Create collection")
                 .font(.custom("LibreBaskerville-Regular", size: 24))
                 .foregroundColor(.baseBlack)
                 .padding(.bottom, 32)
             
             // Text field
             VStack(alignment: .leading, spacing: 8) {
-                InputLabel(text: "Folder name")
+                InputLabel(text: "Collection name")
                     .padding(.horizontal, 24)
                 
                 InputField(
-                    text: $folderName,
-                    placeholder: "Folder name",
-                    error: folderNameError
+                    text: $collectionName,
+                    placeholder: "Collection name",
+                    error: collectionNameError
                 )
                 .padding(.horizontal, 24)
                 .focused($isTextFieldFocused)
                 .submitLabel(.done)
                 .onSubmit {
                     hasAttemptedSubmit = true
-                    validateFolderNameWithError()
+                    validateCollectionNameWithError()
                     if isFormValid {
                         onSave()
                         isPresented = false
@@ -60,13 +60,13 @@ struct CollectionFormSheet: View {
             // Save button
             Button {
                 hasAttemptedSubmit = true
-                validateFolderNameWithError()
+                validateCollectionNameWithError()
                 if isFormValid {
                     onSave()
                     isPresented = false
                 }
             } label: {
-                Text(isEditing ? "Save changes" : "Create folder")
+                Text(isEditing ? "Save changes" : "Create collection")
             }
             .buttonStyle(AppButtonStyle())
         }
@@ -86,8 +86,8 @@ struct CollectionFormSheet: View {
     
     // MARK: - Validation Functions
     
-    private func validateFolderName() -> Bool {
-        let trimmed = folderName.trimmed
+    private func validateCollectionName() -> Bool {
+        let trimmed = collectionName.trimmed
         
         if trimmed.isEmpty {
             return false
@@ -97,54 +97,54 @@ struct CollectionFormSheet: View {
             return false
         }
         
-        // Get existing names, excluding current folder if editing
-        let existingNames = existingFolders.compactMap { folder -> String? in
-            if isEditing, let currentFolder = currentFolder, folder.id == currentFolder.id {
+        // Get existing names, excluding current collection if editing
+        let existingNames = existingCollections.compactMap { collection -> String? in
+            if isEditing, let currentCollection = currentCollection, collection.id == currentCollection.id {
                 return nil
             }
-            return folder.name
+            return collection.name
         }
         
         return ValidationHelper.validateUnique(trimmed, against: existingNames, fieldName: "collection") == nil
     }
     
     @discardableResult
-    private func validateFolderNameWithError() -> Bool {
+    private func validateCollectionNameWithError() -> Bool {
         if hasAttemptedSubmit {
-            let trimmed = folderName.trimmed
+            let trimmed = collectionName.trimmed
             
             // Validate not empty
             if let error = ValidationHelper.validateNotEmpty(trimmed, fieldName: "Collection name") {
-                folderNameError = error
+                collectionNameError = error
                 return false
             }
             
             // Validate length
             if let error = ValidationHelper.validateLength(trimmed, max: AppConstants.Validation.maxCollectionNameLength, fieldName: "Collection name") {
-                folderNameError = error
+                collectionNameError = error
                 return false
             }
             
-            // Get existing names, excluding current folder if editing
-            let existingNames = existingFolders.compactMap { folder -> String? in
-                if isEditing, let currentFolder = currentFolder, folder.id == currentFolder.id {
+            // Get existing names, excluding current collection if editing
+            let existingNames = existingCollections.compactMap { collection -> String? in
+                if isEditing, let currentCollection = currentCollection, collection.id == currentCollection.id {
                     return nil
                 }
-                return folder.name
+                return collection.name
             }
             
             // Validate uniqueness
             if let error = ValidationHelper.validateUnique(trimmed, against: existingNames, fieldName: "collection") {
-                folderNameError = error
+                collectionNameError = error
                 return false
             }
             
-            folderNameError = nil
+            collectionNameError = nil
             return true
         } else {
             // Don't show errors until submit is attempted
-            folderNameError = nil
-            return validateFolderName()
+            collectionNameError = nil
+            return validateCollectionName()
         }
     }
 }

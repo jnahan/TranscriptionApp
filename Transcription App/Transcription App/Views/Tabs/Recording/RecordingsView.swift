@@ -5,7 +5,7 @@ struct RecordingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.showPlusButton) private var showPlusButton
     @Query private var recordings: [Recording]
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
     
     @StateObject private var viewModel = RecordingListViewModel()
     
@@ -84,7 +84,7 @@ struct RecordingsView: View {
                     ),
                     audioURL: nil,
                     existingRecording: recording,
-                    folders: folders,
+                    collections: collections,
                     modelContext: modelContext,
                     onTranscriptionComplete: {},
                     onExit: nil
@@ -152,5 +152,5 @@ struct RecordingsView: View {
 
 #Preview {
     RecordingsView()
-        .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)
+        .modelContainer(for: [Recording.self, RecordingSegment.self, Collection.self], inMemory: true)
 }

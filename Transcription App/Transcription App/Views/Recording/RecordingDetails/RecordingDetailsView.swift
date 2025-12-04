@@ -7,7 +7,7 @@ struct RecordingDetailsView: View {
     @StateObject private var audioPlayer = AudioPlayerController()
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
     
     @State private var showShareSheet = false
     @State private var showNotePopup = false
@@ -156,7 +156,7 @@ struct RecordingDetailsView: View {
                 isPresented: $showEditRecording,
                 audioURL: nil,
                 existingRecording: recording,
-                folders: folders,
+                collections: collections,
                 modelContext: modelContext,
                 onTranscriptionComplete: {},
                 onExit: nil

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CollectionsRow: View {
-    let folder: Folder
+    let collection: Collection
     let recordingCount: Int
     let onRename: () -> Void
     let onDelete: () -> Void
@@ -10,7 +10,7 @@ struct CollectionsRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Folder Icon
+            // Collection Icon
             ZStack {
                 Circle()
                     .fill(Color.accentLight)
@@ -23,9 +23,9 @@ struct CollectionsRow: View {
                     .foregroundColor(.accent)
             }
             
-            // Folder Info
+            // Collection Info
             VStack(alignment: .leading, spacing: 4) {
-                Text(folder.name)
+                Text(collection.name)
                     .font(.interMedium(size: 16))
                     .foregroundColor(.baseBlack)
                 

@@ -4,23 +4,23 @@ import SwiftData
 struct CollectionsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.showPlusButton) private var showPlusButton
-    @Query private var folders: [Folder]
+    @Query private var collections: [Collection]
     @Query private var recordings: [Recording]
     
-    @State private var showCreateFolder = false
-    @State private var newFolderName = ""
+    @State private var showCreateCollection = false
+    @State private var newCollectionName = ""
     @State private var searchText = ""
-    @State private var selectedFolder: Folder?
+    @State private var selectedCollection: Collection?
     @State private var showSettings = false
-    @State private var editingFolder: Folder?
-    @State private var editFolderName = ""
-    @State private var deletingFolder: Folder?
+    @State private var editingCollection: Collection?
+    @State private var editCollectionName = ""
+    @State private var deletingCollection: Collection?
     
-    private var filteredFolders: [Folder] {
+    private var filteredCollections: [Collection] {
         if searchText.isEmpty {
-            return folders
+            return collections
         } else {
-            return folders.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return collections.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
@@ -28,7 +28,7 @@ struct CollectionsView: View {
         NavigationStack {
             ZStack {
                 // Gradient at absolute top of screen (when empty)
-                if folders.isEmpty {
+                if collections.isEmpty {
                     VStack(spacing: 0) {
                         Image("radial-gradient")
                             .resizable()
@@ -47,31 +47,31 @@ struct CollectionsView: View {
                     CustomTopBar(
                         title: "Collections",
                         rightIcon: "folder-plus",
-                        onRightTap: { showCreateFolder = true }
+                        onRightTap: { showCreateCollection = true }
                     )
                     
-                    if !folders.isEmpty {
+                    if !collections.isEmpty {
                         SearchBar(text: $searchText, placeholder: "Search collections...")
                             .padding(.horizontal, 20)
                     }
                     
-                    if folders.isEmpty {
-                        CollectionsEmptyState(showCreateFolder: $showCreateFolder)
+                    if collections.isEmpty {
+                        CollectionsEmptyState(showCreateCollection: $showCreateCollection)
                     } else {
                         List {
-                            ForEach(filteredFolders) { folder in
+                            ForEach(filteredCollections) { collection in
                                 Button {
-                                    selectedFolder = folder
+                                    selectedCollection = collection
                                 } label: {
                                     CollectionsRow(
-                                        folder: folder,
-                                        recordingCount: recordingCount(for: folder),
+                                        collection: collection,
+                                        recordingCount: recordingCount(for: collection),
                                         onRename: {
-                                            editingFolder = folder
-                                            editFolderName = folder.name
+                                            editingCollection = collection
+                                            editCollectionName = collection.name
                                         },
                                         onDelete: {
-                                            deletingFolder = folder
+                                            deletingCollection = collection
                                         }
                                     )
                                 }
@@ -79,7 +79,7 @@ struct CollectionsView: View {
                                 .listRowBackground(Color.warmGray50)
                                 .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
                             }
-                            .onDelete(perform: deleteFolders)
+                            .onDelete(perform: deleteCollections)
                         }
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
@@ -89,66 +89,66 @@ struct CollectionsView: View {
             }
             .background(Color.warmGray50.ignoresSafeArea())
             .navigationBarHidden(true)
-            .navigationDestination(item: $selectedFolder) { folder in
-                CollectionDetailView(folder: folder, showPlusButton: showPlusButton)
+            .navigationDestination(item: $selectedCollection) { collection in
+                CollectionDetailView(collection: collection, showPlusButton: showPlusButton)
                     .onAppear { showPlusButton.wrappedValue = false }
                     .onDisappear { showPlusButton.wrappedValue = true }
             }
-            .sheet(isPresented: $showCreateFolder) {
+            .sheet(isPresented: $showCreateCollection) {
                 CollectionFormSheet(
-                    isPresented: $showCreateFolder,
-                    folderName: $newFolderName,
+                    isPresented: $showCreateCollection,
+                    collectionName: $newCollectionName,
                     isEditing: false,
-                    onSave: createFolder,
-                    existingFolders: folders,
-                    currentFolder: nil
+                    onSave: createCollection,
+                    existingCollections: collections,
+                    currentCollection: nil
                 )
             }
 
             .sheet(isPresented: Binding(
-                get: { editingFolder != nil },
-                set: { if !$0 { editingFolder = nil } }
+                get: { editingCollection != nil },
+                set: { if !$0 { editingCollection = nil } }
             )) {
                 CollectionFormSheet(
                     isPresented: Binding(
-                        get: { editingFolder != nil },
-                        set: { if !$0 { editingFolder = nil } }
+                        get: { editingCollection != nil },
+                        set: { if !$0 { editingCollection = nil } }
                     ),
-                    folderName: $editFolderName,
+                    collectionName: $editCollectionName,
                     isEditing: true,
                     onSave: {
-                        editingFolder?.name = editFolderName
-                        editingFolder = nil
+                        editingCollection?.name = editCollectionName
+                        editingCollection = nil
                     },
-                    existingFolders: folders,
-                    currentFolder: editingFolder
+                    existingCollections: collections,
+                    currentCollection: editingCollection
                 )
             }
             .sheet(isPresented: Binding(
-                get: { deletingFolder != nil },
-                set: { if !$0 { deletingFolder = nil } }
+                get: { deletingCollection != nil },
+                set: { if !$0 { deletingCollection = nil } }
             )) {
-                if let folder = deletingFolder {
-                    let folderRecordingCount = recordings.filter { $0.folder?.id == folder.id }.count
+                if let collection = deletingCollection {
+                    let collectionRecordingCount = recordings.filter { $0.collection?.id == collection.id }.count
                     ConfirmationSheet(
                         isPresented: Binding(
-                            get: { deletingFolder != nil },
-                            set: { if !$0 { deletingFolder = nil } }
+                            get: { deletingCollection != nil },
+                            set: { if !$0 { deletingCollection = nil } }
                         ),
-                        title: "Delete folder?",
-                        message: "Are you sure you want to delete \"\(folder.name)\"? This will remove all \(folderRecordingCount) recording\(folderRecordingCount == 1 ? "" : "s") in this collection.",
-                        confirmButtonText: "Delete folder",
+                        title: "Delete collection?",
+                        message: "Are you sure you want to delete \"\(collection.name)\"? This will remove all \(collectionRecordingCount) recording\(collectionRecordingCount == 1 ? "" : "s") in this collection.",
+                        confirmButtonText: "Delete collection",
                         cancelButtonText: "Cancel",
                         onConfirm: {
-                            // Delete all recordings in this folder
-                            let recordingsInFolder = recordings.filter { $0.folder?.id == folder.id }
-                            for recording in recordingsInFolder {
+                            // Delete all recordings in this collection
+                            let recordingsInCollection = recordings.filter { $0.collection?.id == collection.id }
+                            for recording in recordingsInCollection {
                                 modelContext.delete(recording)
                             }
                             
-                            // Now delete the folder
-                            modelContext.delete(folder)
-                            deletingFolder = nil
+                            // Now delete the collection
+                            modelContext.delete(collection)
+                            deletingCollection = nil
                         }
                     )
                 }
@@ -156,28 +156,28 @@ struct CollectionsView: View {
         }
     }
     
-    private func recordingCount(for folder: Folder) -> Int {
-        recordings.filter { $0.folder?.id == folder.id }.count
+    private func recordingCount(for collection: Collection) -> Int {
+        recordings.filter { $0.collection?.id == collection.id }.count
     }
     
-    private func deleteFolders(offsets: IndexSet) {
-        // Get the first folder from offsets and show confirmation
+    private func deleteCollections(offsets: IndexSet) {
+        // Get the first collection from offsets and show confirmation
         if let index = offsets.first {
-            deletingFolder = filteredFolders[index]
+            deletingCollection = filteredCollections[index]
         }
     }
     
-    private func createFolder() {
-        guard !newFolderName.isEmpty else { return }
+    private func createCollection() {
+        guard !newCollectionName.isEmpty else { return }
         
-        let folder = Folder(name: newFolderName)
-        modelContext.insert(folder)
-        newFolderName = ""
-        showCreateFolder = false
+        let collection = Collection(name: newCollectionName)
+        modelContext.insert(collection)
+        newCollectionName = ""
+        showCreateCollection = false
     }
 }
 
 #Preview {
     CollectionsView()
-        .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)
+        .modelContainer(for: [Recording.self, RecordingSegment.self, Collection.self], inMemory: true)
 }
