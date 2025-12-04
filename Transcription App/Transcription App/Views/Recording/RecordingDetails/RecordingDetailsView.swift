@@ -53,15 +53,19 @@ struct RecordingDetailsView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         if !recording.segments.isEmpty {
                             ForEach(recording.segments.sorted(by: { $0.start < $1.start })) { segment in
+                                let isActive = audioPlayer.isPlaying && 
+                                             audioPlayer.currentTime >= segment.start && 
+                                             audioPlayer.currentTime < segment.end
+                                
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(TimeFormatter.formatTimestamp(segment.start))
                                         .font(.custom("Inter-Regular", size: 14))
                                         .foregroundColor(.warmGray400)
                                         .monospacedDigit()
                                     
-                                    Text(segment.text)
+                                    Text(attributedText(for: segment.text, isActive: isActive))
                                         .font(.custom("Inter-Regular", size: 16))
-                                        .foregroundColor(.baseBlack)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -191,5 +195,24 @@ struct RecordingDetailsView: View {
         .onDisappear {
             audioPlayer.stop()
         }
+    }
+    
+    private func attributedText(for text: String, isActive: Bool) -> AttributedString {
+        var attributedString = AttributedString(text)
+        
+        // Set font and color using attribute container
+        var container = AttributeContainer()
+        container.font = UIFont(name: "Inter-Regular", size: 16) ?? .systemFont(ofSize: 16)
+        container.foregroundColor = UIColor.black
+        
+        if isActive {
+            container.backgroundColor = UIColor(Color.accentLight)
+        }
+        
+        // Apply attributes to entire string
+        let range = attributedString.startIndex..<attributedString.endIndex
+        attributedString[range].mergeAttributes(container)
+        
+        return attributedString
     }
 }
