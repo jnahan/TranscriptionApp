@@ -28,10 +28,6 @@ struct RecordingFormView: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    // Validation constants
-    private let maxTitleLength = 50
-    private let maxNoteLength = 200
-    
     private var isEditing: Bool {
         existingRecording != nil
     }
@@ -229,26 +225,33 @@ struct RecordingFormView: View {
     // MARK: - Validation Functions
     
     private func validateTitle() -> Bool {
-        return !title.isEmpty && title.count <= maxTitleLength
+        let trimmed = title.trimmed
+        return !trimmed.isEmpty && trimmed.count <= AppConstants.Validation.maxTitleLength
     }
     
     private func validateNote() -> Bool {
-        return note.count <= maxNoteLength
+        return note.count <= AppConstants.Validation.maxNoteLength
     }
     
     @discardableResult
     private func validateTitleWithError() -> Bool {
         if hasAttemptedSubmit {
-            if title.isEmpty {
-                titleError = "Title is required"
+            let trimmed = title.trimmed
+            
+            // Validate not empty
+            if let error = ValidationHelper.validateNotEmpty(trimmed, fieldName: "Title") {
+                titleError = error
                 return false
-            } else if title.count > maxTitleLength {
-                titleError = "Title must be less than \(maxTitleLength) characters"
-                return false
-            } else {
-                titleError = nil
-                return true
             }
+            
+            // Validate length
+            if let error = ValidationHelper.validateLength(trimmed, max: AppConstants.Validation.maxTitleLength, fieldName: "Title") {
+                titleError = error
+                return false
+            }
+            
+            titleError = nil
+            return true
         } else {
             // Don't show errors until submit is attempted
             titleError = nil
@@ -259,13 +262,13 @@ struct RecordingFormView: View {
     @discardableResult
     private func validateNoteWithError() -> Bool {
         if hasAttemptedSubmit {
-            if note.count > maxNoteLength {
-                noteError = "Note must be less than \(maxNoteLength) characters"
+            if let error = ValidationHelper.validateLength(note, max: AppConstants.Validation.maxNoteLength, fieldName: "Note") {
+                noteError = error
                 return false
-            } else {
-                noteError = nil
-                return true
             }
+            
+            noteError = nil
+            return true
         } else {
             // Don't show errors until submit is attempted
             noteError = nil
@@ -311,7 +314,7 @@ struct RecordingFormView: View {
         guard let url = audioURL else { return }
         
         let recording = Recording(
-            title: title,
+            title: title.trimmed,
             fileURL: url,
             fullText: transcribedText,
             language: transcribedLanguage,
@@ -330,7 +333,7 @@ struct RecordingFormView: View {
     private func saveEdit() {
         guard let recording = existingRecording else { return }
         
-        recording.title = title
+        recording.title = title.trimmed
         recording.folder = selectedFolder
         recording.notes = note
         

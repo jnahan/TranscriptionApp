@@ -1,5 +1,4 @@
 import SwiftUI
-import AVFoundation
 
 /// Reusable row component for displaying a recording with menu actions
 struct RecordingRow: View {
@@ -95,52 +94,22 @@ struct RecordingRow: View {
     
     // MARK: - Computed Properties
     private var formattedDuration: String {
-        let hours = Int(duration) / 3600
-        let minutes = Int(duration) / 60 % 60
-        
-        if hours > 0 {
-            return "\(hours)hr \(minutes)m"
-        } else if minutes > 0 {
-            return "\(minutes)m"
-        } else {
-            let seconds = Int(duration) % 60
-            return "\(seconds)s"
-        }
+        TimeFormatter.formatDuration(duration)
     }
     
     private var relativeDate: String {
-        let calendar = Calendar.current
-        let now = Date()
-        
-        if calendar.isDateInToday(recording.recordedAt) {
-            return "Today"
-        } else if calendar.isDateInYesterday(recording.recordedAt) {
-            return "Yesterday"
-        } else {
-            let components = calendar.dateComponents([.day], from: recording.recordedAt, to: now)
-            if let days = components.day, days < 7 {
-                return "\(days)d ago"
-            } else if let days = components.day, days < 30 {
-                let weeks = days / 7
-                return "\(weeks)w ago"
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d"
-                return formatter.string(from: recording.recordedAt)
-            }
-        }
+        TimeFormatter.relativeDate(from: recording.recordedAt)
     }
     
     // MARK: - Actions
     private func loadDuration() {
         guard let url = recording.resolvedURL else { return }
         
-        let asset = AVAsset(url: url)
         Task {
             do {
-                let duration = try await asset.load(.duration)
+                let duration = try await AudioHelper.loadDuration(from: url)
                 await MainActor.run {
-                    self.duration = duration.seconds
+                    self.duration = duration
                 }
             } catch {
                 print("Error loading duration: \(error)")
@@ -149,30 +118,11 @@ struct RecordingRow: View {
     }
     
     private func shareTranscription() {
-        let activityVC = UIActivityViewController(
-            activityItems: [recording.fullText],
-            applicationActivities: nil
-        )
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
-           let rootVC = window.rootViewController {
-            rootVC.present(activityVC, animated: true)
-        }
+        ShareHelper.shareText(recording.fullText)
     }
     
     private func exportAudio() {
         guard let url = recording.resolvedURL else { return }
-        
-        let activityVC = UIActivityViewController(
-            activityItems: [url],
-            applicationActivities: nil
-        )
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
-           let rootVC = window.rootViewController {
-            rootVC.present(activityVC, animated: true)
-        }
+        ShareHelper.shareFile(at: url)
     }
 }

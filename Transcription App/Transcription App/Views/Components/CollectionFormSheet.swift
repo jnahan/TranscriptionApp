@@ -14,9 +14,6 @@ struct CollectionFormSheet: View {
     @State private var folderNameError: String? = nil
     @State private var hasAttemptedSubmit = false
     
-    // Validation constants
-    private let maxFolderNameLength = 50
-    
     private var isFormValid: Bool {
         validateFolderName()
     }
@@ -90,53 +87,60 @@ struct CollectionFormSheet: View {
     // MARK: - Validation Functions
     
     private func validateFolderName() -> Bool {
-        if folderName.isEmpty {
+        let trimmed = folderName.trimmed
+        
+        if trimmed.isEmpty {
             return false
         }
         
-        if folderName.count > maxFolderNameLength {
+        if trimmed.count > AppConstants.Validation.maxCollectionNameLength {
             return false
         }
         
-        // Check for duplicates (exclude current folder if editing)
-        let isDuplicate = existingFolders.contains { folder in
-            // If editing, ignore the current folder
+        // Get existing names, excluding current folder if editing
+        let existingNames = existingFolders.compactMap { folder -> String? in
             if isEditing, let currentFolder = currentFolder, folder.id == currentFolder.id {
-                return false
+                return nil
             }
-            return folder.name.lowercased() == folderName.lowercased()
+            return folder.name
         }
         
-        return !isDuplicate
+        return ValidationHelper.validateUnique(trimmed, against: existingNames, fieldName: "collection") == nil
     }
     
     @discardableResult
     private func validateFolderNameWithError() -> Bool {
         if hasAttemptedSubmit {
-            if folderName.isEmpty {
-                folderNameError = "Folder name is required"
+            let trimmed = folderName.trimmed
+            
+            // Validate not empty
+            if let error = ValidationHelper.validateNotEmpty(trimmed, fieldName: "Collection name") {
+                folderNameError = error
                 return false
-            } else if folderName.count > maxFolderNameLength {
-                folderNameError = "Folder name must be less than \(maxFolderNameLength) characters"
-                return false
-            } else {
-                // Check for duplicates (exclude current folder if editing)
-                let isDuplicate = existingFolders.contains { folder in
-                    // If editing, ignore the current folder
-                    if isEditing, let currentFolder = currentFolder, folder.id == currentFolder.id {
-                        return false
-                    }
-                    return folder.name.lowercased() == folderName.lowercased()
-                }
-                
-                if isDuplicate {
-                    folderNameError = "A folder with this name already exists"
-                    return false
-                } else {
-                    folderNameError = nil
-                    return true
-                }
             }
+            
+            // Validate length
+            if let error = ValidationHelper.validateLength(trimmed, max: AppConstants.Validation.maxCollectionNameLength, fieldName: "Collection name") {
+                folderNameError = error
+                return false
+            }
+            
+            // Get existing names, excluding current folder if editing
+            let existingNames = existingFolders.compactMap { folder -> String? in
+                if isEditing, let currentFolder = currentFolder, folder.id == currentFolder.id {
+                    return nil
+                }
+                return folder.name
+            }
+            
+            // Validate uniqueness
+            if let error = ValidationHelper.validateUnique(trimmed, against: existingNames, fieldName: "collection") {
+                folderNameError = error
+                return false
+            }
+            
+            folderNameError = nil
+            return true
         } else {
             // Don't show errors until submit is attempted
             folderNameError = nil

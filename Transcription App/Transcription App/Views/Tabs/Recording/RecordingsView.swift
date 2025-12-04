@@ -150,10 +150,6 @@ struct RecordingsView: View {
     }
 }
 
-extension URL: Identifiable {
-    public var id: String { self.absoluteString }
-}
-
 #Preview {
     RecordingsView()
         .modelContainer(for: [Recording.self, RecordingSegment.self, Folder.self], inMemory: true)
