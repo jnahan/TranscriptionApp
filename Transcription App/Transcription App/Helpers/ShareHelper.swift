@@ -25,6 +25,17 @@ struct ShareHelper {
         presentActivityController(activityVC)
     }
     
+    /// Share multiple items (text, files, etc.) using the system share sheet
+    /// - Parameter items: The items to share
+    static func shareItems(_ items: [Any]) {
+        let activityVC = UIActivityViewController(
+            activityItems: items,
+            applicationActivities: nil
+        )
+        
+        presentActivityController(activityVC)
+    }
+    
     // MARK: - Private Helpers
     
     private static func presentActivityController(_ activityVC: UIActivityViewController) {

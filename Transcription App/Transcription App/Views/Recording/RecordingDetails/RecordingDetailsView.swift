@@ -9,7 +9,6 @@ struct RecordingDetailsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var collections: [Collection]
     
-    @State private var showShareSheet = false
     @State private var showNotePopup = false
     @State private var showEditRecording = false
     @State private var showDeleteConfirm = false
@@ -93,7 +92,11 @@ struct RecordingDetailsView: View {
                         showNotePopup = true
                     },
                     onSharePressed: {
-                        showShareSheet = true
+                        if let url = recording.resolvedURL {
+                            ShareHelper.shareItems([recording.fullText, url])
+                        } else {
+                            ShareHelper.shareText(recording.fullText)
+                        }
                     }
                 )
             }
@@ -117,20 +120,12 @@ struct RecordingDetailsView: View {
             }
             
             Button("Share transcription") {
-                let activityVC = UIActivityViewController(activityItems: [recording.fullText], applicationActivities: nil)
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootVC = windowScene.keyWindow?.rootViewController {
-                    rootVC.present(activityVC, animated: true)
-                }
+                ShareHelper.shareText(recording.fullText)
             }
             
             Button("Export audio") {
                 if let url = recording.resolvedURL {
-                    let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let rootVC = windowScene.keyWindow?.rootViewController {
-                        rootVC.present(activityVC, animated: true)
-                    }
+                    ShareHelper.shareFile(at: url)
                 }
             }
             
@@ -143,13 +138,6 @@ struct RecordingDetailsView: View {
             }
             
             Button("Cancel", role: .cancel) {}
-        }
-        .sheet(isPresented: $showShareSheet) {
-            if let url = recording.resolvedURL {
-                ShareSheet(items: [recording.fullText, url])
-            } else {
-                ShareSheet(items: [recording.fullText])
-            }
         }
         .sheet(isPresented: $showEditRecording) {
             RecordingFormView(
@@ -185,17 +173,4 @@ struct RecordingDetailsView: View {
             audioPlayer.stop()
         }
     }
-}
-
-
-// MARK: - Share Sheet
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        return controller
-    }
-    
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
