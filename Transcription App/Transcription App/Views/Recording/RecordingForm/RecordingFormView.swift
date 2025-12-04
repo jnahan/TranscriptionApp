@@ -11,39 +11,26 @@ struct RecordingFormView: View {
     let onTranscriptionComplete: () -> Void
     let onExit: (() -> Void)?
     
-    @State private var title: String = ""
-    @State private var selectedCollection: Collection? = nil
-    @State private var note: String = ""
-    @State private var transcribedText: String = ""
-    @State private var transcribedLanguage: String = ""
-    @State private var transcribedSegments: [RecordingSegment] = []
-    @State private var showCollectionPicker = false
-    @State private var isTranscribing = false
-    @State private var showExitConfirmation = false
-    
-    // Validation state
-    @State private var titleError: String? = nil
-    @State private var noteError: String? = nil
-    @State private var hasAttemptedSubmit = false
-    
+    @StateObject private var viewModel: RecordingFormViewModel
     @Environment(\.dismiss) private var dismiss
     
-    private var isEditing: Bool {
-        existingRecording != nil
-    }
-    
-    private var isFormValid: Bool {
-        validateTitle() && validateNote()
-    }
-    
-    private var saveButtonText: String {
-        if isTranscribing && !isEditing {
-            return "Processing recording"
-        } else if isEditing {
-            return "Save changes"
-        } else {
-            return "Save transcription"
-        }
+    init(
+        isPresented: Binding<Bool>,
+        audioURL: URL?,
+        existingRecording: Recording?,
+        collections: [Collection],
+        modelContext: ModelContext,
+        onTranscriptionComplete: @escaping () -> Void,
+        onExit: (() -> Void)?
+    ) {
+        self._isPresented = isPresented
+        self.audioURL = audioURL
+        self.existingRecording = existingRecording
+        self.collections = collections
+        self.modelContext = modelContext
+        self.onTranscriptionComplete = onTranscriptionComplete
+        self.onExit = onExit
+        self._viewModel = StateObject(wrappedValue: RecordingFormViewModel(audioURL: audioURL, existingRecording: existingRecording))
     }
     
     var body: some View {
@@ -53,7 +40,7 @@ struct RecordingFormView: View {
             
             VStack(spacing: 0) {
                 // Header
-                if isEditing {
+                if viewModel.isEditing {
                     CustomTopBar(
                         title: "Edit Recording",
                         leftIcon: "caret-left",
@@ -68,7 +55,7 @@ struct RecordingFormView: View {
                         title: "New recording",
                         leftIcon: "x",
                         onLeftTap: {
-                            showExitConfirmation = true
+                            viewModel.showExitConfirmation = true
                         }
                     )
                     .padding(.top, 12)
@@ -88,7 +75,7 @@ struct RecordingFormView: View {
                 }
                 
                 // Waveform animation (only for new recordings)
-                if isTranscribing && !isEditing {
+                if viewModel.isTranscribing && !viewModel.isEditing {
                     HStack(spacing: 4) {
                         ForEach(0..<20) { _ in
                             RoundedRectangle(cornerRadius: 2)
@@ -116,9 +103,9 @@ struct RecordingFormView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             InputLabel(text: "Title")
                             InputField(
-                                text: $title,
+                                text: $viewModel.title,
                                 placeholder: "Title",
-                                error: titleError
+                                error: viewModel.titleError
                             )
                         }
                         
@@ -127,12 +114,12 @@ struct RecordingFormView: View {
                             InputLabel(text: "Collection")
                             InputField(
                                 text: Binding(
-                                    get: { selectedCollection?.name ?? "" },
+                                    get: { viewModel.selectedCollection?.name ?? "" },
                                     set: { _ in }
                                 ),
                                 placeholder: "Select collection",
                                 showChevron: true,
-                                onTap: { showCollectionPicker = true }
+                                onTap: { viewModel.showCollectionPicker = true }
                             )
                         }
                         
@@ -140,204 +127,76 @@ struct RecordingFormView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             InputLabel(text: "Note")
                             InputField(
-                                text: $note,
+                                text: $viewModel.note,
                                 placeholder: "Write a note for yourself...",
                                 isMultiline: true,
                                 height: 200,
-                                error: noteError
+                                error: viewModel.noteError
                             )
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, isEditing ? 24 : 0)
+                    .padding(.top, viewModel.isEditing ? 24 : 0)
                 }
                 
                 Spacer()
                 
                 // Save button
                 Button {
-                    hasAttemptedSubmit = true
-                    validateTitleWithError()
-                    validateNoteWithError()
-                    if isFormValid {
-                        if isEditing {
-                            saveEdit()
+                    viewModel.validateForm()
+                    if viewModel.isFormValid {
+                        if viewModel.isEditing {
+                            viewModel.saveEdit()
+                            isPresented = false
+                            dismiss()
                         } else {
-                            saveRecording()
+                            viewModel.saveRecording(modelContext: modelContext) {
+                                onTranscriptionComplete()
+                                isPresented = false
+                            }
                         }
                     }
                 } label: {
-                    Text(saveButtonText)
+                    Text(viewModel.saveButtonText)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
-                        .background(isTranscribing ? Color.warmGray400 : Color.black)
+                        .background(viewModel.isTranscribing ? Color.warmGray400 : Color.black)
                         .cornerRadius(16)
                 }
-                .disabled(isTranscribing)
+                .disabled(viewModel.isTranscribing)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
             }
         }
-        .sheet(isPresented: $showCollectionPicker) {
+        .sheet(isPresented: $viewModel.showCollectionPicker) {
             CollectionPickerView(
                 collections: collections,
-                selectedCollection: $selectedCollection,
+                selectedCollection: $viewModel.selectedCollection,
                 modelContext: modelContext,
-                isPresented: $showCollectionPicker
+                isPresented: $viewModel.showCollectionPicker
             )
         }
-        .sheet(isPresented: $showExitConfirmation) {
+        .sheet(isPresented: $viewModel.showExitConfirmation) {
             ConfirmationSheet(
-                isPresented: $showExitConfirmation,
+                isPresented: $viewModel.showExitConfirmation,
                 title: "Discard recording?",
                 message: "Your recording will be lost if you exit now. Are you sure you want to continue?",
                 confirmButtonText: "Discard recording",
                 cancelButtonText: "Continue editing",
                 onConfirm: {
-                    // Delete the audio file if it exists
-                    if let url = audioURL {
-                        try? FileManager.default.removeItem(at: url)
-                    }
+                    viewModel.cleanupAudioFile()
                     isPresented = false
                     onExit?()
                 }
             )
         }
         .onAppear {
-            if let recording = existingRecording {
-                // Pre-populate for editing
-                title = recording.title
-                selectedCollection = recording.collection
-                note = recording.notes ?? ""
-                transcribedText = recording.fullText
-                transcribedLanguage = recording.language
-            } else if let url = audioURL {
-                // New recording
-                title = url.deletingPathExtension().lastPathComponent
-                startTranscription()
-            }
+            viewModel.setupForm()
+            viewModel.startTranscriptionIfNeeded()
         }
         .navigationBarHidden(true)
     }
-    
-    // MARK: - Validation Functions
-    
-    private func validateTitle() -> Bool {
-        let trimmed = title.trimmed
-        return !trimmed.isEmpty && trimmed.count <= AppConstants.Validation.maxTitleLength
-    }
-    
-    private func validateNote() -> Bool {
-        return note.count <= AppConstants.Validation.maxNoteLength
-    }
-    
-    @discardableResult
-    private func validateTitleWithError() -> Bool {
-        if hasAttemptedSubmit {
-            let trimmed = title.trimmed
-            
-            // Validate not empty
-            if let error = ValidationHelper.validateNotEmpty(trimmed, fieldName: "Title") {
-                titleError = error
-                return false
-            }
-            
-            // Validate length
-            if let error = ValidationHelper.validateLength(trimmed, max: AppConstants.Validation.maxTitleLength, fieldName: "Title") {
-                titleError = error
-                return false
-            }
-            
-            titleError = nil
-            return true
-        } else {
-            // Don't show errors until submit is attempted
-            titleError = nil
-            return validateTitle()
-        }
-    }
-    
-    @discardableResult
-    private func validateNoteWithError() -> Bool {
-        if hasAttemptedSubmit {
-            if let error = ValidationHelper.validateLength(note, max: AppConstants.Validation.maxNoteLength, fieldName: "Note") {
-                noteError = error
-                return false
-            }
-            
-            noteError = nil
-            return true
-        } else {
-            // Don't show errors until submit is attempted
-            noteError = nil
-            return validateNote()
-        }
-    }
-    
-    // MARK: - Transcription
-    
-    private func startTranscription() {
-        guard let url = audioURL else { return }
-        isTranscribing = true
-        
-        Task {
-            do {
-                let result = try await TranscriptionService.shared.transcribe(audioURL: url)
-                
-                await MainActor.run {
-                    transcribedText = result.text
-                    transcribedLanguage = result.language
-                    transcribedSegments = result.segments.map { segment in
-                        RecordingSegment(
-                            start: segment.start,
-                            end: segment.end,
-                            text: segment.text
-                        )
-                    }
-                    isTranscribing = false
-                }
-            } catch {
-                await MainActor.run {
-                    // TODO: Show error to user in future enhancement
-                    print("Transcription error: \(error.localizedDescription)")
-                    isTranscribing = false
-                }
-            }
-        }
-    }
-    
-    // MARK: - Save Functions
-    
-    private func saveRecording() {
-        guard let url = audioURL else { return }
-        
-        let recording = Recording(
-            title: title.trimmed,
-            fileURL: url,
-            fullText: transcribedText,
-            language: transcribedLanguage,
-            notes: note,
-            segments: transcribedSegments,
-            collection: selectedCollection,
-            recordedAt: Date()
-        )
-        
-        modelContext.insert(recording)
-        
-        onTranscriptionComplete()
-        isPresented = false
-    }
-    
-    private func saveEdit() {
-        guard let recording = existingRecording else { return }
-        
-        recording.title = title.trimmed
-        recording.collection = selectedCollection
-        recording.notes = note
-        
-        isPresented = false
-        dismiss()
-    }
 }
+

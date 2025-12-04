@@ -19,18 +19,7 @@ struct RecordingsView: View {
             ZStack {
                 // Gradient at absolute top of screen (when empty)
                 if filteredRecordings.isEmpty {
-                    VStack(spacing: 0) {
-                        Image("radial-gradient")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 280)
-                            .frame(maxWidth: .infinity)
-                            .rotationEffect(.degrees(180))
-                            .clipped()
-                        
-                        Spacer()
-                    }
-                    .ignoresSafeArea(edges: .top)
+                    EmptyStateGradient()
                 }
                 
                 VStack(spacing: 0) {

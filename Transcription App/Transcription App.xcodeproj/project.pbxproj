@@ -19,6 +19,8 @@
 		5D0ED1232EE131E90003E775 /* URL+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED1222EE131E90003E775 /* URL+Identifier.swift */; };
 		5D0ED1252EE131F50003E775 /* String+Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED1242EE131F50003E775 /* String+Validation.swift */; };
 		5D0ED1272EE134920003E775 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED1262EE134920003E775 /* AppConstants.swift */; };
+		5D0ED12B2EE144640003E775 /* RecordingFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED12A2EE144640003E775 /* RecordingFormViewModel.swift */; };
+		5D0ED12D2EE1454A0003E775 /* EmptyStateGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED12C2EE1454A0003E775 /* EmptyStateGradient.swift */; };
 		5D1570632ED965F40094E13E /* CollectionsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570622ED965F40094E13E /* CollectionsRow.swift */; };
 		5D1570652ED96B0A0094E13E /* CollectionPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570642ED96B0A0094E13E /* CollectionPickerSheet.swift */; };
 		5D1570672ED96BEE0094E13E /* CollectionFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570662ED96BEE0094E13E /* CollectionFormSheet.swift */; };
@@ -80,6 +82,8 @@
 		5D0ED1222EE131E90003E775 /* URL+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Identifier.swift"; sourceTree = "<group>"; };
 		5D0ED1242EE131F50003E775 /* String+Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Validation.swift"; sourceTree = "<group>"; };
 		5D0ED1262EE134920003E775 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		5D0ED12A2EE144640003E775 /* RecordingFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingFormViewModel.swift; sourceTree = "<group>"; };
+		5D0ED12C2EE1454A0003E775 /* EmptyStateGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateGradient.swift; sourceTree = "<group>"; };
 		5D1570622ED965F40094E13E /* CollectionsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsRow.swift; sourceTree = "<group>"; };
 		5D1570642ED96B0A0094E13E /* CollectionPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionPickerSheet.swift; sourceTree = "<group>"; };
 		5D1570662ED96BEE0094E13E /* CollectionFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionFormSheet.swift; sourceTree = "<group>"; };
@@ -145,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				5D4622D32ED83570009A454D /* RecordingFormView.swift */,
+				5D0ED12A2EE144640003E775 /* RecordingFormViewModel.swift */,
 			);
 			path = RecordingForm;
 			sourceTree = "<group>";
@@ -295,6 +300,7 @@
 				5D1570642ED96B0A0094E13E /* CollectionPickerSheet.swift */,
 				5D1570682EDA0F450094E13E /* TopBar.swift */,
 				5D0ED1152EE0FF2D0003E775 /* Confirmation.swift */,
+				5D0ED12C2EE1454A0003E775 /* EmptyStateGradient.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -474,6 +480,7 @@
 				5D0ED11D2EE131860003E775 /* ShareHelper.swift in Sources */,
 				5D7925AC2ECD8E4A002889A6 /* Transcription_AppApp.swift in Sources */,
 				5DDA7CD02EDD864C00AFB6C0 /* CollectionDetailView.swift in Sources */,
+				5D0ED12D2EE1454A0003E775 /* EmptyStateGradient.swift in Sources */,
 				5D0ED11F2EE1318F0003E775 /* ValidationHelper.swift in Sources */,
 				5D214A372ED8238B0069565D /* Collection.swift in Sources */,
 				5D15706B2EDA154A0094E13E /* AudioPlayerControls.swift in Sources */,
@@ -509,6 +516,7 @@
 				5D962F242ECE8DD400049626 /* RecorderVisualizer.swift in Sources */,
 				5D1570652ED96B0A0094E13E /* CollectionPickerSheet.swift in Sources */,
 				5DB579042ED84651002DC84D /* MainTabView.swift in Sources */,
+				5D0ED12B2EE144640003E775 /* RecordingFormViewModel.swift in Sources */,
 				5DDA7CCA2EDD842100AFB6C0 /* View+Shadow.swift in Sources */,
 				5D1570672ED96BEE0094E13E /* CollectionFormSheet.swift in Sources */,
 				5DB579252ED8D143002DC84D /* TranscriptionService.swift in Sources */,
