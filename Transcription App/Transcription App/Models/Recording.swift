@@ -31,7 +31,34 @@ class Recording {
     
     // MARK: - Computed Properties
     var resolvedURL: URL? {
-        return URL(fileURLWithPath: filePath)
+        guard let appSupportDir = try? FileManager.default
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else {
+            return nil
+        }
+        
+        // Try to resolve as relative path first (new recordings)
+        let relativeURL = appSupportDir.appendingPathComponent(filePath)
+        if FileManager.default.fileExists(atPath: relativeURL.path) {
+            return relativeURL
+        }
+        
+        // Fallback: Handle old absolute paths by extracting filename and looking in Recordings folder
+        let filename = URL(fileURLWithPath: filePath).lastPathComponent
+        let fallbackURL = appSupportDir
+            .appendingPathComponent("Recordings")
+            .appendingPathComponent(filename)
+        
+        if FileManager.default.fileExists(atPath: fallbackURL.path) {
+            return fallbackURL
+        }
+        
+        // Last resort: try the original absolute path (will fail for old recordings after rebuild)
+        let absoluteURL = URL(fileURLWithPath: filePath)
+        if FileManager.default.fileExists(atPath: absoluteURL.path) {
+            return absoluteURL
+        }
+        
+        return nil
     }
     
     init(
@@ -46,7 +73,18 @@ class Recording {
     ) {
         self.id = UUID()
         self.title = title
-        self.filePath = fileURL.path  // Convert URL to path string
+        
+        // Store relative path from Application Support directory
+        if let appSupportDir = try? FileManager.default
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false),
+           fileURL.path.hasPrefix(appSupportDir.path) {
+            // Extract relative path
+            self.filePath = String(fileURL.path.dropFirst(appSupportDir.path.count + 1))
+        } else {
+            // Fallback to absolute path if we can't determine relative path
+            self.filePath = fileURL.path
+        }
+        
         self.fullText = fullText
         self.language = language
         self.notes = notes
