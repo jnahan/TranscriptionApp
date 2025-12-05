@@ -116,14 +116,14 @@ final class Recorder: ObservableObject {
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         #endif
-        AudioServicesPlaySystemSound(1113)
+        // Audio sound disabled
     }
     
     private func playStopFeedback() {
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
         #endif
-        AudioServicesPlaySystemSound(1114)
+        // Audio sound disabled
     }
     
     func reset() {
