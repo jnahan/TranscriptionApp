@@ -45,7 +45,7 @@ struct CollectionPickerSheet: View {
                         }
                         
                         Text("Create collection")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.interMedium(size: 16))
                             .foregroundColor(.baseBlack)
                         
                         Spacer()
@@ -63,6 +63,8 @@ struct CollectionPickerSheet: View {
                             selectedCollection = nil
                         } else {
                             selectedCollection = collection
+                            // Automatically close the modal when a collection is selected
+                            isPresented = false
                         }
                     } label: {
                         HStack(spacing: 16) {
@@ -79,7 +81,7 @@ struct CollectionPickerSheet: View {
                             }
                             
                             Text(collection.name)
-                                .font(.system(size: 18, weight: .semibold))
+                                .font(.interMedium(size: 16))
                                 .foregroundColor(.baseBlack)
                             
                             Spacer()

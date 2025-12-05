@@ -139,10 +139,11 @@ struct CollectionDetailView: View {
                 VStack(spacing: 16) {
                     Text(collection.name + " is empty")
                         .font(.libreMedium(size: 24))
+                        .multilineTextAlignment(.center)
                 }
-               .frame(maxWidth: 280)
-               .frame(maxHeight: .infinity)
-               Spacer()
+                .frame(maxWidth: 280)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                Spacer()
             } else {
                 List {
                     ForEach(filteredRecordings) { recording in
