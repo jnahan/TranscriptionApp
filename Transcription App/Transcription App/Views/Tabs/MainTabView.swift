@@ -22,7 +22,6 @@ struct MainTabView: View {
     
     @State private var showNewRecordingSheet = false
     @State private var showRecorderScreen = false
-    @State private var showLiveTranscription = false
     @State private var showFilePicker = false
     @State private var showVideoPicker = false
     // used to pass file url from picker to transcription screen
@@ -107,7 +106,6 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: $showNewRecordingSheet) {
             NewRecordingSheet(
                 onRecordAudio: { showRecorderScreen = true },
-                onLiveTranscription: { showLiveTranscription = true },
                 onUploadFile: { showFilePicker = true },
                 onChooseFromPhotos: { showVideoPicker = true }
             )
@@ -115,10 +113,7 @@ struct MainTabView: View {
             .presentationBackground(.clear)
         }
         .fullScreenCover(isPresented: $showRecorderScreen) {
-            RecorderView(isLiveTranscriptionEnabled: false)
-        }
-        .fullScreenCover(isPresented: $showLiveTranscription) {
-            RecorderView(isLiveTranscriptionEnabled: true)
+            RecorderView()
         }
         // handle file picker, video picker logic
         .sheet(isPresented: $showFilePicker) {
