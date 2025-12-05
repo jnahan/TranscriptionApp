@@ -19,7 +19,7 @@ struct RecordingsView: View {
             ZStack {
                 // Gradient at absolute top of screen (when empty)
                 if filteredRecordings.isEmpty {
-                    EmptyStateGradient()
+                    EmptyStateGradientView()
                 }
                 
                 VStack(spacing: 0) {
@@ -31,7 +31,7 @@ struct RecordingsView: View {
                     )
                     
                     if viewModel.showCopyToast {
-                        CopyToast()
+                        CopyToastView()
                             .zIndex(1)
                             .frame(maxWidth: .infinity)
                             .padding(.top, 10)
@@ -91,14 +91,14 @@ struct RecordingsView: View {
     private var recordingsList: some View {
         Group {
             if filteredRecordings.isEmpty {
-                RecordingEmptyState()
+                RecordingEmptyStateView()
             } else {
                 List {
                     ForEach(filteredRecordings) { recording in
                         Button {
                             selectedRecording = recording
                         } label: {
-                            RecordingRow(
+                            RecordingRowView(
                                 recording: recording,
                                 player: viewModel.player,
                                 onCopy: { viewModel.copyRecording(recording) },

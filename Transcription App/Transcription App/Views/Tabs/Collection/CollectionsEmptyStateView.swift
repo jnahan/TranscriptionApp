@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CollectionsEmptyState: View {
+struct CollectionsEmptyStateView: View {
     @Binding var showCreateCollection: Bool
     
     var body: some View {

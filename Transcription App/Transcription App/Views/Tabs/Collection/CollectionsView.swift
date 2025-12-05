@@ -29,7 +29,7 @@ struct CollectionsView: View {
             ZStack {
                 // Gradient at absolute top of screen (when empty)
                 if collections.isEmpty {
-                    EmptyStateGradient()
+                    EmptyStateGradientView()
                 }
                 
                 VStack(spacing: 0) {
@@ -45,14 +45,14 @@ struct CollectionsView: View {
                     }
                     
                     if collections.isEmpty {
-                        CollectionsEmptyState(showCreateCollection: $showCreateCollection)
+                        CollectionsEmptyStateView(showCreateCollection: $showCreateCollection)
                     } else {
                         List {
                             ForEach(filteredCollections) { collection in
                                 Button {
                                     selectedCollection = collection
                                 } label: {
-                                    CollectionsRow(
+                                    CollectionsRowView(
                                         collection: collection,
                                         recordingCount: recordingCount(for: collection),
                                         onRename: {

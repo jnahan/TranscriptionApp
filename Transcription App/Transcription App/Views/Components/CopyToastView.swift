@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CopyToast: View {
+struct CopyToastView: View {
     var body: some View {
         Text("Recording copied")
             .padding()

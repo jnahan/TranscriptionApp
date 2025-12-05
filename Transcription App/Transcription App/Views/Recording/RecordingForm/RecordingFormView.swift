@@ -142,7 +142,7 @@ struct RecordingFormView: View {
             }
         }
         .sheet(isPresented: $viewModel.showCollectionPicker) {
-            CollectionPickerView(
+            CollectionPickerSheet(
                 collections: collections,
                 selectedCollection: $viewModel.selectedCollection,
                 modelContext: modelContext,

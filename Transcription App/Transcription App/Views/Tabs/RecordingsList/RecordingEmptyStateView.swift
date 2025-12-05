@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct RecordingEmptyState: View {
+struct RecordingEmptyStateView: View {
     var body: some View {
         VStack {
             Spacer()

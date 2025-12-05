@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Reusable row component for displaying a recording with menu actions
-struct RecordingRow: View {
+struct RecordingRowView: View {
     // MARK: - Properties
     let recording: Recording
     @ObservedObject var player: Player

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CollectionsRow: View {
+struct CollectionsRowView: View {
     let collection: Collection
     let recordingCount: Int
     let onRename: () -> Void

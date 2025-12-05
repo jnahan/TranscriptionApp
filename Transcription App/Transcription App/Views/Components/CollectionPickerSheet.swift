@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct CollectionPickerView: View {
+struct CollectionPickerSheet: View {
     let collections: [Collection]
     @Binding var selectedCollection: Collection?
     let modelContext: ModelContext

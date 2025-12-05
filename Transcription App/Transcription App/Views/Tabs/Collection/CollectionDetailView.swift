@@ -45,7 +45,7 @@ struct CollectionDetailView: View {
             )
             
             if viewModel.showCopyToast {
-                CopyToast()
+                CopyToastView()
                     .zIndex(1)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 10)
@@ -149,7 +149,7 @@ struct CollectionDetailView: View {
                         Button {
                             selectedRecording = recording
                         } label: {
-                            RecordingRow(
+                            RecordingRowView(
                                 recording: recording,
                                 player: viewModel.player,
                                 onCopy: { viewModel.copyRecording(recording) },
