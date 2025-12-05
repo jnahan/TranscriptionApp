@@ -63,6 +63,9 @@ class RecordingDetailsViewModel: ObservableObject {
         }
         
         do {
+            // Clear history before generating a new summary to avoid context position errors
+            LLMService.shared.clearHistory()
+            
             let systemPrompt = "You are a helpful assistant. Provide direct, concise responses without showing your thinking process or reasoning steps."
             let prompt = "Please generate a concise summary for this transcription. Provide only the summary, without any thinking or reasoning:\n\n\(recording.fullText)"
             
