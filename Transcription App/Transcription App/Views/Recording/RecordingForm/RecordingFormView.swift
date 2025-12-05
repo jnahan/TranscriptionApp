@@ -52,7 +52,7 @@ struct RecordingFormView: View {
                     .padding(.top, 12)
                 } else {
                     CustomTopBar(
-                        title: "New recording",
+                        title: "",
                         leftIcon: "x",
                         onLeftTap: {
                             viewModel.showExitConfirmation = true
