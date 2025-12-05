@@ -13,6 +13,7 @@ struct RecordingDetailsView: View {
     @State private var showEditRecording = false
     @State private var showDeleteConfirm = false
     @State private var showMenu = false
+    @State private var currentActiveSegmentId: UUID?
     
     private var showTimestamps: Bool {
         SettingsManager.shared.showTimestamps
@@ -53,50 +54,82 @@ struct RecordingDetailsView: View {
                 }
                 
                 // Scrollable Transcript Area
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        if showTimestamps && !recording.segments.isEmpty {
-                            // Show segments with timestamps when enabled
-                            ForEach(recording.segments.sorted(by: { $0.start < $1.start })) { segment in
-                                let isActive = audioPlayer.isPlaying && 
-                                             audioPlayer.currentTime >= segment.start && 
-                                             audioPlayer.currentTime < segment.end
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(TimeFormatter.formatTimestamp(segment.start))
-                                        .font(.custom("Inter-Regular", size: 14))
-                                        .foregroundColor(.warmGray400)
-                                        .monospacedDigit()
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            if showTimestamps && !recording.segments.isEmpty {
+                                // Show segments with timestamps when enabled
+                                ForEach(recording.segments.sorted(by: { $0.start < $1.start })) { segment in
+                                    let isActive = audioPlayer.isPlaying && 
+                                                 audioPlayer.currentTime >= segment.start && 
+                                                 audioPlayer.currentTime < segment.end
                                     
-                                    Text(attributedText(for: segment.text, isActive: isActive))
-                                        .font(.custom("Inter-Regular", size: 16))
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if let url = recording.resolvedURL {
-                                        // If already playing, just seek. Otherwise load, seek, and play.
-                                        if audioPlayer.isPlaying {
-                                            audioPlayer.seek(toTime: segment.start)
-                                        } else {
-                                            audioPlayer.loadAudio(url: url)
-                                            audioPlayer.seek(toTime: segment.start)
-                                            audioPlayer.play(url)
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(TimeFormatter.formatTimestamp(segment.start))
+                                            .font(.custom("Inter-Regular", size: 14))
+                                            .foregroundColor(.warmGray400)
+                                            .monospacedDigit()
+                                        
+                                        Text(attributedText(for: segment.text, isActive: isActive))
+                                            .font(.custom("Inter-Regular", size: 16))
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    .id(segment.id)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if let url = recording.resolvedURL {
+                                            // If already playing, just seek. Otherwise load, seek, and play.
+                                            if audioPlayer.isPlaying {
+                                                audioPlayer.seek(toTime: segment.start)
+                                            } else {
+                                                audioPlayer.loadAudio(url: url)
+                                                audioPlayer.seek(toTime: segment.start)
+                                                audioPlayer.play(url)
+                                            }
+                                        }
+                                        // Scroll to tapped segment
+                                        currentActiveSegmentId = segment.id
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            proxy.scrollTo(segment.id, anchor: .center)
                                         }
                                     }
                                 }
+                            } else {
+                                // Show full text when timestamps are disabled or no segments
+                                Text(recording.fullText)
+                                    .font(.custom("Inter-Regular", size: 16))
+                                    .foregroundColor(.baseBlack)
                             }
-                        } else {
-                            // Show full text when timestamps are disabled or no segments
-                            Text(recording.fullText)
-                                .font(.custom("Inter-Regular", size: 16))
-                                .foregroundColor(.baseBlack)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, AppConstants.UI.Spacing.large)
+                        .padding(.top, 24)
+                        .padding(.bottom, 180)
+                    }
+                    .onChange(of: audioPlayer.currentTime) { _, _ in
+                        if audioPlayer.isPlaying && showTimestamps && !recording.segments.isEmpty {
+                            // Find the currently active segment
+                            let sortedSegments = recording.segments.sorted(by: { $0.start < $1.start })
+                            if let activeSegment = sortedSegments.first(where: { segment in
+                                audioPlayer.currentTime >= segment.start && 
+                                audioPlayer.currentTime < segment.end
+                            }) {
+                                // Only scroll if this is a new active segment
+                                if currentActiveSegmentId != activeSegment.id {
+                                    currentActiveSegmentId = activeSegment.id
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        proxy.scrollTo(activeSegment.id, anchor: .center)
+                                    }
+                                }
+                            }
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, AppConstants.UI.Spacing.large)
-                    .padding(.top, 24)
-                    .padding(.bottom, 180)
+                    .onChange(of: audioPlayer.isPlaying) { _, isPlaying in
+                        // Reset tracking when playback stops
+                        if !isPlaying {
+                            currentActiveSegmentId = nil
+                        }
+                    }
                 }
                 
                 Spacer()
