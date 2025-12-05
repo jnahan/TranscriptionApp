@@ -14,6 +14,10 @@ struct RecordingDetailsView: View {
     @State private var showDeleteConfirm = false
     @State private var showMenu = false
     
+    private var showTimestamps: Bool {
+        SettingsManager.shared.showTimestamps
+    }
+    
     var body: some View {
         ZStack {
             Color.warmGray50
@@ -51,7 +55,8 @@ struct RecordingDetailsView: View {
                 // Scrollable Transcript Area
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
-                        if !recording.segments.isEmpty {
+                        if showTimestamps && !recording.segments.isEmpty {
+                            // Show segments with timestamps when enabled
                             ForEach(recording.segments.sorted(by: { $0.start < $1.start })) { segment in
                                 let isActive = audioPlayer.isPlaying && 
                                              audioPlayer.currentTime >= segment.start && 
@@ -82,17 +87,10 @@ struct RecordingDetailsView: View {
                                 }
                             }
                         } else {
-                            // Show full text with a single timestamp at the top
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("0:00")
-                                    .font(.custom("Inter-Regular", size: 14))
-                                    .foregroundColor(.warmGray400)
-                                    .monospacedDigit()
-                                
+                            // Show full text when timestamps are disabled or no segments
                             Text(recording.fullText)
-                                    .font(.custom("Inter-Regular", size: 16))
+                                .font(.custom("Inter-Regular", size: 16))
                                 .foregroundColor(.baseBlack)
-                            }
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

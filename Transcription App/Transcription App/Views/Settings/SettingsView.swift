@@ -4,10 +4,12 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var audioLanguage: String
+    @State private var showTimestamps: Bool
     
     init() {
         let settings = SettingsManager.shared
         _audioLanguage = State(initialValue: settings.audioLanguage)
+        _showTimestamps = State(initialValue: settings.showTimestamps)
     }
     
     // Data for selection lists
@@ -139,6 +141,47 @@ struct SettingsView: View {
                                 )) {
                                     SettingsRow(title: "Audio language", value: audioLanguage, imageName: "text-aa")
                                 }
+                                
+                                Divider().padding(.leading, 60)
+                                
+                                NavigationLink(destination: SelectionListView(
+                                    title: "Timestamps",
+                                    items: [
+                                        SelectionItem(emoji: nil, title: "On"),
+                                        SelectionItem(emoji: nil, title: "Off")
+                                    ],
+                                    selectedItem: Binding(
+                                        get: { showTimestamps ? "On" : "Off" },
+                                        set: { newValue in
+                                            showTimestamps = (newValue == "On")
+                                        }
+                                    )
+                                )) {
+                                    HStack(spacing: 16) {
+                                        Image("clock")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(.black)
+                                        
+                                        Text("Timestamps")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.baseBlack)
+                                        
+                                        Spacer()
+                                        
+                                        Text(showTimestamps ? "On" : "Off")
+                                            .font(.system(size: 17))
+                                            .foregroundColor(.warmGray500)
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.warmGray400)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 16)
+                                }
                             }
                             .background(Color.white)
                             .cornerRadius(12)
@@ -206,6 +249,9 @@ struct SettingsView: View {
         .presentationDragIndicator(.hidden)
         .onChange(of: audioLanguage) { oldValue, newValue in
             SettingsManager.shared.audioLanguage = newValue
+        }
+        .onChange(of: showTimestamps) { oldValue, newValue in
+            SettingsManager.shared.showTimestamps = newValue
         }
     }
     
