@@ -1,0 +1,4 @@
+# Large model files - DO NOT COMMIT
+*.gguf
+**/LLM/*.gguf
+Transcription App/Transcription App/LLM/*.gguf
