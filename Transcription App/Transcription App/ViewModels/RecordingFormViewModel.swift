@@ -183,6 +183,7 @@ class RecordingFormViewModel: ObservableObject {
             fullText: transcribedText,
             language: transcribedLanguage,
             notes: note,
+            summary: nil,  // Summary will be generated when user clicks Summary tab
             segments: [],  // Start with empty array
             collection: selectedCollection,
             recordedAt: Date()

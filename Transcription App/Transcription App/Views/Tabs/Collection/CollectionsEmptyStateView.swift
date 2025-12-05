@@ -40,3 +40,5 @@ struct CollectionsEmptyStateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
+
+

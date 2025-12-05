@@ -25,6 +25,9 @@ class Recording {
     // MARK: - User Notes
     var notes: String
     
+    // MARK: - AI Summary
+    var summary: String?
+    
     // MARK: - Organization
     @Relationship(inverse: \Collection.recordings)
     var collection: Collection?
@@ -67,6 +70,7 @@ class Recording {
         fullText: String,
         language: String,
         notes: String = "",
+        summary: String? = nil,
         segments: [RecordingSegment] = [],
         collection: Collection? = nil,
         recordedAt: Date
@@ -88,6 +92,7 @@ class Recording {
         self.fullText = fullText
         self.language = language
         self.notes = notes
+        self.summary = summary
         self.segments = segments
         self.collection = collection
         self.recordedAt = recordedAt

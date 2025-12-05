@@ -21,3 +21,5 @@ struct RecordingEmptyStateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
+
+
