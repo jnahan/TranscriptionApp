@@ -148,6 +148,7 @@ class RecordingFormViewModel: ObservableObject {
         
         Task {
             do {
+                // TranscriptionService will use settings from UserDefaults automatically
                 let result = try await TranscriptionService.shared.transcribe(audioURL: url)
                 
                 await MainActor.run {
@@ -160,16 +161,10 @@ class RecordingFormViewModel: ObservableObject {
                             text: segment.text
                         )
                     }
-                    print("✅ ViewModel: Mapped \(transcribedSegments.count) segments")
-                    for (index, seg) in transcribedSegments.enumerated() {
-                        print("   Segment \(index): \(seg.start)s - \(seg.text.prefix(30))...")
-                    }
                     isTranscribing = false
                 }
             } catch {
                 await MainActor.run {
-                    // TODO: Show error to user in future enhancement
-                    print("Transcription error: \(error.localizedDescription)")
                     isTranscribing = false
                 }
             }

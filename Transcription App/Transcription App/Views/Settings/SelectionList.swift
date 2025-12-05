@@ -11,6 +11,21 @@ struct SelectionListView: View {
     let items: [SelectionItem]
     @Binding var selectedItem: String
     @Environment(\.dismiss) var dismiss
+    @State private var searchText = ""
+    
+    // Show search bar only for language selection (has many items)
+    private var showSearchBar: Bool {
+        title == "Audio Language"
+    }
+    
+    // Filter items based on search text
+    private var filteredItems: [SelectionItem] {
+        if searchText.isEmpty {
+            return items
+        } else {
+            return items.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -21,8 +36,15 @@ struct SelectionListView: View {
             )
             .padding(.top, 12)
             
+            if showSearchBar {
+                SearchBar(text: $searchText, placeholder: "Search languages...")
+                    .padding(.horizontal, AppConstants.UI.Spacing.large)
+                    .padding(.top, 8)
+                    .padding(.bottom, 8)
+            }
+            
             List {
-                ForEach(items) { item in
+                ForEach(filteredItems) { item in
                     Button(action: {
                         selectedItem = item.title
                         dismiss()
@@ -47,8 +69,10 @@ struct SelectionListView: View {
                                     .foregroundColor(.accent)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 16)
                         .padding(.horizontal, 20)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .listRowBackground(Color.warmGray50)

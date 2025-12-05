@@ -21,6 +21,7 @@
 		5D0ED1272EE134920003E775 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED1262EE134920003E775 /* AppConstants.swift */; };
 		5D0ED12B2EE144640003E775 /* RecordingFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED12A2EE144640003E775 /* RecordingFormViewModel.swift */; };
 		5D0ED12D2EE1454A0003E775 /* EmptyStateGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED12C2EE1454A0003E775 /* EmptyStateGradient.swift */; };
+		5D0ED12F2EE26FE20003E775 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0ED12E2EE26FE20003E775 /* SettingsManager.swift */; };
 		5D1570632ED965F40094E13E /* CollectionsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570622ED965F40094E13E /* CollectionsRow.swift */; };
 		5D1570652ED96B0A0094E13E /* CollectionPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570642ED96B0A0094E13E /* CollectionPickerSheet.swift */; };
 		5D1570672ED96BEE0094E13E /* CollectionFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1570662ED96BEE0094E13E /* CollectionFormSheet.swift */; };
@@ -84,6 +85,7 @@
 		5D0ED1262EE134920003E775 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		5D0ED12A2EE144640003E775 /* RecordingFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingFormViewModel.swift; sourceTree = "<group>"; };
 		5D0ED12C2EE1454A0003E775 /* EmptyStateGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateGradient.swift; sourceTree = "<group>"; };
+		5D0ED12E2EE26FE20003E775 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		5D1570622ED965F40094E13E /* CollectionsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsRow.swift; sourceTree = "<group>"; };
 		5D1570642ED96B0A0094E13E /* CollectionPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionPickerSheet.swift; sourceTree = "<group>"; };
 		5D1570662ED96BEE0094E13E /* CollectionFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionFormSheet.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 			children = (
 				5D962F2A2ECEBAC000049626 /* SettingsView.swift */,
 				5D0ED10D2EE004090003E775 /* SelectionList.swift */,
+				5D0ED12E2EE26FE20003E775 /* SettingsManager.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -510,6 +513,7 @@
 				5D7925BD2ECD8E6C002889A6 /* Recording.swift in Sources */,
 				5DDA7CCC2EDD850300AFB6C0 /* CollectionsEmptyState.swift in Sources */,
 				5D0ED10A2EDFD1090003E775 /* AppButtonStyle.swift in Sources */,
+				5D0ED12F2EE26FE20003E775 /* SettingsManager.swift in Sources */,
 				5D15706D2EDA172F0094E13E /* NoteOverlay.swift in Sources */,
 				5D4622D42ED83570009A454D /* RecordingFormView.swift in Sources */,
 				5DB579022ED84343002DC84D /* RecorderView.swift in Sources */,
