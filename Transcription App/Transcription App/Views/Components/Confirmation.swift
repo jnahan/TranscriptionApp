@@ -28,6 +28,7 @@ struct ConfirmationSheet: View {
                 .font(.system(size: 16))
                 .foregroundColor(.warmGray600)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 32)
             
@@ -48,12 +49,38 @@ struct ConfirmationSheet: View {
                 }
                 .buttonStyle(GhostButtonStyle())
             }
-            .padding(.bottom, 20)
         }
         .background(Color.warmGray100)
-        .presentationDetents([.height(300)])
+        .presentationDetents([.height(calculateHeight())])
         .presentationDragIndicator(.hidden)
         .presentationBackground(Color.warmGray100)
         .presentationCornerRadius(24)
+    }
+    
+    private func calculateHeight() -> CGFloat {
+        // Drag handle: 5 + 12 top + 20 bottom = 37
+        let dragHandleHeight: CGFloat = 37
+        
+        // Title: ~30 (font size 24 with padding)
+        let titleHeight: CGFloat = 30 + 16 // font height + bottom padding
+        
+        // Message: estimate based on text length and width
+        // Assuming ~40 characters per line at 16pt font with 24pt horizontal padding
+        let screenWidth: CGFloat = UIScreen.main.bounds.width
+        let availableWidth = screenWidth - 48 // 24pt padding on each side
+        let estimatedLineHeight: CGFloat = 22 // 16pt font with line spacing
+        let charactersPerLine = Int(availableWidth / 9) // rough estimate
+        let lineCount = max(1, (message.count / charactersPerLine) + (message.count % charactersPerLine > 0 ? 1 : 0))
+        let messageHeight = CGFloat(lineCount) * estimatedLineHeight + 32 // + bottom padding
+        
+        // Buttons: 2 buttons with spacing
+        // Each button: 16*2 (vertical padding) + ~22 (text height) + 6 (bottom padding from style) = ~60
+        // Spacing between buttons: 12
+        let buttonsHeight: CGFloat = 60 + 12 + 60 // first button + spacing + second button
+        
+        let totalHeight = dragHandleHeight + titleHeight + messageHeight + buttonsHeight
+        
+        // Add some safe area padding at bottom
+        return totalHeight + 20
     }
 }
