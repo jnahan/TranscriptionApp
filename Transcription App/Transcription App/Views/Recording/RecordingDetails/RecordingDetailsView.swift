@@ -5,12 +5,12 @@ import AVFoundation
 enum RecordingDetailTab {
     case transcript
     case summary
+    case askSono
 }
 
 struct RecordingDetailsView: View {
     let recording: Recording
     @StateObject private var audioPlayer = Player()
-    @StateObject private var viewModel: RecordingDetailsViewModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var collections: [Collection]
@@ -21,11 +21,6 @@ struct RecordingDetailsView: View {
     @State private var showMenu = false
     @State private var currentActiveSegmentId: UUID?
     @State private var selectedTab: RecordingDetailTab = .transcript
-    
-    init(recording: Recording) {
-        self.recording = recording
-        _viewModel = StateObject(wrappedValue: RecordingDetailsViewModel(recording: recording))
-    }
     
     private var showTimestamps: Bool {
         SettingsManager.shared.showTimestamps
@@ -78,6 +73,12 @@ struct RecordingDetailsView: View {
                         isSelected: selectedTab == .summary,
                         action: { selectedTab = .summary }
                     )
+                    
+                    TabButton(
+                        title: "Ask Sono",
+                        isSelected: selectedTab == .askSono,
+                        action: { selectedTab = .askSono }
+                    )
                 }
                 .padding(.horizontal, AppConstants.UI.Spacing.large)
                 .padding(.top, 16)
@@ -85,8 +86,10 @@ struct RecordingDetailsView: View {
                 // Content Area
                 if selectedTab == .transcript {
                     transcriptView
-                } else {
+                } else if selectedTab == .summary {
                     summaryView
+                } else {
+                    askSonoView
                 }
                 
                 Spacer()
@@ -261,6 +264,12 @@ struct RecordingDetailsView: View {
     // Remove the old summaryView computed property and replace with:
     private var summaryView: some View {
         SummaryView(recording: recording)
+    }
+    
+    // MARK: - Ask Sono View
+    
+    private var askSonoView: some View {
+        AskSonoView(recording: recording)
     }
     
     // MARK: - Helper Methods
